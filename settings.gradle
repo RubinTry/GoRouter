@@ -1,0 +1,4 @@
+include ':gorouter-complier'
+include ':api'
+include ':app'
+rootProject.name = "GoRouter"
