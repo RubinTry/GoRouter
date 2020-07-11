@@ -1,4 +1,4 @@
-package cn.gorouter.api;
+package cn.gorouter.api.launcher;
 
 public class RouterBinder implements IRouter {
     @Override

@@ -2,25 +2,20 @@ package cn.gorouter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import cn.gorouter.api.logger.GoLogger;
-import cn.gorouter.api.logger.LogPrinter;
 
 /**
  * @author logcat
  */
-public class MainActivity extends AppCompatActivity {
+public class PageTwo extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_page_two);
 
 
-
-
-        startActivity(new Intent(this , PageTwo.class));
     }
 }
