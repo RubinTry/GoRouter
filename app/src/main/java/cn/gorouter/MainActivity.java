@@ -5,9 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import cn.gorouter.api.logger.GoLogger;
-import cn.gorouter.api.logger.LogPrinter;
-
 /**
  * @author logcat
  */

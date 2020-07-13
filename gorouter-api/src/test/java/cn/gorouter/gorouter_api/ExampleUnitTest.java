@@ -1,4 +1,4 @@
-package cn.gorouter.api;
+package cn.gorouter.gorouter_api;
 
 import org.junit.Test;
 

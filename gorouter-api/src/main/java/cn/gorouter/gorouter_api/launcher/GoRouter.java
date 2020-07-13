@@ -1,4 +1,4 @@
-package cn.gorouter.api.launcher;
+package cn.gorouter.gorouter_api.launcher;
 
 import android.app.Activity;
 import android.app.Application;
@@ -6,7 +6,7 @@ import android.app.Application;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.gorouter.api.logger.GoLogger;
+import cn.gorouter.gorouter_api.logger.GoLogger;
 
 
 /**

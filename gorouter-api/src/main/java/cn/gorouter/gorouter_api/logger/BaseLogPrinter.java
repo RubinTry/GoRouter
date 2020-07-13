@@ -1,8 +1,7 @@
-package cn.gorouter.api.logger;
+package cn.gorouter.gorouter_api.logger;
 
 import android.util.Log;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 

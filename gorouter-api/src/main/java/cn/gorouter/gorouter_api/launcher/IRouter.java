@@ -1,4 +1,4 @@
-package cn.gorouter.api.launcher;
+package cn.gorouter.gorouter_api.launcher;
 
 public interface IRouter {
     void add();

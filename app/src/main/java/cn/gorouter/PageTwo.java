@@ -4,8 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import cn.gorouter.api.logger.GoLogger;
-
 /**
  * @author logcat
  */
@@ -16,6 +14,6 @@ public class PageTwo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_page_two);
 
-
+        
     }
 }

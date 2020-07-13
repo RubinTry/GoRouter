@@ -2,7 +2,7 @@ package cn.gorouter;
 
 import android.app.Application;
 
-import cn.gorouter.api.launcher.GoRouter;
+import cn.gorouter.gorouter_api.launcher.GoRouter;
 
 /**
  * @author logcat
