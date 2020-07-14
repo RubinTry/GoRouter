@@ -16,7 +16,7 @@ public class GoLogger {
         logger.setSplitChar(splitChar);
     }
 
-    public static void openLog() {
+    public static synchronized void openLog() {
         logger.open();
     }
 
