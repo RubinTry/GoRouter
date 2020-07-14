@@ -12,9 +12,11 @@ import androidx.fragment.app.Fragment;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.gorouter.gorouter_api.logger.GoLogger;
 import cn.gorouter.gorouter_api.utils.ActivityUtils;
 import dalvik.system.DexFile;
 
@@ -33,6 +35,12 @@ public class _GoRouter {
     private Map<String, Class> nodeTargetContainer;
     private Map<String, Class> typeContainer;
     private Integer requestCode;
+
+
+    private _GoRouter(){
+        nodeTargetContainer = new HashMap<>();
+        typeContainer = new HashMap<>();
+    }
 
     public static _GoRouter getInstance() {
         if (instance == null) {
@@ -198,13 +206,24 @@ public class _GoRouter {
     }
 
     /**
-     * 将节点容器与类型容器传入
-     * @param nodeTargetContainer  节点容器
-     * @param typeContainer   类型容器
+     * 将获取到的所有路由都装进容器中
+     * @param url
+     * @param target
+     * @param typeName
      */
-    public void setContainer(Map<String, Class> nodeTargetContainer, Map<String, Class> typeContainer) {
-        this.nodeTargetContainer = nodeTargetContainer;
-        this.typeContainer = typeContainer;
+    public void put(String url, Class target , String typeName) {
+        if (url != null && target != null) {
+            nodeTargetContainer.put(url, target);
+            GoLogger.debug("target added!");
+            try {
+                Class targetType = Class.forName(typeName);
+                GoLogger.info(targetType.getName());
+                typeContainer.put(url , targetType);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 

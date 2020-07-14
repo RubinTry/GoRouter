@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import cn.gorouter.gorouter_annotation.Route;
 import cn.gorouter.gorouter_api.launcher.GoRouter;
+import cn.gorouter.gorouter_api.logger.GoLogger;
 
 /**
  * @author logcat
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        GoLogger.error("This is first page!");
 
         GoRouter.getInstance()
                 .build("main/PageTwo" , null)

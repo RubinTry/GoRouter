@@ -17,12 +17,10 @@ public class GoRouter {
     private static volatile GoRouter instance;
     private static boolean init;
     private Application application;
-    private Map<String, Class> nodeTargetContainer;
-    private Map<String , Class> typeContainer;
+
 
     private GoRouter() {
-        nodeTargetContainer = new HashMap<>();
-        typeContainer = new HashMap<>();
+
     }
 
     public static GoRouter getInstance() {
@@ -64,27 +62,7 @@ public class GoRouter {
     }
 
 
-    /**
-     * 将获取到的所有路由都装进容器中
-     * @param url
-     * @param target
-     * @param typeName
-     */
-    public void put(String url, Class target , String typeName) {
-        if (url != null && target != null) {
-            nodeTargetContainer.put(url, target);
-            GoLogger.debug("target added!");
-            try {
-                Class targetType = Class.forName(typeName);
-                GoLogger.info(targetType.getName());
-                typeContainer.put(url , targetType);
-                _GoRouter.getInstance().setContainer(nodeTargetContainer , typeContainer);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     /**
      * 构建一个路由

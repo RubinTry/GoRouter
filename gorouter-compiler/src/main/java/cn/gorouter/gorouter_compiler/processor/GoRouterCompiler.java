@@ -91,7 +91,7 @@ public class GoRouterCompiler extends AbstractProcessor {
                 writer = sourceFile.openWriter();
                 writer.write("package cn.gorouter.route;\n" +
                         "\n" +
-                        "import cn.gorouter.gorouter_api.launcher.GoRouter;\n" +
+                        "import cn.gorouter.gorouter_api.launcher._GoRouter;\n" +
                         "import android.util.Log;\n" +
                         "import cn.gorouter.gorouter_api.launcher.IRouter;\n\n" +
                         "/**\n" +
@@ -106,7 +106,7 @@ public class GoRouterCompiler extends AbstractProcessor {
                     String key = iterator.next();
                     String nodeNames = map.get(key);
                     writer.write("\n" +
-                            "        GoRouter.getInstance().put(\"" + key +
+                            "        _GoRouter.getInstance().put(\"" + key +
                             "\" , " + nodeNames + " , \"" + typeMap.get(key) +
                             "\");");
                 }

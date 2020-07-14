@@ -19,6 +19,6 @@ public class PageTwo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_page_two);
 
-//        GoLogger.debug("");
+        GoLogger.error("This is second page!");
     }
 }
