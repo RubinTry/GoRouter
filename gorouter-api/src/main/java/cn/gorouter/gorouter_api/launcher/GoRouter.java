@@ -9,14 +9,13 @@ import cn.gorouter.gorouter_api.logger.GoLogger;
 
 
 /**
- * @author logcat
+ * @author logcat <a href="13857769302@163.com">Contact me.</a>
  * @version 1.0.0
  * @date 2020/07/11 16:25
  */
 public class GoRouter {
     private static volatile GoRouter instance;
     private static boolean init;
-    private Application application;
 
 
     private GoRouter() {
@@ -59,6 +58,17 @@ public class GoRouter {
         GoLogger.info("GoRouter init start.");
         init = _GoRouter.getInstance().init(application);
         GoLogger.info("GoRouter init over.");
+    }
+
+
+    /**
+     * 构建一个路由
+     * @param url
+     * @return
+     */
+    public GoRouter build(String url){
+        build(url , null , null);
+        return this;
     }
 
 
