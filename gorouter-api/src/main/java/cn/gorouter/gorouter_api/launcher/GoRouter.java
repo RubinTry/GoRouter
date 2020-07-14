@@ -93,6 +93,9 @@ public class GoRouter {
      * @return
      */
     public GoRouter build(String url, Bundle data) {
+        if(!init){
+            throw new IllegalArgumentException("You haven't initialized yet！");
+        }
         build(url , data , null);
         return this;
     }
@@ -106,6 +109,9 @@ public class GoRouter {
      * @return
      */
     public GoRouter build(String url , Bundle data , Integer requestCode){
+        if(!init){
+            throw new IllegalArgumentException("You haven't initialized yet！");
+        }
         _GoRouter.getInstance().build(url , data , requestCode);
         return this;
     }
@@ -114,6 +120,9 @@ public class GoRouter {
      * 开始跳转
      */
     public void go(){
+        if(!init){
+            throw new IllegalArgumentException("You haven't initialized yet！");
+        }
         try {
             _GoRouter.getInstance().go();
         }catch (Exception e){

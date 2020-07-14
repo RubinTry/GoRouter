@@ -15,7 +15,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
-import cn.gorouter.gorouter_api.logger.GoLogger;
 import cn.gorouter.gorouter_api.utils.ActivityUtils;
 import dalvik.system.DexFile;
 
@@ -160,19 +159,28 @@ public class _GoRouter {
      * @param type
      * @param nodeTarget
      */
-    private void go(TypeKind type, Class nodeTarget) {
+    private void go(TypeKind type, Class nodeTarget) throws NullPointerException{
         switch (type) {
             case ACTIVITY:
                 if (requestCode != null) {
                     Activity currentActivity = ActivityUtils.getCurrentActivity();
                     if (currentActivity != null) {
                         Intent intent = new Intent(currentActivity, nodeTarget);
+                        if(currentData != null){
+                            intent.putExtras(currentData);
+                        }
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         currentActivity.startActivityForResult(intent, requestCode.intValue());
+                        currentActivity = null;
+                    }else{
+                        throw new NullPointerException("No activity launching!!!");
                     }
-                    currentActivity = null;
+
                 } else {
                     Intent intent = new Intent(application.getApplicationContext(), nodeTarget);
+                    if(currentData != null){
+                        intent.putExtras(currentData);
+                    }
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     application.getApplicationContext().startActivity(intent);
                 }
@@ -189,6 +197,11 @@ public class _GoRouter {
 
     }
 
+    /**
+     * 将节点容器与类型容器传入
+     * @param nodeTargetContainer  节点容器
+     * @param typeContainer   类型容器
+     */
     public void setContainer(Map<String, Class> nodeTargetContainer, Map<String, Class> typeContainer) {
         this.nodeTargetContainer = nodeTargetContainer;
         this.typeContainer = typeContainer;
