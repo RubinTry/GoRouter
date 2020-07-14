@@ -2,7 +2,6 @@ package cn.gorouter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import cn.gorouter.gorouter_annotation.Route;
@@ -23,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         GoLogger.error("This is first page!");
 
         GoRouter.getInstance()
-                .build("main/PageTwo" , null)
+                .build("main/PageTwo")
                 .go();
     }
 }

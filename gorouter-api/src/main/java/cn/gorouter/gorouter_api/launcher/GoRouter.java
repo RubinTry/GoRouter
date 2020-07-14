@@ -2,8 +2,6 @@ package cn.gorouter.gorouter_api.launcher;
 
 import android.app.Application;
 import android.os.Bundle;
-import java.util.HashMap;
-import java.util.Map;
 
 import cn.gorouter.gorouter_api.logger.GoLogger;
 
