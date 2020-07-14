@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -11,9 +12,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/api" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/gorouter-complier" />
+            <option value="$PROJECT_DIR$/gorouter-annotation" />
+            <option value="$PROJECT_DIR$/gorouter-api" />
+            <option value="$PROJECT_DIR$/gorouter-compiler" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

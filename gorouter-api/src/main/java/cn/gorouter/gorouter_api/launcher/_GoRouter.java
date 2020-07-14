@@ -24,8 +24,9 @@ import static cn.gorouter.gorouter_api.launcher._GoRouter.TypeKind.ACTIVITY;
 import static cn.gorouter.gorouter_api.launcher._GoRouter.TypeKind.FRAGMENT;
 
 /**
- * @author logcat
- * @date 2020/07/14
+ * @author logcat <a href="13857769302@163.com">Contact me.</a>
+ * @version 1.0.0
+ * @date 2020/07/11 16:25
  */
 public class _GoRouter {
     private static volatile _GoRouter instance;
@@ -59,7 +60,7 @@ public class _GoRouter {
 
 
     /**
-     * 初始化获取所有路由
+     * Initialize all route and put them into container.
      * @param application
      * @return
      */
@@ -70,7 +71,7 @@ public class _GoRouter {
 
             try {
                 Class<? extends Activity> aClass = (Class<? extends Activity>) Class.forName(className);
-                //判断这个类是不是IRouter这个接口的子类
+                //Is IRouter's sub class?
                 if (IRouter.class.isAssignableFrom(aClass)) {
                     IRouter iRouter = (IRouter) aClass.newInstance();
                     iRouter.put();
@@ -84,10 +85,10 @@ public class _GoRouter {
 
 
     /**
-     * 扫描指定包名下的所有类名
+     * Scan all class names under the specified package name.
      *
      * @param context
-     * @param packageName
+     * @param packageName Witch package we want scan.
      * @return
      */
     private List<String> getClasses(Context context, String packageName) {
@@ -116,10 +117,10 @@ public class _GoRouter {
 
 
     /**
-     * 构建一个路由
-     * @param url  路由地址
-     * @param data  需要传递的数据
-     * @param requestCode  实现startActivityForResult所需的参数
+     * Build a route
+     * @param url  route url address
+     * @param data  The data that needs to be passed to the target page
+     * @param requestCode  Parameters required to implement {@link Activity#startActivityForResult(Intent, int)}
      */
     public void build(String url, Bundle data, Integer requestCode) {
         this.currentUrl = url;
@@ -129,7 +130,7 @@ public class _GoRouter {
 
 
     /**
-     * 开始跳转
+     * Go to target page.
      */
     public void go() throws NullPointerException {
         if (currentUrl == null) {
@@ -140,15 +141,16 @@ public class _GoRouter {
             throw new NullPointerException("container is empty!!!");
         }
 
-        //进行各个节点的获取以及类型的判断
+        //Get all the node and type classes.
         Class nodeTarget = nodeTargetContainer.get(currentUrl);
         Class targetType = typeContainer.get(currentUrl);
 
         if(nodeTarget != null && targetType != null){
             if (Activity.class.isAssignableFrom(targetType)) {
-                //如果节点类型为activity，则使用activity的方式作出跳转
+                //If the node type is Activity,the jump is made in the form of Activity.
                 go(ACTIVITY, nodeTarget);
             } else if (Fragment.class.isAssignableFrom(targetType)) {
+                //If the node type is Fragment,the jump is made in the form of Fragment.
                 go(FRAGMENT, nodeTarget);
             }
         }else{
@@ -163,7 +165,7 @@ public class _GoRouter {
 
 
     /**
-     * 开始跳转
+     * Go to target page.
      * @param type
      * @param nodeTarget
      */
@@ -206,7 +208,7 @@ public class _GoRouter {
     }
 
     /**
-     * 将获取到的所有路由都装进容器中
+     * Put all the node and type names into container.
      * @param url
      * @param target
      * @param typeName
@@ -228,7 +230,7 @@ public class _GoRouter {
 
 
     /**
-     * 页面类型
+     * Page type.
      */
     enum TypeKind {
         ACTIVITY(0),

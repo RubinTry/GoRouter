@@ -24,10 +24,11 @@ import javax.tools.JavaFileObject;
 import cn.gorouter.gorouter_annotation.Route;
 
 /**
- * @author logcat
- * @date 2020/07/13
+ * @author logcat <a href="13857769302@163.com">Contact me.</a>
+ * @version 1.0.0
+ * @date 2020/07/11 16:25
  */
-@AutoService(Processor.class)//注册一个注解处理器
+@AutoService(Processor.class)//Register a annotation processor
 public class GoRouterCompiler extends AbstractProcessor {
 
 
@@ -41,7 +42,7 @@ public class GoRouterCompiler extends AbstractProcessor {
 
 
     /**
-     * 声明注解处理器支持的java版本
+     * Declare the Java version supported by the annotation processor
      *
      * @return
      */
@@ -52,7 +53,7 @@ public class GoRouterCompiler extends AbstractProcessor {
 
 
     /**
-     * 声明注解处理器要处理的注解是哪些
+     * What are the annotations to be processed by the annotation processor
      *
      * @return
      */
@@ -77,15 +78,16 @@ public class GoRouterCompiler extends AbstractProcessor {
             String nodeName = typeElement.getQualifiedName().toString();
             map.put(key, nodeName + ".class");
             //得到当前元素的类型
+            //Get current element's type.
             String typeName = typeElement.getSuperclass().toString();
             typeMap.put(key , typeName);
         }
 
         if (map.size() > 0) {
             Writer writer = null;
-            //创建一个新类名
+            //Create a new className.
             String nodeName = "RouteBinder" + System.currentTimeMillis();
-            //生成文件
+            //Generate a file.
             try {
                 JavaFileObject sourceFile = filter.createSourceFile("cn.gorouter.route." + nodeName);
                 writer = sourceFile.openWriter();

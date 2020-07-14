@@ -35,14 +35,14 @@ public class GoRouter {
 
 
     /**
-     * 开启日志打印
+     * open log printer.
      */
     public static void openLog() {
         GoLogger.openLog();
     }
 
     /**
-     * 设置Log日志的边框符号
+     * Set logger's split char
      * @param splitChar
      */
     public static void setLogSplitChar(String splitChar) {
@@ -51,18 +51,18 @@ public class GoRouter {
 
 
     /**
-     * 初始化GoRouter
+     * Initialize GoRouter
      * @param application
      */
     public static void init(Application application) {
-        GoLogger.info("GoRouter init start.");
+        GoLogger.info("GoRouter initialize start.");
         init = _GoRouter.getInstance().init(application);
-        GoLogger.info("GoRouter init over.");
+        GoLogger.info("GoRouter initialize over.");
     }
 
 
     /**
-     * 构建一个路由
+     * Build a route
      * @param url
      * @return
      */
@@ -75,7 +75,7 @@ public class GoRouter {
 
 
     /**
-     * 构建一个路由
+     * Build a route
      * @param url
      * @param data
      * @return
@@ -90,7 +90,7 @@ public class GoRouter {
 
 
     /**
-     * 构建一个路由
+     * Build a route
      * @param url
      * @param data
      * @param requestCode
@@ -105,7 +105,7 @@ public class GoRouter {
     }
 
     /**
-     * 开始跳转
+     * Go to target page.
      */
     public void go(){
         if(!init){
