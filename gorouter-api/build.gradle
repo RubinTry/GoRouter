@@ -1,5 +1,14 @@
 apply plugin: 'com.android.library'
 
+
+ext {
+    bintrayName = 'gorouter-api'
+    artifact = bintrayName
+    libraryName = 'GoRouter sdk'
+    libraryDescription = 'A router for android'
+    libraryVersion = gorouter_main_version
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -16,9 +25,11 @@ android {
 
     buildTypes {
         release {
+            debuggable false
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+        lintOptions { abortOnError false }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -34,3 +45,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 }
+
+
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'

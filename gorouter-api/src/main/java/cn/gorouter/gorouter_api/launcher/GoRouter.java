@@ -35,7 +35,7 @@ public class GoRouter {
     /**
      * open log printer.
      */
-    public static void openLog() {
+    public synchronized static void openLog() {
         GoLogger.openLog();
     }
 
@@ -43,7 +43,7 @@ public class GoRouter {
      * Set logger's split char
      * @param splitChar
      */
-    public static void setLogSplitChar(String splitChar) {
+    public synchronized static void setLogSplitChar(String splitChar) {
         GoLogger.setSplitChar(splitChar);
     }
 

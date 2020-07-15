@@ -11,7 +11,7 @@ import cn.gorouter.gorouter_api.logger.GoLogger;
 /**
  * @author logcat
  */
-@Route("main/MainActivity")
+@Route("/main/MainActivity")
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -19,10 +19,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GoLogger.error("This is first page!");
+        GoLogger.info("This is main page!");
 
+        //visit "login_model" 's LoginActivity
         GoRouter.getInstance()
-                .build("main/PageTwo")
+                .build("/login/LoginActivity")
                 .go();
     }
 }

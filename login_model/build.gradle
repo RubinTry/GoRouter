@@ -1,11 +1,17 @@
-apply plugin: 'com.android.application'
+if(isApplication.toBoolean().booleanValue()){
+    apply plugin: 'com.android.application'
+}else{
+    apply plugin: 'com.android.library'
+}
 
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "cn.gorouter"
+        if(isApplication.toBoolean().booleanValue()){
+            applicationId "cn.gorouter.login_model"
+        }
         minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
@@ -20,9 +26,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+
+
+    sourceSets {
+        main {
+            //指定要加载哪个AndroidManifest.xml文件
+            if (isApplication.toBoolean().booleanValue()) {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            } else {
+                manifest.srcFile 'src/main/manifest/AndroidManifest.xml'
+            }
+        }
     }
 }
 
@@ -35,14 +49,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
     implementation 'cn.rubintry:gorouter-annotation:1.0.0'
     implementation 'cn.rubintry:gorouter-api:1.0.0'
     annotationProcessor 'cn.rubintry:gorouter-compiler:1.0.0'
-
-
-    if(!isApplication.toBoolean().booleanValue()){
-        implementation project(path: ':login_model')
-    }
 
 }

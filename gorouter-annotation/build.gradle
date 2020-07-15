@@ -1,8 +1,23 @@
 apply plugin: 'java-library'
 
+
+ext {
+    bintrayName = 'gorouter-annotation'
+    artifact = bintrayName
+    libraryName = 'GoRouter annotation'
+    libraryDescription = 'The annotation used in gorouter api'
+    libraryVersion = gorouter_annotation_version
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'

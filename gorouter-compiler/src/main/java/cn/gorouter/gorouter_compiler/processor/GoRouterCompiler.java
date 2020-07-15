@@ -4,7 +4,6 @@ import com.google.auto.service.AutoService;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.security.Key;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -71,7 +70,7 @@ public class GoRouterCompiler extends AbstractProcessor {
         //ExecutableElement 方法节点
         // VariableElement成员变量节点
         Map<String, String> map = new HashMap<>();
-        Map<String , String> typeMap = new HashMap<>();
+        Map<String, String> typeMap = new HashMap<>();
         for (Element element : elementsAnnotatedWith) {
             TypeElement typeElement = (TypeElement) element;
             String key = typeElement.getAnnotation(Route.class).value();
@@ -80,7 +79,7 @@ public class GoRouterCompiler extends AbstractProcessor {
             //得到当前元素的类型
             //Get current element's type.
             String typeName = typeElement.getSuperclass().toString();
-            typeMap.put(key , typeName);
+            typeMap.put(key, typeName);
         }
 
         if (map.size() > 0) {

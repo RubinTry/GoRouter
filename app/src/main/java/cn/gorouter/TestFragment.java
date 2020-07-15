@@ -7,6 +7,6 @@ import cn.gorouter.gorouter_annotation.Route;
 /**
  * @author logcat
  */
-@Route("TestFragment")
+@Route("/main/TestFragment")
 public class TestFragment extends Fragment {
 }

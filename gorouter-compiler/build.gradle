@@ -1,12 +1,28 @@
 apply plugin: 'java-library'
 
 
+ext {
+    bintrayName = 'gorouter-compiler'
+    artifact = bintrayName
+    libraryName = 'GoRouter compiler sdk'
+    libraryDescription = 'A router for android'
+    libraryVersion = gorouter_compiler_version
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(path: ':gorouter-annotation')
+    implementation 'cn.rubintry:gorouter-annotation:1.0.0'
     annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
     compileOnly 'com.google.auto.service:auto-service:1.0-rc4'
 }
 
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
+
+
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
