@@ -71,16 +71,12 @@ public class GoRouterCompiler extends AbstractProcessor {
         //ExecutableElement 方法节点
         // VariableElement成员变量节点
         Map<String, String> map = new HashMap<>();
-        Map<String, String> typeMap = new HashMap<>();
+//        Map<String, String> typeMap = new HashMap<>();
         for (Element element : elementsAnnotatedWith) {
             TypeElement typeElement = (TypeElement) element;
             String url = typeElement.getAnnotation(Route.class).url();
             String nodeName = typeElement.getQualifiedName().toString();
             map.put(url, nodeName + ".class");
-            //得到当前元素的类型
-            //Get current element's type.
-            String typeName = typeElement.getSuperclass().toString();
-            typeMap.put(url, typeName);
         }
 
         if (map.size() > 0) {
@@ -108,8 +104,7 @@ public class GoRouterCompiler extends AbstractProcessor {
                     String nodeNames = map.get(key);
                     writer.write("\n" +
                             "        _GoRouter.getInstance().put(\"" + key +
-                            "\" , " + nodeNames + " , \"" + typeMap.get(key) +
-                            "\");");
+                            "\" , " + nodeNames + ");");
                 }
                 writer.write("\n" +
                         "    }\n" +

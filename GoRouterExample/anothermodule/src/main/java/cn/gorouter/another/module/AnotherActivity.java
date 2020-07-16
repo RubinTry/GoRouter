@@ -10,7 +10,7 @@ import cn.gorouter.annotation.Route;
  * @author logcat
  */
 @Route(url = "/another/AnotherActivity")
-public class AnotherActivity extends AppCompatActivity {
+public class AnotherActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

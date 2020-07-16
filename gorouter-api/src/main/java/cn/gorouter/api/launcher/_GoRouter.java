@@ -1,7 +1,6 @@
 package cn.gorouter.api.launcher;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -35,7 +34,6 @@ public class _GoRouter {
     private String currentUrl;
     private Bundle currentData;
     private Map<String, Class> nodeTargetContainer;
-    private Map<String, Class> typeContainer;
     private static Context mContext;
 
     private static Handler mHandler;
@@ -43,7 +41,6 @@ public class _GoRouter {
 
     private _GoRouter() {
         nodeTargetContainer = new HashMap<>();
-        typeContainer = new HashMap<>();
     }
 
     public static _GoRouter getInstance() {
@@ -140,19 +137,18 @@ public class _GoRouter {
             throw new IllegalArgumentException("Please set currentUrl");
         }
 
-        if (nodeTargetContainer == null || typeContainer == null) {
+        if (nodeTargetContainer == null) {
             throw new NullPointerException("container is empty!!!");
         }
 
         //Get all the node and type classes.
         Class nodeTarget = nodeTargetContainer.get(currentUrl);
-        Class targetType = typeContainer.get(currentUrl);
 
-        if (nodeTarget != null && targetType != null) {
-            if (Activity.class.isAssignableFrom(targetType)) {
+        if (nodeTarget != null) {
+            if (Activity.class.isAssignableFrom(nodeTarget)) {
                 //If the node type is Activity,the jump is made in the form of Activity.
                 go(currentContext, requestCode, ACTIVITY, nodeTarget);
-            } else if (Fragment.class.isAssignableFrom(targetType)) {
+            } else if (Fragment.class.isAssignableFrom(nodeTarget)) {
                 //If the node type is Fragment,the jump is made in the form of Fragment.
                 go(currentContext, requestCode, FRAGMENT, nodeTarget);
             }
@@ -197,16 +193,13 @@ public class _GoRouter {
      *
      * @param url
      * @param target
-     * @param typeName
      */
-    public void put(String url, Class target, String typeName) {
+    public void put(String url, Class target) {
         if (url != null && target != null) {
             nodeTargetContainer.put(url, target);
             GoLogger.debug("target added!");
             try {
-                Class targetType = Class.forName(typeName);
-                GoLogger.info(targetType.getName());
-                typeContainer.put(url, targetType);
+                GoLogger.info(target.getSimpleName());
 
             } catch (Exception e) {
                 e.printStackTrace();
