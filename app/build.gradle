@@ -40,13 +40,5 @@ dependencies {
     implementation 'cn.rubintry:gorouter-annotation:1.0.1'
     implementation 'cn.rubintry:gorouter-api:1.0.1'
     annotationProcessor 'cn.rubintry:gorouter-compiler:1.0.1'
-//
-//    annotationProcessor project(path: ':gorouter-compiler')
-//    implementation project(path: ':gorouter-api')
-//    implementation project(path: ':gorouter-annotation')
-
-    if(!isApplication.toBoolean().booleanValue()){
-        implementation project(path: ':login_model')
-    }
 
 }
