@@ -1,0 +1,4 @@
+include ':anothermodule'
+include ':commonLibrary'
+include ':app'
+rootProject.name = "GoRouterExample"
