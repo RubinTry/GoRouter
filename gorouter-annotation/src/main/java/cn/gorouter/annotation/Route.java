@@ -1,9 +1,9 @@
-package cn.gorouter.gorouter_annotation;
+package cn.gorouter.annotation;
 
 /**
  * @author logcat
  * @date 2020/07/13
  */
 public @interface Route {
-    String value();
+    String url();
 }
