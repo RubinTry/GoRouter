@@ -1,17 +1,21 @@
 package cn.gorouter;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
-import cn.gorouter.gorouter_annotation.Route;
-import cn.gorouter.gorouter_api.launcher.GoRouter;
-import cn.gorouter.gorouter_api.logger.GoLogger;
+import cn.gorouter.annotation.Route;
+import cn.gorouter.api.launcher.GoRouter;
+import cn.gorouter.api.logger.GoLogger;
 
 /**
  * @author logcat
  */
-@Route("/main/MainActivity")
+@Route(url = "/main/MainActivity")
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -21,9 +25,24 @@ public class MainActivity extends AppCompatActivity {
 
         GoLogger.info("This is main page!");
 
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1001){
+//            Toast.makeText(this, "从登录页返回", Toast.LENGTH_SHORT).show();
+            GoLogger.debug("从登录页返回");
+        }
+
+    }
+
+    public void toLogin(View view) {
         //visit "login_model" 's LoginActivity
         GoRouter.getInstance()
                 .build("/login/LoginActivity")
-                .go();
+                .go(this , 1001);
     }
 }

@@ -1,4 +1,4 @@
-package cn.gorouter.gorouter_api.utils;
+package cn.gorouter.api.utils;
 
 import android.app.Activity;
 

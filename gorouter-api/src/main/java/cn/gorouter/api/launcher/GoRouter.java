@@ -1,9 +1,10 @@
-package cn.gorouter.gorouter_api.launcher;
+package cn.gorouter.api.launcher;
 
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 
-import cn.gorouter.gorouter_api.logger.GoLogger;
+import cn.gorouter.api.logger.GoLogger;
 
 
 /**
@@ -14,6 +15,7 @@ import cn.gorouter.gorouter_api.logger.GoLogger;
 public class GoRouter {
     private static volatile GoRouter instance;
     private static boolean init;
+    private static Context applicationContext;
 
 
     private GoRouter() {
@@ -41,6 +43,7 @@ public class GoRouter {
 
     /**
      * Set logger's split char
+     *
      * @param splitChar
      */
     public synchronized static void setLogSplitChar(String splitChar) {
@@ -50,68 +53,70 @@ public class GoRouter {
 
     /**
      * Initialize GoRouter
-     * @param application
+     *
+     * @param context
      */
-    public static void init(Application application) {
+    public static void init(Context context) {
+        applicationContext = context.getApplicationContext();
         GoLogger.info("GoRouter initialize start.");
-        init = _GoRouter.getInstance().init(application);
+        init = _GoRouter.init(context.getApplicationContext());
         GoLogger.info("GoRouter initialize over.");
     }
 
 
     /**
      * Build a route
+     *
      * @param url
      * @return
      */
-    public GoRouter build(String url){
-        build(url , null , null);
+    public GoRouter build(String url) {
+        build(url, null);
         return this;
     }
 
 
-
-
     /**
      * Build a route
+     *
      * @param url
      * @param data
      * @return
      */
     public GoRouter build(String url, Bundle data) {
-        if(!init){
-            throw new IllegalArgumentException("You haven't initialized yet！");
+        try {
+            if (!init) {
+                throw new IllegalArgumentException("You haven't initialized yet！");
+            }
+            _GoRouter.getInstance().build(url, data);
+        }catch (Exception e){
+            GoLogger.error("Exception happen: " + e);
         }
-        build(url , data , null);
-        return this;
-    }
-
-
-    /**
-     * Build a route
-     * @param url
-     * @param data
-     * @param requestCode
-     * @return
-     */
-    public GoRouter build(String url , Bundle data , Integer requestCode){
-        if(!init){
-            throw new IllegalArgumentException("You haven't initialized yet！");
-        }
-        _GoRouter.getInstance().build(url , data , requestCode);
         return this;
     }
 
     /**
      * Go to target page.
      */
-    public void go(){
-        if(!init){
-            throw new IllegalArgumentException("You haven't initialized yet！");
-        }
+    public void go() {
         try {
-            _GoRouter.getInstance().go();
-        }catch (Exception e){
+            if (!init) {
+                throw new IllegalArgumentException("You haven't initialized yet！");
+            }
+            _GoRouter.getInstance().go(applicationContext , null);
+        } catch (Exception e) {
+            GoLogger.error("Exception happen: " + e);
+        }
+    }
+
+
+    public void go(Context context, Integer requestCode) {
+        try {
+            if (!init) {
+                throw new IllegalArgumentException("You haven't initialized yet！");
+            }
+            _GoRouter.getInstance().go(context, requestCode);
+        } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);
         }
     }

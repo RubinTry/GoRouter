@@ -1,4 +1,4 @@
-package cn.gorouter.gorouter_api.logger;
+package cn.gorouter.api.logger;
 
 /**
  * @author logcat

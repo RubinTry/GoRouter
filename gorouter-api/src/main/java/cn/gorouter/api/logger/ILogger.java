@@ -1,18 +1,11 @@
-package cn.gorouter.gorouter_api.logger;
+package cn.gorouter.api.logger;
 
 /**
  * @author logcat
  * @date 2020/07/11 16:25
  * @version 1.0.0
  */
-public interface ILogPrinter {
-
-    /**
-     * set a char for split.
-     * @param splitChar
-     */
-    void setSplitChar(String splitChar);
-
+public interface ILogger {
     /**
      * open log print , because it's default close.
      */
@@ -103,11 +96,4 @@ public interface ILogPrinter {
      * @return
      */
     int getMessageLength();
-
-
-    /**
-     * get the message's real length.
-     * @return
-     */
-    int getRealLength();
 }

@@ -1,4 +1,4 @@
-package cn.gorouter.gorouter_api.launcher;
+package cn.gorouter.api.launcher;
 
 
 

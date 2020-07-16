@@ -4,14 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import cn.gorouter.gorouter_annotation.Route;
-import cn.gorouter.gorouter_api.launcher.GoRouter;
-import cn.gorouter.gorouter_api.logger.GoLogger;
+import cn.gorouter.annotation.Route;
+import cn.gorouter.api.logger.GoLogger;
 
 /**
  * @author logcat
  */
-@Route("/main/PageTwo")
+@Route(url = "/main/PageTwo")
 public class PageTwo extends AppCompatActivity {
 
     @Override
