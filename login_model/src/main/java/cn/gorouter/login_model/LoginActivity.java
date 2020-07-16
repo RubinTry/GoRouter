@@ -4,8 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import cn.gorouter.gorouter_annotation.Route;
-import cn.gorouter.gorouter_api.logger.GoLogger;
+import cn.gorouter.annotation.Route;
+import cn.gorouter.api.logger.GoLogger;
+
 
 /**
  * @author logcat
@@ -13,7 +14,7 @@ import cn.gorouter.gorouter_api.logger.GoLogger;
  * @version 1.0.0
  * This activity is use for test in another module.
  */
-@Route("/login/LoginActivity")
+@Route(url = "/login/LoginActivity")
 public class LoginActivity extends AppCompatActivity {
 
     @Override
@@ -23,5 +24,11 @@ public class LoginActivity extends AppCompatActivity {
 
 
         GoLogger.info("This is LoginActivity.");
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 }

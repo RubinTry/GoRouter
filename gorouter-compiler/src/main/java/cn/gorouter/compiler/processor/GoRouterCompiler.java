@@ -1,4 +1,4 @@
-package cn.gorouter.gorouter_compiler.processor;
+package cn.gorouter.compiler.processor;
 
 import com.google.auto.service.AutoService;
 
@@ -20,7 +20,8 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 
-import cn.gorouter.gorouter_annotation.Route;
+import cn.gorouter.annotation.Route;
+
 
 /**
  * @author logcat <a href="13857769302@163.com">Contact me.</a>
@@ -73,13 +74,13 @@ public class GoRouterCompiler extends AbstractProcessor {
         Map<String, String> typeMap = new HashMap<>();
         for (Element element : elementsAnnotatedWith) {
             TypeElement typeElement = (TypeElement) element;
-            String key = typeElement.getAnnotation(Route.class).value();
+            String url = typeElement.getAnnotation(Route.class).url();
             String nodeName = typeElement.getQualifiedName().toString();
-            map.put(key, nodeName + ".class");
+            map.put(url, nodeName + ".class");
             //得到当前元素的类型
             //Get current element's type.
             String typeName = typeElement.getSuperclass().toString();
-            typeMap.put(key, typeName);
+            typeMap.put(url, typeName);
         }
 
         if (map.size() > 0) {
@@ -92,9 +93,8 @@ public class GoRouterCompiler extends AbstractProcessor {
                 writer = sourceFile.openWriter();
                 writer.write("package cn.gorouter.route;\n" +
                         "\n" +
-                        "import cn.gorouter.gorouter_api.launcher._GoRouter;\n" +
-                        "import android.util.Log;\n" +
-                        "import cn.gorouter.gorouter_api.launcher.IRouter;\n\n" +
+                        "import cn.gorouter.api.launcher._GoRouter;\n" +
+                        "import cn.gorouter.api.launcher.IRouter;\n\n" +
                         "/**\n" +
                         " * @author logcat\n" +
                         " */\n" +

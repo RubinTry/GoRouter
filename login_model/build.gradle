@@ -49,8 +49,11 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 
-    implementation 'cn.rubintry:gorouter-annotation:1.0.0'
-    implementation 'cn.rubintry:gorouter-api:1.0.0'
-    annotationProcessor 'cn.rubintry:gorouter-compiler:1.0.0'
+    implementation 'cn.rubintry:gorouter-annotation:1.0.1'
+    implementation 'cn.rubintry:gorouter-api:1.0.1'
+    annotationProcessor 'cn.rubintry:gorouter-compiler:1.0.1'
+//    annotationProcessor project(path: ':gorouter-compiler')
+//    implementation project(path: ':gorouter-api')
+//    implementation project(path: ':gorouter-annotation')
 
 }
