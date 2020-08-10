@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
 import cn.gorouter.annotation.Route
 import cn.gorouter.api.launcher.GoRouter
 import cn.gorouter.api.logger.GoLogger
@@ -31,9 +32,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun toLogin(view: View?) {
+
         //visit LoginActivity
         GoRouter.getInstance()
                 .build("/main/Login")
-                .go()
+                .go(this , ActivityOptionsCompat.makeBasic().toBundle() , 0)
     }
 }

@@ -11,9 +11,16 @@ import kotlin.system.exitProcess
 
 /**
  * @author logcat
+ * Activity监听者
  */
 class ActivityMonitor {
     private var activityList: LinkedList<Activity>? = null
+
+    /**
+     * 初始化ActivityMonitor并注册生命周期监听器
+     *
+     * @param application
+     */
     fun initialize(application: Application) {
         activityList = LinkedList()
         application.registerActivityLifecycleCallbacks(
@@ -34,6 +41,10 @@ class ActivityMonitor {
         )
     }
 
+
+    /**
+     * 获得栈顶Activity
+     */
     val lastFragmentActivity: FragmentActivity?
         get() {
             val size = activityList!!.size
@@ -46,6 +57,11 @@ class ActivityMonitor {
             return activity
         }
 
+
+    /**
+     * 退出应用
+     *
+     */
     fun exit() {
         for (activity in activityList!!) {
             activity.finish()
@@ -55,6 +71,10 @@ class ActivityMonitor {
         exitProcess(0)
     }
 
+
+    /**
+     * 获取ActivityMonitor单例
+     */
     companion object {
         @Volatile
         var instance: ActivityMonitor? = null

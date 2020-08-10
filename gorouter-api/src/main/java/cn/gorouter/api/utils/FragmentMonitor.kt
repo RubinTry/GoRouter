@@ -8,6 +8,7 @@ import java.lang.IllegalArgumentException
 
 /**
  * @author logcat
+ * Fragment监听器
  */
 class FragmentMonitor {
 
@@ -16,6 +17,9 @@ class FragmentMonitor {
     private var pageList: ArrayList<Fragment> = ArrayList()
 
 
+    /**
+     * 获取FragmentMonitor单例
+     */
     companion object {
         @Volatile
         var instance: FragmentMonitor? = null
@@ -33,16 +37,34 @@ class FragmentMonitor {
     }
 
 
+    /**
+     * 将fragment压入栈中
+     *
+     * @param fragment  需要被添加的fragment
+     * @return
+     */
     private fun add(fragment: Fragment): Boolean {
         pageList.add(fragment)
         return true
     }
 
 
+    /**
+     * 跳转至某个fragment
+     *
+     * @param fragment  目标fragment
+     */
     fun jump(fragment: Fragment) {
         jump(fragment, this.container!!)
     }
 
+
+    /**
+     * 跳转至某个fragment
+     *
+     * @param fragment  目标fragment
+     * @param container  盛装fragment的堆栈
+     */
     fun jump(fragment: Fragment, container: View) {
         if (container != null) {
             this.container = container
@@ -77,6 +99,13 @@ class FragmentMonitor {
         transaction.commit()
     }
 
+
+    /**
+     * 栈中是否包含某个fragment
+     *
+     * @param fragment  被包含的fragment
+     * @return
+     */
     private fun contains(fragment: Fragment): Boolean {
         for (current in pageList) {
             if (fragment.javaClass.name == current.javaClass.name) {
@@ -87,6 +116,12 @@ class FragmentMonitor {
     }
 
 
+    /**
+     * 栈中是否包含某个fragment
+     *
+     * @param aClass  需要被包含的fragment的类对象
+     * @return
+     */
     fun contains(aClass: Class<out Fragment?>?): Boolean {
         for (current in pageList) {
             if (current.javaClass == aClass) {
@@ -96,6 +131,11 @@ class FragmentMonitor {
         return false
     }
 
+    /**
+     * 隐藏某个fragment
+     *
+     * @param aClass  需要被隐藏的fragment的类对象
+     */
     fun hide(aClass: Class<out Fragment?>?) {
         val manager = getManager()
                 ?: throw IllegalArgumentException("No activity running!!!")
@@ -112,6 +152,11 @@ class FragmentMonitor {
     }
 
 
+    /**
+     * 隐藏某个fragment
+     *
+     * @param fragment  需要被隐藏的fragment
+     */
     fun hide(fragment: Fragment) {
         if(pageList.isNullOrEmpty()){
             return
@@ -128,6 +173,12 @@ class FragmentMonitor {
         transaction?.commit()
     }
 
+
+    /**
+     * 销毁（移除）某个fragment
+     *
+     * @param fragment 需要被销毁(移除)的fragment
+     */
     fun finish(fragment: Fragment) {
         if(pageList.isNullOrEmpty()){
             return
@@ -148,6 +199,11 @@ class FragmentMonitor {
     }
 
 
+    /**
+     * 销毁（移除）某个fragment
+     *
+     * @param aClass  需要被销毁(移除)的fragment的类对象
+     */
     fun finish(aClass: Class<out Fragment?>?) {
         val manager = getManager()
         val transaction = manager?.beginTransaction()
@@ -166,10 +222,21 @@ class FragmentMonitor {
         }
     }
 
+
+    /**
+     * 获取fragment管理器
+     *
+     * @return
+     */
     private fun getManager(): FragmentManager? {
         return ActivityMonitor.instance?.lastFragmentActivity?.supportFragmentManager
     }
 
+
+    /**
+     * 跳转至栈中的上一个fragment
+     *
+     */
     private fun jumpToLast() {
         if (!pageList.isNullOrEmpty()) {
             val manager = getManager()
@@ -183,10 +250,20 @@ class FragmentMonitor {
     }
 
 
+    /**
+     * 栈中的fragment总数
+     *
+     * @return
+     */
     fun getFragmentCount(): Int {
         return pageList.size
     }
 
+
+    /**
+     * 销毁栈顶的fragment
+     *
+     */
     fun finishLast() {
         if(!pageList.isNullOrEmpty()){
             val fragment = pageList.last()
@@ -199,10 +276,21 @@ class FragmentMonitor {
         jumpToLast()
     }
 
+
+    /**
+     * 获得栈中的所有fragment
+     *
+     * @return
+     */
     fun getAllFragments(): List<Fragment> {
         return pageList
     }
 
+
+    /**
+     * 移除栈中的所有fragment
+     *
+     */
     fun clear() {
         val manager = getManager()
         val transaction = manager?.beginTransaction()
@@ -212,10 +300,21 @@ class FragmentMonitor {
         pageList.clear()
     }
 
+
+    /**
+     * 注册fragment回调函数，栈为空时回调callback内的方法
+     *
+     * @param callback
+     */
     fun registerCallback(callback: ActivityLifeCycleCallback) {
         this.callback = callback
     }
 
+
+    /**
+     * 反注册回调函数
+     *
+     */
     fun unRegisterCallback(){
         if(callback != null){
             callback = null
@@ -224,9 +323,14 @@ class FragmentMonitor {
 
 
     /**
-     * 无fragment时回调这个方法
+     * 无fragment时回调这个接口
      */
     interface ActivityLifeCycleCallback{
+
+        /**
+         * 无fragment时回调这个方法
+         *
+         */
         fun noFragmentNow();
     }
 

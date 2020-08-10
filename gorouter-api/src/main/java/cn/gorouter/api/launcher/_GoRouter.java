@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -57,6 +58,10 @@ public class _GoRouter {
         nodeTargetContainer = new HashMap<>();
     }
 
+    /**
+     * 获得_GoRouter单例
+     * @return
+     */
     public static _GoRouter getInstance() {
         if (instance == null) {
             synchronized (_GoRouter.class) {
@@ -68,6 +73,12 @@ public class _GoRouter {
         return instance;
     }
 
+
+    /**
+     * 初始化_GoRouter
+     * @param application
+     * @return
+     */
     public static boolean init(Application application) {
         mContext = application.getApplicationContext();
         mHandler = new Handler(Looper.getMainLooper());
@@ -78,7 +89,7 @@ public class _GoRouter {
 
     /**
      * Initialize all route and put them into container.
-     *
+     * 初始化_GoRouter并且将所有节点添加进容器
      * @param context
      * @return
      */
@@ -87,8 +98,6 @@ public class _GoRouter {
         for (Class aClass : classNames) {
 
             try {
-//                Class aClass = Class.forName(className);
-                //Is IRouter's sub class?
                 if (IRouter.class.isAssignableFrom(aClass)) {
                     IRouter iRouter = (IRouter) aClass.newInstance();
                     iRouter.put();
@@ -103,7 +112,7 @@ public class _GoRouter {
 
     /**
      * Scan all class names under the specified package name.
-     *
+     * 扫描某个包名下的所有类
      * @param context
      * @param packageName Witch package we want scan.
      * @return
@@ -133,7 +142,7 @@ public class _GoRouter {
 
     /**
      * Build a route
-     *
+     * 通过路由键构建一个路由
      * @param url  route url address
      * @param data The data that needs to be passed to the target page
      */
@@ -143,10 +152,13 @@ public class _GoRouter {
     }
 
 
+
+
     /**
      * Go to target page.
+     * 通过路由键访问具体页面
      */
-    public void go(Context context, Integer requestCode) throws NullPointerException {
+    public void go(Context context, Integer requestCode , @Nullable Bundle options) throws NullPointerException {
         Context currentContext = null == context ? mContext : context;
         if (currentUrl == null) {
             throw new IllegalArgumentException("Please set currentUrl");
@@ -162,10 +174,10 @@ public class _GoRouter {
         if (nodeTarget != null) {
             if (Activity.class.isAssignableFrom(nodeTarget)) {
                 //If the node type is Activity,the jump is made in the form of Activity.
-                go(currentContext, requestCode, ACTIVITY, nodeTarget);
+                go(currentContext, requestCode, ACTIVITY , nodeTarget , options);
             } else if (Fragment.class.isAssignableFrom(nodeTarget)) {
                 //If the node type is Fragment,the jump is made in the form of Fragment.
-                go(currentContext, requestCode, FRAGMENT, nodeTarget);
+                go(currentContext, requestCode, FRAGMENT, nodeTarget , options);
             }
         } else {
             throw new NullPointerException("route \"" + currentUrl + "\" is not found!!!");
@@ -177,18 +189,18 @@ public class _GoRouter {
 
     /**
      * Go to target page.
-     *
-     * @param type
+     * 通过路由键访问具体页面
+     * @param type 页面类型 {@link TypeKind#ACTIVITY} activity类型   {@link TypeKind#FRAGMENT} fragment 类型
      * @param nodeTarget
      */
-    private void go(Context currentContext, Integer requestCode, TypeKind type, Class nodeTarget) throws NullPointerException {
+    private void go(Context currentContext, Integer requestCode, TypeKind type, Class nodeTarget , @Nullable Bundle options) throws NullPointerException {
         switch (type) {
             case ACTIVITY:
 
                 runOnMainThread(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(currentContext, nodeTarget, requestCode);
+                        startActivity(currentContext, nodeTarget , options, requestCode);
                     }
                 });
 
@@ -203,6 +215,11 @@ public class _GoRouter {
 
     }
 
+
+    /**
+     * 通过路由键返回一个fragment实例
+     * @return  得到的fragment实例
+     */
     public Fragment getFragmentInstance() {
         if (currentUrl == null) {
             throw new IllegalArgumentException("Please set currentUrl");
@@ -236,7 +253,7 @@ public class _GoRouter {
 
     /**
      * Put all the node and type names into container.
-     *
+     * 将所有节点与节点类型装入容器
      * @param url
      * @param target
      */
@@ -258,6 +275,7 @@ public class _GoRouter {
 
     /**
      * Page type.
+     * 页面类型
      */
     enum TypeKind {
         ACTIVITY(0),
@@ -278,12 +296,12 @@ public class _GoRouter {
 
     /**
      * Jump into an Activity
-     *
-     * @param currentContext
-     * @param activityClazz
-     * @param requestCode
+     * 开始跳转至对应的activity
+     * @param currentContext  当前页面上下文（可能为应用全局的上下文）
+     * @param activityClazz  目标activity的类对象
+     * @param requestCode   页面返回时回调的请求码
      */
-    private void startActivity(Context currentContext, Class activityClazz, Integer requestCode) {
+    private void startActivity(Context currentContext, Class activityClazz , @Nullable Bundle options, Integer requestCode) {
 
         Intent intent = new Intent(currentContext, activityClazz);
         if (currentData != null) {
@@ -295,14 +313,14 @@ public class _GoRouter {
 
         if (requestCode != null && requestCode.intValue() >= 0) {
             if (currentContext instanceof Activity) {
-                ActivityCompat.startActivityForResult((Activity) currentContext, intent, requestCode, null);
+                ActivityCompat.startActivityForResult((Activity) currentContext, intent, requestCode, options);
             } else {
                 GoLogger.warn("Must use [go(activity, ...)] to support [startActivityForResult]");
             }
         } else {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            ActivityCompat.startActivity(currentContext, intent, null);
+            ActivityCompat.startActivity(currentContext, intent, options);
         }
 
     }
@@ -310,7 +328,7 @@ public class _GoRouter {
 
     /**
      * Run on UIThread
-     *
+     * 确保再UI线程上进行
      * @param runnable
      */
     private void runOnMainThread(Runnable runnable) {
