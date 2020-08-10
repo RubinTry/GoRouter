@@ -1,14 +1,14 @@
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'org.jetbrains.dokka'
+
 
 
 android {
 
 
     dataBinding {
-        enabled = true
+        android.buildFeatures.dataBinding = true
     }
     defaultConfig {
         multiDexEnabled true
@@ -26,9 +26,7 @@ android {
 }
 
 
-kapt {
-    generateStubs = true
-}
+
 
 dependencies {
     def activity_version = "1.1.0"
@@ -42,12 +40,4 @@ dependencies {
 
 }
 
-tasks.dokkaJavadoc {
-    outputDirectory = "$buildDir/dokka"
-    dokkaSourceSets {
-        create("gorouter-annotation")
-        create("gorouter-api") // or other names, identical to those in Kotlin-plugin
-        create("gorouter-compiler") // or other names, identical to those in Kotlin-plugin
-    }
-}
 

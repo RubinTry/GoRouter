@@ -31,10 +31,7 @@ android {
 
         lintOptions { abortOnError false }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+
 }
 
 dependencies {
@@ -45,8 +42,11 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 }
-
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
 
 apply from: '../install.gradle'
 apply from: '../bintray.gradle'
 apply from: '../config.gradle'
+apply from: '../doc.gradle'

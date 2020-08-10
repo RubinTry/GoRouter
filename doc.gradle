@@ -1,0 +1,16 @@
+apply plugin: 'org.jetbrains.dokka'
+dokka {
+// 输出格式，目前支持五种，html, javadoc,html-as-java, markdown,kotlin-website*
+    outputFormat = 'javadoc'
+// 文档输出目录(app/build/dokka)
+    outputDirectory = "$buildDir/dokka"
+//配置方式一
+    configuration {
+        noJdkLink = true
+        noStdlibLink = true
+        noAndroidSdkLink = true
+        skipDeprecated = true // Do not output deprecated members
+        reportUndocumented = true // Emit warnings about not documented members.
+        skipEmptyPackages = true // Do not create index pages for empty packages
+    }
+}
