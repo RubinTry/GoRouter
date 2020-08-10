@@ -13,6 +13,7 @@ public class ExampleApplication extends Application {
     public void onCreate() {
         super.onCreate();
         GoRouter.openLog();
+        GoRouter.setLogSplitChar("*");
         GoRouter.init(this);
     }
 }

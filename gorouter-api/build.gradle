@@ -49,3 +49,4 @@ dependencies {
 
 apply from: '../install.gradle'
 apply from: '../bintray.gradle'
+apply from: '../config.gradle'

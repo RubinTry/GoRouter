@@ -1,4 +1,4 @@
-package cn.gorouter;
+package cn.gorouter.common.library;
 
 import androidx.appcompat.app.AppCompatActivity;
 

@@ -1,21 +1,20 @@
 package cn.gorouter.gorouterexample;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import cn.gorouter.annotation.Route;
 import cn.gorouter.api.launcher.GoRouter;
 import cn.gorouter.api.logger.GoLogger;
+import cn.gorouter.common.library.BaseActivity;
 
 /**
  * @author logcat
  */
 @Route(url = "/main/MainActivity")
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         GoRouter.getInstance()
                 .build("/another/AnotherActivity")
-                .go(this , 1001);
+                .go();
     }
 
 

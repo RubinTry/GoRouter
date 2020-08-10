@@ -31,7 +31,7 @@ dependencies {
 
 
     api 'cn.rubintry:gorouter-annotation:1.0.3'
-    api 'cn.rubintry:gorouter-api:1.0.2'
+    api 'cn.rubintry:gorouter-api:1.0.4'
     
 
 }

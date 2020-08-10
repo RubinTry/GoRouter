@@ -1,6 +1,5 @@
 apply plugin: 'java-library'
 
-
 ext {
     bintrayName = 'gorouter-compiler'
     artifact = bintrayName
@@ -23,6 +22,7 @@ targetCompatibility = "1.8"
 
 apply from: '../install.gradle'
 apply from: '../bintray.gradle'
+//apply from: '../doc.gradle'
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"

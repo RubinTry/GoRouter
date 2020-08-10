@@ -1,6 +1,7 @@
 package cn.gorouter.api.launcher;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,18 +9,26 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import cn.gorouter.api.logger.GoLogger;
+import cn.gorouter.api.utils.ActivityMonitor;
+import cn.gorouter.api.utils.FragmentMonitor;
 import dalvik.system.DexFile;
+import dalvik.system.PathClassLoader;
 
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.ACTIVITY;
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT;
@@ -35,8 +44,13 @@ public class _GoRouter {
     private Bundle currentData;
     private Map<String, Class> nodeTargetContainer;
     private static Context mContext;
+    private static ClassLoader mCurrentClassLoader;
 
     private static Handler mHandler;
+
+    static {
+        mCurrentClassLoader = Thread.currentThread().getContextClassLoader();
+    }
 
 
     private _GoRouter() {
@@ -54,10 +68,11 @@ public class _GoRouter {
         return instance;
     }
 
-    public static synchronized boolean init(Context context) {
-        mContext = context;
+    public static boolean init(Application application) {
+        mContext = application.getApplicationContext();
         mHandler = new Handler(Looper.getMainLooper());
-        return initAllRoute(context);
+        ActivityMonitor.Companion.getInstance().initialize(application);
+        return initAllRoute(mContext);
     }
 
 
@@ -68,11 +83,11 @@ public class _GoRouter {
      * @return
      */
     private static synchronized boolean initAllRoute(Context context) {
-        List<String> classNames = getClasses(context.getApplicationContext(), "cn.gorouter.route");
-        for (String className : classNames) {
+        List<Class> classNames = getClasses(context.getApplicationContext(), "cn.gorouter.route");
+        for (Class aClass : classNames) {
 
             try {
-                Class aClass = Class.forName(className);
+//                Class aClass = Class.forName(className);
                 //Is IRouter's sub class?
                 if (IRouter.class.isAssignableFrom(aClass)) {
                     IRouter iRouter = (IRouter) aClass.newInstance();
@@ -93,23 +108,23 @@ public class _GoRouter {
      * @param packageName Witch package we want scan.
      * @return
      */
-    private static synchronized List<String> getClasses(Context context, String packageName) {
-        List<String> classList = new ArrayList<>();
+    private static List<Class> getClasses(Context context, String packageName) {
+        List<Class> classList = new ArrayList<>();
         String path = null;
 
         try {
             path = context.getPackageManager().getApplicationInfo(context.getPackageName(), 0).sourceDir;
             DexFile dexFile = new DexFile(path);
+            PathClassLoader pathClassLoader = new PathClassLoader(path , mCurrentClassLoader);
             Enumeration entries = dexFile.entries();
             while (entries.hasMoreElements()) {
                 String name = (String) entries.nextElement();
                 if (name.contains(packageName)) {
-                    classList.add(name);
+                    Class aClass = pathClassLoader.loadClass(name);
+                    classList.add(aClass);
                 }
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        }  catch (Exception e) {
             e.printStackTrace();
         }
         return classList;
@@ -162,6 +177,7 @@ public class _GoRouter {
 
     /**
      * Go to target page.
+     *
      * @param type
      * @param nodeTarget
      */
@@ -187,6 +203,36 @@ public class _GoRouter {
 
     }
 
+    public Fragment getFragmentInstance() {
+        if (currentUrl == null) {
+            throw new IllegalArgumentException("Please set currentUrl");
+        }
+
+        if (nodeTargetContainer == null) {
+            throw new NullPointerException("container is empty!!!");
+        }
+
+
+        //Get all the node and type classes.
+        Class nodeTarget = nodeTargetContainer.get(currentUrl);
+
+
+        if(nodeTarget != null && Fragment.class.isAssignableFrom(nodeTarget)){
+            try {
+                return (Fragment) nodeTarget.getConstructor().newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        GoLogger.error("Don't have this fragment!!!");
+        return null;
+
+    }
+
+
+
 
     /**
      * Put all the node and type names into container.
@@ -206,6 +252,8 @@ public class _GoRouter {
             }
         }
     }
+
+
 
 
     /**
@@ -230,6 +278,7 @@ public class _GoRouter {
 
     /**
      * Jump into an Activity
+     *
      * @param currentContext
      * @param activityClazz
      * @param requestCode
@@ -241,22 +290,27 @@ public class _GoRouter {
             intent.putExtras(currentData);
         }
 
+
+
+
         if (requestCode != null && requestCode.intValue() >= 0) {
             if (currentContext instanceof Activity) {
                 ActivityCompat.startActivityForResult((Activity) currentContext, intent, requestCode, null);
             } else {
-                GoLogger.warn("Must use [navigation(activity, ...)] to support [startActivityForResult]");
+                GoLogger.warn("Must use [go(activity, ...)] to support [startActivityForResult]");
             }
         } else {
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            ActivityCompat.startActivity(currentContext, intent , null);
+            ActivityCompat.startActivity(currentContext, intent, null);
         }
 
     }
 
 
     /**
-     *  Run on UIThread
+     * Run on UIThread
+     *
      * @param runnable
      */
     private void runOnMainThread(Runnable runnable) {

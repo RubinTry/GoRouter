@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.fragment.app.Fragment;
+
 import cn.gorouter.api.logger.GoLogger;
 
 
@@ -46,7 +48,7 @@ public class GoRouter {
      *
      * @param splitChar
      */
-    public synchronized static void setLogSplitChar(String splitChar) {
+    public static void setLogSplitChar(String splitChar) {
         GoLogger.setSplitChar(splitChar);
     }
 
@@ -54,12 +56,12 @@ public class GoRouter {
     /**
      * Initialize GoRouter
      *
-     * @param context
+     * @param application
      */
-    public static void init(Context context) {
-        applicationContext = context.getApplicationContext();
+    public static void init(Application application) {
+        applicationContext = application.getApplicationContext();
         GoLogger.info("GoRouter initialize start.");
-        init = _GoRouter.init(context.getApplicationContext());
+        init = _GoRouter.init(application);
         GoLogger.info("GoRouter initialize over.");
     }
 
@@ -89,7 +91,7 @@ public class GoRouter {
                 throw new IllegalArgumentException("You haven't initialized yet！");
             }
             _GoRouter.getInstance().build(url, data);
-        }catch (Exception e){
+        } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);
         }
         return this;
@@ -103,7 +105,7 @@ public class GoRouter {
             if (!init) {
                 throw new IllegalArgumentException("You haven't initialized yet！");
             }
-            _GoRouter.getInstance().go(applicationContext , null);
+            _GoRouter.getInstance().go(applicationContext, null);
         } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);
         }
@@ -119,6 +121,15 @@ public class GoRouter {
         } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);
         }
+    }
+
+
+    /**
+     * Get the target fragment object
+     * @return
+     */
+    public Fragment getFragmentInstance() {
+        return _GoRouter.getInstance().getFragmentInstance();
     }
 
 }
