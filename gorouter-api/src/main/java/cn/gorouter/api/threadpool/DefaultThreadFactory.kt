@@ -6,6 +6,11 @@ import cn.gorouter.api.utils.Consts
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicInteger
 
+
+/**
+ * 默认线程工厂
+ * @author logcat
+ */
 class DefaultThreadFactory : ThreadFactory{
     private val poolNumber = AtomicInteger(1)
 
@@ -21,6 +26,12 @@ class DefaultThreadFactory : ThreadFactory{
     }
 
 
+    /**
+     * 创建新线程
+     *
+     * @param runnable
+     * @return
+     */
     override fun newThread(@NonNull runnable: Runnable?): Thread? {
         val threadName = namePrefix + threadNumber.getAndIncrement()
         GoLogger.info(Consts.TAG +  "Thread production, name is [$threadName]")

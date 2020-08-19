@@ -9,8 +9,10 @@ import java.util.concurrent.*
  * @date 2020/08/19 17:07
  */
 class DefaultPoolExecutor private constructor(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long, unit: TimeUnit, workQueue: BlockingQueue<Runnable>, threadFactory: ThreadFactory) : ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, RejectedExecutionHandler { r, executor -> GoLogger.error(Consts.TAG + "Task rejected, too many task!") }) {
-    /*
-     *  线程执行结束，顺便看一下有没有乱七八糟的异常
+
+
+    /**
+     * 线程执行结束，顺便看一下有没有乱七八糟的异常
      *
      * @param r the runnable that has completed
      * @param t the exception that caused termination, or null if
@@ -66,6 +68,12 @@ class DefaultPoolExecutor private constructor(corePoolSize: Int, maximumPoolSize
     }
 
 
+    /**
+     * 打印线程堆栈信息
+     *
+     * @param stackTrace
+     * @return
+     */
     fun formatStackTrace(stackTrace: Array<StackTraceElement>): String? {
         val sb = StringBuilder()
         for (element in stackTrace) {

@@ -118,6 +118,7 @@ public class _GoRouter {
     /**
      * Initialize all route and put them into container.
      * 初始化_GoRouter并且将所有节点添加进容器
+     *
      * @param context
      * @return
      */
@@ -172,7 +173,7 @@ public class _GoRouter {
                             }
                         }
                     } catch (Throwable ignore) {
-                       GoLogger.error("Scan map file in dex files made error." , ignore);
+                        GoLogger.error("Scan map file in dex files made error.", ignore);
                     } finally {
                         if (null != dexFile) {
                             try {
@@ -194,7 +195,7 @@ public class _GoRouter {
 
 
     /**
-     * get all the dex path
+     * 获取所有的dex路径
      *
      * @param context the application context
      * @return all the dex path
@@ -239,7 +240,7 @@ public class _GoRouter {
 
 
     /**
-     * Get instant run dex path, used to catch the branch usingApkSplits=false.
+     * 获取 instant run dex 路径, 用来捕获分支 usingApkSplits=false.
      */
     private static List<String> tryLoadInstantRunDexFile(ApplicationInfo applicationInfo) {
         List<String> instantRunSourcePaths = new ArrayList<>();
@@ -289,27 +290,24 @@ public class _GoRouter {
         String vmName = null;
 
         try {
-            if (isYunOS()) {    // YunOS需要特殊判断
-                vmName = "'YunOS'";
-                isMultidexCapable = Integer.valueOf(System.getProperty("ro.build.version.sdk")) >= 21;
-            } else {    // 非YunOS原生Android
-                vmName = "'Android'";
-                String versionString = System.getProperty("java.vm.version");
-                if (versionString != null) {
-                    Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.\\d+)?").matcher(versionString);
-                    if (matcher.matches()) {
-                        try {
-                            int major = Integer.parseInt(matcher.group(1));
-                            int minor = Integer.parseInt(matcher.group(2));
-                            isMultidexCapable = (major > VM_WITH_MULTIDEX_VERSION_MAJOR)
-                                    || ((major == VM_WITH_MULTIDEX_VERSION_MAJOR)
-                                    && (minor >= VM_WITH_MULTIDEX_VERSION_MINOR));
-                        } catch (NumberFormatException ignore) {
-                            // let isMultidexCapable be false
-                        }
+            //原生Android
+            vmName = "'Android'";
+            String versionString = System.getProperty("java.vm.version");
+            if (versionString != null) {
+                Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.\\d+)?").matcher(versionString);
+                if (matcher.matches()) {
+                    try {
+                        int major = Integer.parseInt(matcher.group(1));
+                        int minor = Integer.parseInt(matcher.group(2));
+                        isMultidexCapable = (major > VM_WITH_MULTIDEX_VERSION_MAJOR)
+                                || ((major == VM_WITH_MULTIDEX_VERSION_MAJOR)
+                                && (minor >= VM_WITH_MULTIDEX_VERSION_MINOR));
+                    } catch (NumberFormatException ignore) {
+                        // let isMultidexCapable be false
                     }
                 }
             }
+
         } catch (Exception ignore) {
 
         }
@@ -541,20 +539,5 @@ public class _GoRouter {
      */
     private void runOnMainThread(Runnable runnable) {
         MainExecutor.Companion.getInstance().execute(runnable);
-    }
-
-
-    /**
-     * 判断系统是否为YunOS系统
-     */
-    private static boolean isYunOS() {
-        try {
-            String version = System.getProperty("ro.yunos.version");
-            String vmName = System.getProperty("java.vm.name");
-            return (vmName != null && vmName.toLowerCase().contains("lemur"))
-                    || (version != null && version.trim().length() > 0);
-        } catch (Exception ignore) {
-            return false;
-        }
     }
 }

@@ -34,8 +34,8 @@ class MainExecutor(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long,
     }
 
 
-    /*
-     *  线程执行结束，顺便看一下有么有什么乱七八糟的异常
+    /**
+     * 线程执行结束，顺便看一下有没有乱七八糟的异常
      *
      * @param r the runnable that has completed
      * @param t the exception that caused termination, or null if
@@ -63,6 +63,12 @@ class MainExecutor(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long,
     }
 
 
+    /**
+     * 开启线程堆栈打印
+     *
+     * @param stackTrace
+     * @return
+     */
     fun formatStackTrace(stackTrace: Array<StackTraceElement>): String? {
         val sb = StringBuilder()
         for (element in stackTrace) {
