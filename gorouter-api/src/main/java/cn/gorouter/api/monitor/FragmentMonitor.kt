@@ -22,9 +22,7 @@ import java.util.*
 class FragmentMonitor {
 
     private var callCount: Int = 0
-    private val TAG: String = this.javaClass.simpleName
     private var application: Application? = null
-    private var container: Int? = null
     private var pageList: LinkedList<Fragment> = LinkedList()
     private var fragmentSharedCard: FragmentSharedCard? = null
         get() {
@@ -61,81 +59,23 @@ class FragmentMonitor {
         val manager = ActivityMonitor.instance?.lastFragmentActivity?.supportFragmentManager
         if (callCount == 0) {
             manager?.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
-                override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context) {
-                    super.onFragmentPreAttached(fm, f, context)
-                    Log.d(TAG, "onFragmentPreAttached: ")
-                }
-
-                override fun onFragmentAttached(fm: FragmentManager, f: Fragment, context: Context) {
-                    super.onFragmentAttached(fm, f, context)
-                    Log.d(TAG, "onFragmentAttached: ")
-                }
-
-                override fun onFragmentPreCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
-                    super.onFragmentPreCreated(fm, f, savedInstanceState)
-                    Log.d(TAG, "onFragmentPreCreated: ")
-                }
 
 
                 override fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
                     super.onFragmentCreated(fm, f, savedInstanceState)
-                    Log.d(TAG, "onFragmentCreated: ")
+                    GoLogger.debug("onFragmentCreated: ")
                     pageList.add(f)
                 }
 
 
-                override fun onFragmentActivityCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
-                    super.onFragmentActivityCreated(fm, f, savedInstanceState)
-                    Log.d(TAG, "onFragmentActivityCreated: ")
-                }
-
-
-                override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-                    super.onFragmentViewCreated(fm, f, v, savedInstanceState)
-                    Log.d(TAG, "onFragmentViewCreated: ")
-                }
-
-                override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
-                    super.onFragmentStarted(fm, f)
-                    Log.d(TAG, "onFragmentStarted: ")
-                }
-
-                override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
-                    super.onFragmentResumed(fm, f)
-                    Log.d(TAG, "onFragmentResumed: ")
-                }
-
-                override fun onFragmentPaused(fm: FragmentManager, f: Fragment) {
-                    super.onFragmentPaused(fm, f)
-                    Log.d(TAG, "onFragmentPaused: ")
-                }
-
-
-                override fun onFragmentStopped(fm: FragmentManager, f: Fragment) {
-                    super.onFragmentStopped(fm, f)
-                    Log.d(TAG, "onFragmentStopped: ")
-                }
-
-                override fun onFragmentSaveInstanceState(fm: FragmentManager, f: Fragment, outState: Bundle) {
-                    super.onFragmentSaveInstanceState(fm, f, outState)
-                    Log.d(TAG, "onFragmentSaveInstanceState: ")
-                }
-
-                override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
-                    super.onFragmentViewDestroyed(fm, f)
-                    Log.d(TAG, "onFragmentViewDestroyed: ")
-                }
 
                 override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
                     super.onFragmentDestroyed(fm, f)
-                    Log.d(TAG, "onFragmentDestroyed: ")
+                    GoLogger.debug("onFragmentDestroyed: ")
                     pageList.remove(f)
                 }
 
-                override fun onFragmentDetached(fm: FragmentManager, f: Fragment) {
-                    super.onFragmentDetached(fm, f)
-                    Log.d(TAG, "onFragmentDetached: ")
-                }
+
 
             }, true)
             callCount++
@@ -202,7 +142,7 @@ class FragmentMonitor {
      * @param container fragment的容器
      * @param useDefaultTransition 是否使用默认的转场动画
      */
-    fun replace(fragment: Fragment, container: Int, useDefaultTransition: Boolean) {
+    private fun replace(fragment: Fragment, container: Int, useDefaultTransition: Boolean) {
         val manager = getManager()
         val transaction = manager?.beginTransaction()
 
@@ -228,7 +168,7 @@ class FragmentMonitor {
      * @param enterTransition 入场动画
      * @param exitTransition  出场动画
      */
-    fun replace(fragment: Fragment, container: Int, enterTransition: Transition?, exitTransition: Transition?) {
+    private fun replace(fragment: Fragment, container: Int, enterTransition: Transition?, exitTransition: Transition?) {
         val manager = getManager()
         val transaction = manager?.beginTransaction()
 

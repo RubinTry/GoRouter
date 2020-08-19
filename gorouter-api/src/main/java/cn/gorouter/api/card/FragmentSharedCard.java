@@ -4,6 +4,7 @@ import android.transition.Transition;
 
 /**
  * @author logcat
+ * 共享元素信息面板
  */
 public class FragmentSharedCard extends SharedCard {
     private String TAG;
