@@ -148,6 +148,11 @@ public class BaseLogPrinter implements ILogPrinter {
         return message.getBytes(StandardCharsets.ISO_8859_1).length;
     }
 
+    @Override
+    public boolean isOpen() {
+        return open;
+    }
+
     protected String changeCharset(String msg , Charset charset){
         if(msg != null){
             byte[] bs = msg.getBytes();
@@ -155,4 +160,6 @@ public class BaseLogPrinter implements ILogPrinter {
         }
         return null;
     }
+
+
 }

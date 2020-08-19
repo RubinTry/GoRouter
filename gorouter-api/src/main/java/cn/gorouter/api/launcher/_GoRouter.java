@@ -4,8 +4,13 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -13,18 +18,27 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cn.gorouter.api.card.FragmentSharedCard;
 import cn.gorouter.api.logger.GoLogger;
 import cn.gorouter.api.monitor.FragmentMonitor;
+import cn.gorouter.api.threadpool.DefaultPoolExecutor;
 import cn.gorouter.api.threadpool.MainExecutor;
 import cn.gorouter.api.monitor.ActivityMonitor;
+import cn.gorouter.api.utils.Consts;
 import dalvik.system.DexFile;
 import dalvik.system.PathClassLoader;
 
@@ -45,6 +59,18 @@ public class _GoRouter {
     private static Context mContext;
     private static ClassLoader mCurrentClassLoader;
     private FragmentSharedCard mFragmentSharedCard;
+
+
+    private static final String EXTRACTED_NAME_EXT = ".classes";
+    private static final String EXTRACTED_SUFFIX = ".zip";
+
+    private static final String SECONDARY_FOLDER_NAME = "code_cache" + File.separator + "secondary-dexes";
+
+    private static final String PREFS_FILE = "multidex.version";
+    private static final String KEY_DEX_NUMBER = "dex.number";
+
+    private static final int VM_WITH_MULTIDEX_VERSION_MAJOR = 2;
+    private static final int VM_WITH_MULTIDEX_VERSION_MINOR = 1;
 
 
     static {
@@ -97,17 +123,16 @@ public class _GoRouter {
      * @return
      */
     private static synchronized boolean initAllRoute(Context context) {
-        List<Class> classNames = getClasses(context.getApplicationContext(), "cn.gorouter.route");
-        for (Class aClass : classNames) {
-
-            try {
+        try {
+            List<Class> classNames = getClasses(context.getApplicationContext(), "cn.gorouter.route");
+            for (Class aClass : classNames) {
                 if (IRouter.class.isAssignableFrom(aClass)) {
                     IRouter iRouter = (IRouter) aClass.newInstance();
                     iRouter.put();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return true;
     }
@@ -121,26 +146,174 @@ public class _GoRouter {
      * @param packageName Witch package we want scan.
      * @return
      */
-    private static List<Class> getClasses(Context context, String packageName) {
+    private static List<Class> getClasses(Context context, String packageName) throws PackageManager.NameNotFoundException, IOException {
         List<Class> classList = new ArrayList<>();
-        String path = null;
 
-        try {
-            path = context.getPackageManager().getApplicationInfo(context.getPackageName(), 0).sourceDir;
-            DexFile dexFile = new DexFile(path);
-            PathClassLoader pathClassLoader = new PathClassLoader(path, mCurrentClassLoader);
-            Enumeration entries = dexFile.entries();
-            while (entries.hasMoreElements()) {
-                String name = (String) entries.nextElement();
-                if (name.contains(packageName)) {
-                    Class aClass = pathClassLoader.loadClass(name);
-                    classList.add(aClass);
+        List<String> paths = getSourcePaths(context);
+        final CountDownLatch pathParserCtl = new CountDownLatch(paths.size());
+        for (String path : paths) {
+            DefaultPoolExecutor.Companion.getInstance().execute(new Runnable() {
+                @Override
+                public void run() {
+                    DexFile dexFile = null;
+                    try {
+                        if (path.endsWith(EXTRACTED_SUFFIX)) {
+                            //NOT use new DexFile(path), because it will throw "permission error in /data/dalvik-cache"
+                            dexFile = DexFile.loadDex(path, path + ".tmp", 0);
+                        } else {
+                            dexFile = new DexFile(path);
+                        }
+                        PathClassLoader pathClassLoader = new PathClassLoader(path, mCurrentClassLoader);
+                        Enumeration<String> dexEntries = dexFile.entries();
+                        while (dexEntries.hasMoreElements()) {
+                            String className = dexEntries.nextElement();
+                            if (className.startsWith(packageName)) {
+                                Class aClass = pathClassLoader.loadClass(className);
+                                classList.add(aClass);
+                            }
+                        }
+                    } catch (Throwable ignore) {
+                        Log.e("ARouter", "Scan map file in dex files made error.", ignore);
+                    } finally {
+                        if (null != dexFile) {
+                            try {
+                                dexFile.close();
+                            } catch (Throwable ignore) {
+                            }
+                        }
+
+                        pathParserCtl.countDown();
+                    }
                 }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            });
         }
         return classList;
+    }
+
+
+    /**
+     * get all the dex path
+     *
+     * @param context the application context
+     * @return all the dex path
+     * @throws PackageManager.NameNotFoundException
+     * @throws IOException
+     */
+    public static List<String> getSourcePaths(Context context) throws PackageManager.NameNotFoundException, IOException {
+        ApplicationInfo applicationInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
+        File sourceApk = new File(applicationInfo.sourceDir);
+
+        List<String> sourcePaths = new ArrayList<>();
+        sourcePaths.add(applicationInfo.sourceDir); //add the default apk path
+
+        //the prefix of extracted file, ie: test.classes
+        String extractedFilePrefix = sourceApk.getName() + EXTRACTED_NAME_EXT;
+
+//        如果VM已经支持了MultiDex，就不要去Secondary Folder加载 Classesx.zip了，那里已经么有了
+//        通过是否存在sp中的multidex.version是不准确的，因为从低版本升级上来的用户，是包含这个sp配置的
+        if (!isVMMultidexCapable()) {
+            //the total dex numbers
+            int totalDexNumber = getMultiDexPreferences(context).getInt(KEY_DEX_NUMBER, 1);
+            File dexDir = new File(applicationInfo.dataDir, SECONDARY_FOLDER_NAME);
+
+            for (int secondaryNumber = 2; secondaryNumber <= totalDexNumber; secondaryNumber++) {
+                //for each dex file, ie: test.classes2.zip, test.classes3.zip...
+                String fileName = extractedFilePrefix + secondaryNumber + EXTRACTED_SUFFIX;
+                File extractedFile = new File(dexDir, fileName);
+                if (extractedFile.isFile()) {
+                    sourcePaths.add(extractedFile.getAbsolutePath());
+                    //we ignore the verify zip part
+                } else {
+                    throw new IOException("Missing extracted secondary dex file '" + extractedFile.getPath() + "'");
+                }
+            }
+        }
+
+        if (GoLogger.isOpen()) { // Search instant run support only debuggable
+            sourcePaths.addAll(tryLoadInstantRunDexFile(applicationInfo));
+        }
+        return sourcePaths;
+    }
+
+
+    /**
+     * Get instant run dex path, used to catch the branch usingApkSplits=false.
+     */
+    private static List<String> tryLoadInstantRunDexFile(ApplicationInfo applicationInfo) {
+        List<String> instantRunSourcePaths = new ArrayList<>();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != applicationInfo.splitSourceDirs) {
+            // add the split apk, normally for InstantRun, and newest version.
+            instantRunSourcePaths.addAll(Arrays.asList(applicationInfo.splitSourceDirs));
+            Log.d(Consts.TAG, "Found InstantRun support");
+        } else {
+            try {
+                // This man is reflection from Google instant run sdk, he will tell me where the dex files go.
+                Class pathsByInstantRun = Class.forName("com.android.tools.fd.runtime.Paths");
+                Method getDexFileDirectory = pathsByInstantRun.getMethod("getDexFileDirectory", String.class);
+                String instantRunDexPath = (String) getDexFileDirectory.invoke(null, applicationInfo.packageName);
+
+                File instantRunFilePath = new File(instantRunDexPath);
+                if (instantRunFilePath.exists() && instantRunFilePath.isDirectory()) {
+                    File[] dexFile = instantRunFilePath.listFiles();
+                    for (File file : dexFile) {
+                        if (null != file && file.exists() && file.isFile() && file.getName().endsWith(".dex")) {
+                            instantRunSourcePaths.add(file.getAbsolutePath());
+                        }
+                    }
+                    Log.d(Consts.TAG, "Found InstantRun support");
+                }
+
+            } catch (Exception e) {
+                Log.e(Consts.TAG, "InstantRun support error, " + e.getMessage());
+            }
+        }
+
+        return instantRunSourcePaths;
+    }
+
+    private static SharedPreferences getMultiDexPreferences(Context context) {
+        return context.getSharedPreferences(PREFS_FILE, Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ? Context.MODE_PRIVATE : Context.MODE_PRIVATE | Context.MODE_MULTI_PROCESS);
+    }
+
+    /**
+     * Identifies if the current VM has a native support for multidex, meaning there is no need for
+     * additional installation by this library.
+     *
+     * @return true if the VM handles multidex
+     */
+    private static boolean isVMMultidexCapable() {
+        boolean isMultidexCapable = false;
+        String vmName = null;
+
+        try {
+            if (isYunOS()) {    // YunOS需要特殊判断
+                vmName = "'YunOS'";
+                isMultidexCapable = Integer.valueOf(System.getProperty("ro.build.version.sdk")) >= 21;
+            } else {    // 非YunOS原生Android
+                vmName = "'Android'";
+                String versionString = System.getProperty("java.vm.version");
+                if (versionString != null) {
+                    Matcher matcher = Pattern.compile("(\\d+)\\.(\\d+)(\\.\\d+)?").matcher(versionString);
+                    if (matcher.matches()) {
+                        try {
+                            int major = Integer.parseInt(matcher.group(1));
+                            int minor = Integer.parseInt(matcher.group(2));
+                            isMultidexCapable = (major > VM_WITH_MULTIDEX_VERSION_MAJOR)
+                                    || ((major == VM_WITH_MULTIDEX_VERSION_MAJOR)
+                                    && (minor >= VM_WITH_MULTIDEX_VERSION_MINOR));
+                        } catch (NumberFormatException ignore) {
+                            // let isMultidexCapable be false
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignore) {
+
+        }
+
+        Log.i(Consts.TAG, "VM with name " + vmName + (isMultidexCapable ? " has multidex support" : " does not have multidex support"));
+        return isMultidexCapable;
     }
 
 
@@ -181,9 +354,9 @@ public class _GoRouter {
             } else if (Fragment.class.isAssignableFrom(nodeTarget)) {
                 //If the node type is Fragment,the jump is made in the form of Fragment.
                 go(currentContext, requestCode, FRAGMENT, nodeTarget, options);
-            } else if(android.app.Fragment.class.isAssignableFrom(nodeTarget)){
+            } else if (android.app.Fragment.class.isAssignableFrom(nodeTarget)) {
                 //If the node type is Fragment in package app,we should go to fragment
-                go(currentContext , requestCode , FRAGMENT_IN_APP_PACKAGE , nodeTarget , options);
+                go(currentContext, requestCode, FRAGMENT_IN_APP_PACKAGE, nodeTarget, options);
             }
         } else {
             throw new NullPointerException("route \"" + currentUrl + "\" is not found!!!");
@@ -195,13 +368,14 @@ public class _GoRouter {
 
     /**
      * 为fragment添加共享元素以便在跳转时自动携带炫酷动画
-     * @param element  需要添加共享元素效果的视图
-     * @param name  视图名称
-     * @param backStackTAG  返回栈tag
-     * @param containerId   容器的视图id
-     * @param useDefaultTransition  是否启用默认动画
+     *
+     * @param element              需要添加共享元素效果的视图
+     * @param name                 视图名称
+     * @param backStackTAG         返回栈tag
+     * @param containerId          容器的视图id
+     * @param useDefaultTransition 是否启用默认动画
      */
-    public void addSharedFragment(View element, String name, String backStackTAG, int containerId , boolean useDefaultTransition) {
+    public void addSharedFragment(View element, String name, String backStackTAG, int containerId, boolean useDefaultTransition) {
         if (mFragmentSharedCard == null) {
             mFragmentSharedCard = new FragmentSharedCard();
         }
@@ -215,7 +389,8 @@ public class _GoRouter {
 
     /**
      * 添加共享元素动画
-     * @param enterTransition  入场动画
+     *
+     * @param enterTransition 入场动画
      * @param exitTransition  出场动画
      */
     public void addTransition(Transition enterTransition, Transition exitTransition) {
@@ -227,14 +402,13 @@ public class _GoRouter {
     }
 
 
-
-
     /**
      * 设置供fragment跳转用的容器id
+     *
      * @param container
      */
     public void setFragmentContainer(int container) {
-        if(container != 0){
+        if (container != 0) {
             if (container == View.NO_ID) {
                 throw new IllegalArgumentException("Can't add fragment with no id");
             }
@@ -267,9 +441,9 @@ public class _GoRouter {
                     Fragment curFragment = (Fragment) nodeTarget.getConstructor().newInstance();
 
                     if (mFragmentSharedCard != null) {
-                        FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).replace(curFragment , container);
+                        FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).replace(curFragment, container);
                     } else {
-                        FragmentMonitor.Companion.getInstance().replace(curFragment , container);
+                        FragmentMonitor.Companion.getInstance().replace(curFragment, container);
                     }
                     mFragmentSharedCard = null;
                 } catch (Exception e) {
@@ -303,8 +477,6 @@ public class _GoRouter {
             }
         }
     }
-
-
 
 
     /**
@@ -367,5 +539,20 @@ public class _GoRouter {
      */
     private void runOnMainThread(Runnable runnable) {
         MainExecutor.Companion.getInstance().execute(runnable);
+    }
+
+
+    /**
+     * 判断系统是否为YunOS系统
+     */
+    private static boolean isYunOS() {
+        try {
+            String version = System.getProperty("ro.yunos.version");
+            String vmName = System.getProperty("java.vm.name");
+            return (vmName != null && vmName.toLowerCase().contains("lemur"))
+                    || (version != null && version.trim().length() > 0);
+        } catch (Exception ignore) {
+            return false;
+        }
     }
 }

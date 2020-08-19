@@ -110,4 +110,8 @@ public interface ILogPrinter {
      * @return
      */
     int getRealLength();
+
+
+
+    boolean isOpen();
 }
