@@ -3,6 +3,8 @@ package cn.gorouter.api.launcher;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
+import android.transition.Transition;
+import android.view.View;
 
 import androidx.fragment.app.Fragment;
 
@@ -106,6 +108,57 @@ public class GoRouter {
         return this;
     }
 
+
+    /**
+     * 添加共享元素信息
+     * @param element  需要添加共享元素效果的视图
+     * @param name  视图名称
+     * @param backStackTAG  返回栈tag
+     * @param containerId fragment的容器的id
+     * @return
+     */
+    public GoRouter addSharedFragment(View element , String name , String backStackTAG , int containerId){
+        addSharedFragment(element , name , backStackTAG , containerId , false);
+        return this;
+    }
+
+
+    /**
+     * 添加共享元素信息
+     * @param element 需要添加共享元素效果的视图
+     * @param name 视图名称
+     * @param backStackTAG 返回栈tag
+     * @param containerId fragment的容器的id
+     * @param useDefaultTransition 是否使用默认的转场动画
+     * @return
+     */
+    public GoRouter addSharedFragment(View element , String name , String backStackTAG , int containerId , boolean useDefaultTransition){
+        _GoRouter.getInstance().addSharedFragment(element , name , backStackTAG , containerId , useDefaultTransition);
+        return this;
+    }
+
+    /**
+     * 为共享元素添加自定义转场动画
+     * @param enterTransition
+     * @param exitTransition
+     * @return
+     */
+    public GoRouter addTransition(Transition enterTransition , Transition exitTransition) {
+        _GoRouter.getInstance().addTransition(enterTransition , exitTransition);
+        return this;
+    }
+
+
+    /**
+     * 设置fragment的容器
+     * @param fragmentContainer
+     * @return
+     */
+    public GoRouter setFragmentContainer(int fragmentContainer){
+        _GoRouter.getInstance().setFragmentContainer(fragmentContainer);
+        return this;
+    }
+
     /**
      * Go to target page.
      * 通过先前设置好的路由键访问具体页面
@@ -165,15 +218,6 @@ public class GoRouter {
         }
     }
 
-
-    /**
-     * Get the target fragment object
-     * 通过路由键获得一个fragment实例
-     * @return  得到的fragment实例
-     */
-    public Fragment getFragmentInstance() {
-        return _GoRouter.getInstance().getFragmentInstance();
-    }
 
 
 }

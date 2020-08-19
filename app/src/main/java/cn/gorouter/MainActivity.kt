@@ -9,20 +9,35 @@ import androidx.core.app.ActivityOptionsCompat
 import cn.gorouter.annotation.Route
 import cn.gorouter.api.launcher.GoRouter
 import cn.gorouter.api.logger.GoLogger
+import cn.gorouter.api.monitor.ActivityMonitor
+import cn.gorouter.api.monitor.FragmentMonitor
 
 /**
  * @author logcat
  */
 @Route(url = "/main/MainActivity")
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), FragmentMonitor.FragmentMonitorCallback {
     private val TAG = this.javaClass.simpleName
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        GoLogger.info("This is main page!")
-        val fragment = GoRouter.getInstance().build("app/TestFragment").fragmentInstance
-        Log.d(TAG, "onCreate: " + fragment.javaClass.simpleName)
+
+
+        FragmentMonitor.instance?.fragmentMonitorCallback = this
+
+        GoRouter.getInstance().build("app/TestFragment")
+                .setFragmentContainer(R.id.flContainer)
+                .go()
+
+
     }
+
+
+    override fun onBackPressed() {
+        FragmentMonitor.instance?.finishLast()
+        Log.d(TAG, "count: " + FragmentMonitor.instance?.getFragmentCount())
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -36,6 +51,12 @@ class MainActivity : AppCompatActivity() {
         //visit LoginActivity
         GoRouter.getInstance()
                 .build("/main/Login")
-                .go(this , ActivityOptionsCompat.makeBasic().toBundle() , 0)
+                .go(this, ActivityOptionsCompat.makeBasic().toBundle(), 0)
     }
+
+    override fun noFragment() {
+        ActivityMonitor.instance?.exit()
+    }
+
+
 }

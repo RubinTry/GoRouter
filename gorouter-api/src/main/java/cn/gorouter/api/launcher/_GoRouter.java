@@ -4,35 +4,33 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.transition.Transition;
+import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import cn.gorouter.api.card.FragmentSharedCard;
 import cn.gorouter.api.logger.GoLogger;
-import cn.gorouter.api.utils.ActivityMonitor;
-import cn.gorouter.api.utils.FragmentMonitor;
+import cn.gorouter.api.monitor.FragmentMonitor;
+import cn.gorouter.api.threadpool.MainExecutor;
+import cn.gorouter.api.monitor.ActivityMonitor;
 import dalvik.system.DexFile;
 import dalvik.system.PathClassLoader;
 
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.ACTIVITY;
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT;
+import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAGE;
 
 /**
  * @author logcat <a href="13857769302@163.com">Contact me.</a>
@@ -46,12 +44,14 @@ public class _GoRouter {
     private Map<String, Class> nodeTargetContainer;
     private static Context mContext;
     private static ClassLoader mCurrentClassLoader;
+    private FragmentSharedCard mFragmentSharedCard;
 
-    private static Handler mHandler;
 
     static {
         mCurrentClassLoader = Thread.currentThread().getContextClassLoader();
     }
+
+    private int container;
 
 
     private _GoRouter() {
@@ -60,6 +60,7 @@ public class _GoRouter {
 
     /**
      * 获得_GoRouter单例
+     *
      * @return
      */
     public static _GoRouter getInstance() {
@@ -76,13 +77,14 @@ public class _GoRouter {
 
     /**
      * 初始化_GoRouter
+     *
      * @param application
      * @return
      */
-    public static boolean init(Application application) {
+    public synchronized static boolean init(Application application) {
         mContext = application.getApplicationContext();
-        mHandler = new Handler(Looper.getMainLooper());
         ActivityMonitor.Companion.getInstance().initialize(application);
+        FragmentMonitor.Companion.getInstance().initialize(application);
         return initAllRoute(mContext);
     }
 
@@ -90,6 +92,7 @@ public class _GoRouter {
     /**
      * Initialize all route and put them into container.
      * 初始化_GoRouter并且将所有节点添加进容器
+     *
      * @param context
      * @return
      */
@@ -113,6 +116,7 @@ public class _GoRouter {
     /**
      * Scan all class names under the specified package name.
      * 扫描某个包名下的所有类
+     *
      * @param context
      * @param packageName Witch package we want scan.
      * @return
@@ -124,7 +128,7 @@ public class _GoRouter {
         try {
             path = context.getPackageManager().getApplicationInfo(context.getPackageName(), 0).sourceDir;
             DexFile dexFile = new DexFile(path);
-            PathClassLoader pathClassLoader = new PathClassLoader(path , mCurrentClassLoader);
+            PathClassLoader pathClassLoader = new PathClassLoader(path, mCurrentClassLoader);
             Enumeration entries = dexFile.entries();
             while (entries.hasMoreElements()) {
                 String name = (String) entries.nextElement();
@@ -133,7 +137,7 @@ public class _GoRouter {
                     classList.add(aClass);
                 }
             }
-        }  catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return classList;
@@ -143,6 +147,7 @@ public class _GoRouter {
     /**
      * Build a route
      * 通过路由键构建一个路由
+     *
      * @param url  route url address
      * @param data The data that needs to be passed to the target page
      */
@@ -152,13 +157,11 @@ public class _GoRouter {
     }
 
 
-
-
     /**
      * Go to target page.
      * 通过路由键访问具体页面
      */
-    public void go(Context context, Integer requestCode , @Nullable Bundle options) throws NullPointerException {
+    public void go(Context context, Integer requestCode, @Nullable Bundle options) throws NullPointerException {
         Context currentContext = null == context ? mContext : context;
         if (currentUrl == null) {
             throw new IllegalArgumentException("Please set currentUrl");
@@ -174,10 +177,13 @@ public class _GoRouter {
         if (nodeTarget != null) {
             if (Activity.class.isAssignableFrom(nodeTarget)) {
                 //If the node type is Activity,the jump is made in the form of Activity.
-                go(currentContext, requestCode, ACTIVITY , nodeTarget , options);
+                go(currentContext, requestCode, ACTIVITY, nodeTarget, options);
             } else if (Fragment.class.isAssignableFrom(nodeTarget)) {
                 //If the node type is Fragment,the jump is made in the form of Fragment.
-                go(currentContext, requestCode, FRAGMENT, nodeTarget , options);
+                go(currentContext, requestCode, FRAGMENT, nodeTarget, options);
+            } else if(android.app.Fragment.class.isAssignableFrom(nodeTarget)){
+                //If the node type is Fragment in package app,we should go to fragment
+                go(currentContext , requestCode , FRAGMENT_IN_APP_PACKAGE , nodeTarget , options);
             }
         } else {
             throw new NullPointerException("route \"" + currentUrl + "\" is not found!!!");
@@ -188,25 +194,87 @@ public class _GoRouter {
 
 
     /**
+     * 为fragment添加共享元素以便在跳转时自动携带炫酷动画
+     * @param element  需要添加共享元素效果的视图
+     * @param name  视图名称
+     * @param backStackTAG  返回栈tag
+     * @param containerId   容器的视图id
+     * @param useDefaultTransition  是否启用默认动画
+     */
+    public void addSharedFragment(View element, String name, String backStackTAG, int containerId , boolean useDefaultTransition) {
+        if (mFragmentSharedCard == null) {
+            mFragmentSharedCard = new FragmentSharedCard();
+        }
+        mFragmentSharedCard.setSharedElement(element);
+        mFragmentSharedCard.setName(name);
+        mFragmentSharedCard.setTAG(backStackTAG);
+        mFragmentSharedCard.setContainerId(containerId);
+        mFragmentSharedCard.setUseDefaultTransition(useDefaultTransition);
+    }
+
+
+    /**
+     * 添加共享元素动画
+     * @param enterTransition  入场动画
+     * @param exitTransition  出场动画
+     */
+    public void addTransition(Transition enterTransition, Transition exitTransition) {
+        if (mFragmentSharedCard == null) {
+            mFragmentSharedCard = new FragmentSharedCard();
+        }
+        mFragmentSharedCard.setEnterTransition(enterTransition);
+        mFragmentSharedCard.setExitTransition(exitTransition);
+    }
+
+
+
+
+    /**
+     * 设置供fragment跳转用的容器id
+     * @param container
+     */
+    public void setFragmentContainer(int container) {
+        if(container != 0){
+            if (container == View.NO_ID) {
+                throw new IllegalArgumentException("Can't add fragment with no id");
+            }
+            this.container = container;
+        }
+    }
+
+
+    /**
      * Go to target page.
      * 通过路由键访问具体页面
-     * @param type 页面类型 {@link TypeKind#ACTIVITY} activity类型   {@link TypeKind#FRAGMENT} fragment 类型
+     *
+     * @param type       页面类型 {@link TypeKind#ACTIVITY} activity类型   {@link TypeKind#FRAGMENT} fragment 类型
      * @param nodeTarget
      */
-    private void go(Context currentContext, Integer requestCode, TypeKind type, Class nodeTarget , @Nullable Bundle options) throws NullPointerException {
+    private void go(Context currentContext, Integer requestCode, TypeKind type, Class nodeTarget, @Nullable Bundle options) throws NullPointerException {
         switch (type) {
             case ACTIVITY:
 
                 runOnMainThread(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(currentContext, nodeTarget , options, requestCode);
+                        startActivity(currentContext, nodeTarget, options, requestCode);
                     }
                 });
 
                 break;
             case FRAGMENT:
+                try {
+                    Fragment curFragment = (Fragment) nodeTarget.getConstructor().newInstance();
 
+                    if (mFragmentSharedCard != null) {
+                        FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).replace(curFragment , container);
+                    } else {
+                        FragmentMonitor.Companion.getInstance().replace(curFragment , container);
+                    }
+                    mFragmentSharedCard = null;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             default:
                 break;
@@ -217,43 +285,9 @@ public class _GoRouter {
 
 
     /**
-     * 通过路由键返回一个fragment实例
-     * @return  得到的fragment实例
-     */
-    public Fragment getFragmentInstance() {
-        if (currentUrl == null) {
-            throw new IllegalArgumentException("Please set currentUrl");
-        }
-
-        if (nodeTargetContainer == null) {
-            throw new NullPointerException("container is empty!!!");
-        }
-
-
-        //Get all the node and type classes.
-        Class nodeTarget = nodeTargetContainer.get(currentUrl);
-
-
-        if(nodeTarget != null && Fragment.class.isAssignableFrom(nodeTarget)){
-            try {
-                return (Fragment) nodeTarget.getConstructor().newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-
-        GoLogger.error("Don't have this fragment!!!");
-        return null;
-
-    }
-
-
-
-
-    /**
      * Put all the node and type names into container.
      * 将所有节点与节点类型装入容器
+     *
      * @param url
      * @param target
      */
@@ -280,7 +314,7 @@ public class _GoRouter {
     enum TypeKind {
         ACTIVITY(0),
         FRAGMENT(1),
-        FRAGMENT_ON_ANDROID_SUPPORT(2);
+        FRAGMENT_IN_APP_PACKAGE(2);
 
         private final int type;
 
@@ -297,18 +331,17 @@ public class _GoRouter {
     /**
      * Jump into an Activity
      * 开始跳转至对应的activity
-     * @param currentContext  当前页面上下文（可能为应用全局的上下文）
+     *
+     * @param currentContext 当前页面上下文（可能为应用全局的上下文）
      * @param activityClazz  目标activity的类对象
-     * @param requestCode   页面返回时回调的请求码
+     * @param requestCode    页面返回时回调的请求码
      */
-    private void startActivity(Context currentContext, Class activityClazz , @Nullable Bundle options, Integer requestCode) {
+    private void startActivity(Context currentContext, Class activityClazz, @Nullable Bundle options, Integer requestCode) {
 
         Intent intent = new Intent(currentContext, activityClazz);
         if (currentData != null) {
             intent.putExtras(currentData);
         }
-
-
 
 
         if (requestCode != null && requestCode.intValue() >= 0) {
@@ -329,13 +362,10 @@ public class _GoRouter {
     /**
      * Run on UIThread
      * 确保再UI线程上进行
+     *
      * @param runnable
      */
     private void runOnMainThread(Runnable runnable) {
-        if (Looper.getMainLooper().getThread() != Thread.currentThread()) {
-            mHandler.post(runnable);
-        } else {
-            runnable.run();
-        }
+        MainExecutor.Companion.getInstance().execute(runnable);
     }
 }
