@@ -66,4 +66,8 @@ public class GoLogger {
     }
 
 
+    public static boolean isOpen(){
+        return logger.isOpen();
+    }
+
 }
