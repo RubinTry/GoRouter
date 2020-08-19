@@ -145,7 +145,7 @@ public class _GoRouter {
      * @param packageName Witch package we want scan.
      * @return
      */
-    private static List<Class> getClasses(Context context, String packageName) throws PackageManager.NameNotFoundException, IOException {
+    private static List<Class> getClasses(Context context, String packageName) throws PackageManager.NameNotFoundException, IOException, InterruptedException {
         List<Class> classList = new ArrayList<>();
 
         List<String> paths = getSourcePaths(context);
@@ -172,7 +172,7 @@ public class _GoRouter {
                             }
                         }
                     } catch (Throwable ignore) {
-                        Log.e("ARouter", "Scan map file in dex files made error.", ignore);
+                       GoLogger.error("Scan map file in dex files made error." , ignore);
                     } finally {
                         if (null != dexFile) {
                             try {
@@ -186,6 +186,9 @@ public class _GoRouter {
                 }
             });
         }
+
+        pathParserCtl.await();
+        GoLogger.debug(Consts.TAG + "Filter " + classList.size() + " classes by packageName <" + packageName + ">");
         return classList;
     }
 
@@ -227,8 +230,8 @@ public class _GoRouter {
                 }
             }
         }
-
-        if (GoLogger.isOpen()) { // Search instant run support only debuggable
+        // Search instant run support only debuggable
+        if (GoLogger.isOpen()) {
             sourcePaths.addAll(tryLoadInstantRunDexFile(applicationInfo));
         }
         return sourcePaths;

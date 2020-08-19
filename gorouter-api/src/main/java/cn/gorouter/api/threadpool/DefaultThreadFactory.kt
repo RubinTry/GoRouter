@@ -14,10 +14,10 @@ class DefaultThreadFactory : ThreadFactory{
     private var namePrefix: String? = null
 
 
-    fun DefaultThreadFactory() {
+    constructor(){
         val s = System.getSecurityManager()
         group = if (s != null) s.threadGroup else Thread.currentThread().threadGroup
-        namePrefix = "ARouter task pool No." + poolNumber.getAndIncrement() + ", thread No."
+        namePrefix = "GoRouter task pool No." + poolNumber.getAndIncrement() + ", thread No."
     }
 
 
