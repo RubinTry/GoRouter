@@ -16,11 +16,9 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +46,7 @@ import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAG
 
 /**
  * @author logcat <a href="13857769302@163.com">Contact me.</a>
- * @version 1.0.0
+ * @version 1.0.10
  * @date 2020/07/11 16:25
  */
 public class _GoRouter {
