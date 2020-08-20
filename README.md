@@ -113,8 +113,10 @@ Target Activity
 
 
 #### With sharedElements
-##### Layout
+
 Fragment
+
+##### Layout
 
 fragment1
 ```xml
@@ -159,6 +161,8 @@ fragment2
 
 
 Activity
+
+##### Layout
 
 activity1
 ```xml
