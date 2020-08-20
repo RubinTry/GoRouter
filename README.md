@@ -1,10 +1,12 @@
 # GoRouter
 
-<center style="text-align: center;">
+<div style="align: center;">
 
-![logo(https://github.com/RubinTry/GoRouter)](https://gorouter-1258359008.cos.ap-shanghai.myqcloud.com/logo.png)
+    <a href="https://github.com/RubinTry/GoRouter">
+        <img src="https://gorouter-1258359008.cos.ap-shanghai.myqcloud.com/logo.png">
+    </a>
 
-</center>
+</div>
 
 ```
 The most lightweight Framework about router in android.
