@@ -2,7 +2,7 @@
 
 <div style="text-align: center;">
 
-![logo](resource/img/logo.png)
+![logo](resource\img\logo.png)
 
 </div>
 
