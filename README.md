@@ -20,6 +20,6 @@ The most lightweight Framework about router in android.
 
 #### Latest version
 
-module | GoRouter-api | GoRouter-compiler | GoRouter-annotation
----|---|---|---|---
+|module|GoRouter-api|GoRouter-compiler|GoRouter-annotation|
+|---|---|---|---|
 version|[![Download](https://img.shields.io/badge/Download-1.0.10-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Download](https://img.shields.io/badge/Download-1.0.4-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Download](https://img.shields.io/badge/Download-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
