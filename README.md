@@ -31,7 +31,7 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.10-blue)](https://b
 
 #### Feature
 1. **Support for multi-modules**
-2. **Support for Activity and Fragment**
+2. **Full Activity and Fragment support**
 3. **InstantRun support**
 4. **MultiDex support**
 5. **AndroidX Support**
