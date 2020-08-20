@@ -11,4 +11,4 @@ The most lightweight Framework about router in android.
 ```
 
 
-[![Download](resource/img/download_api_1.0.10.svg)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)
+[![Download](https://img.shields.io/badge/Download-1.0.10-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)
