@@ -1,6 +1,6 @@
 <div align=center>
     <a href="https://github.com/RubinTry/GoRouter">
-        <img src="https://gorouter-1258359008.cos.ap-shanghai.myqcloud.com/logo.png"/>
+        <img src="https://gorouter-1258359008.cos.ap-shanghai.myqcloud.com/GoRouter.png"/>
     </a>
 </div>
 
@@ -27,7 +27,7 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.10-blue)](https://b
 
 #### 特性
 1. **支持多模块开发**
-2. **同时支持Activity和Fragment**
+2. **完美支持Activity和Fragment**
 3. **支持InstantRun support**
 4. **支持MultiDex support（google）**
 5. **支持AndroidX**

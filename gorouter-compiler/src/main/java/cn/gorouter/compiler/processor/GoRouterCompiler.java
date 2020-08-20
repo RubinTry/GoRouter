@@ -82,7 +82,7 @@ public class GoRouterCompiler extends AbstractProcessor {
         if (map.size() > 0) {
             Writer writer = null;
             //Create a new className.
-            String nodeName = "RouteBinder" + System.currentTimeMillis();
+            String nodeName = "RouteBinder" + System.currentTimeMillis() + "Impl";
             //Generate a file.
             try {
                 JavaFileObject sourceFile = filter.createSourceFile("cn.gorouter.route." + nodeName);
