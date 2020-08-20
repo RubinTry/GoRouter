@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity(), FragmentMonitor.FragmentMonitorCallbac
                 .go()
 
 
+        GoRouter.getInstance().build("/main/Login").go()
     }
 
 

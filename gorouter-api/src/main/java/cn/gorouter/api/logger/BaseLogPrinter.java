@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * @author logcat
- * @date 2020/07/11 16:29
+ * @since 2020/07/11 16:29
  * The base class for logger
  */
 public class BaseLogPrinter implements ILogPrinter {

@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.transition.Transition;
 import android.view.View;
 
-import androidx.fragment.app.Fragment;
-
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import cn.gorouter.api.logger.GoLogger;
@@ -16,8 +13,8 @@ import cn.gorouter.api.logger.GoLogger;
 
 /**
  * @author logcat <a href="13857769302@163.com">Contact me.</a>
- * @version 1.0.0
- * @date 2020/07/11 16:25
+ * @version 1.0.10
+ * @since 2020/07/11 16:25
  */
 public class GoRouter {
     private static volatile GoRouter instance;

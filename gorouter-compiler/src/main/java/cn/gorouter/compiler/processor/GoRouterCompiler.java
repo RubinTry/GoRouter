@@ -26,7 +26,7 @@ import cn.gorouter.annotation.Route;
 /**
  * @author logcat <a href="13857769302@163.com">Contact me.</a>
  * @version 1.0.0
- * @date 2020/07/11 16:25
+ * @since 2020/07/11 16:25
  */
 @AutoService(Processor.class)//Register a annotation processor
 public class GoRouterCompiler extends AbstractProcessor {

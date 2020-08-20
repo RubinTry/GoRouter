@@ -16,11 +16,9 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,8 +46,8 @@ import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAG
 
 /**
  * @author logcat <a href="13857769302@163.com">Contact me.</a>
- * @version 1.0.0
- * @date 2020/07/11 16:25
+ * @version 1.0.10
+ * @since 2020/07/11 16:25
  */
 public class _GoRouter {
     private static volatile _GoRouter instance;
@@ -150,6 +148,7 @@ public class _GoRouter {
         List<Class> classList = new ArrayList<>();
 
         List<String> paths = getSourcePaths(context);
+        //线程总数锁存器
         final CountDownLatch pathParserCtl = new CountDownLatch(paths.size());
         for (String path : paths) {
             DefaultPoolExecutor.Companion.getInstance().execute(new Runnable() {
@@ -182,12 +181,14 @@ public class _GoRouter {
                             }
                         }
 
+                        //总数 -1
                         pathParserCtl.countDown();
                     }
                 }
             });
         }
 
+        //一直等待，直到线程总数降为0
         pathParserCtl.await();
         GoLogger.debug(Consts.TAG + "Filter " + classList.size() + " classes by packageName <" + packageName + ">");
         return classList;
@@ -207,7 +208,8 @@ public class _GoRouter {
         File sourceApk = new File(applicationInfo.sourceDir);
 
         List<String> sourcePaths = new ArrayList<>();
-        sourcePaths.add(applicationInfo.sourceDir); //add the default apk path
+        //add the default apk path
+        sourcePaths.add(applicationInfo.sourceDir);
 
         //the prefix of extracted file, ie: test.classes
         String extractedFilePrefix = sourceApk.getName() + EXTRACTED_NAME_EXT;
@@ -440,11 +442,17 @@ public class _GoRouter {
                 try {
                     Fragment curFragment = (Fragment) nodeTarget.getConstructor().newInstance();
 
+                    if(currentData != null){
+                        curFragment.setArguments(currentData);
+                    }
+
                     if (mFragmentSharedCard != null) {
                         FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).replace(curFragment, container);
                     } else {
                         FragmentMonitor.Companion.getInstance().replace(curFragment, container);
                     }
+
+                    FragmentMonitor.Companion.getInstance().addToList(curFragment);
                     mFragmentSharedCard = null;
                 } catch (Exception e) {
                     e.printStackTrace();

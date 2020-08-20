@@ -36,3 +36,25 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.10-blue)](https://b
 4. **MultiDex support**
 5. **AndroidX Support**
 6. **Support kotlin**
+
+
+
+#### How to use?
+
+In any fragment
+```java
+
+   //Navigation to any fragment right away
+   GoRouter.getInstance().build("routeKey1")
+                   .setFragmentContainer(fragment's containerId)
+                   .go()
+
+    //Here you will navigation to RouteFragment      
+```
+Another Fragment
+```java
+   @Route(url = "routeKey1")
+   public class RouteFragment extends Fragment {
+```
+
+

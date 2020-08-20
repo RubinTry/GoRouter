@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author logcat
- * @date 2020/07/13
+ * @since 2020/07/13
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.CLASS)

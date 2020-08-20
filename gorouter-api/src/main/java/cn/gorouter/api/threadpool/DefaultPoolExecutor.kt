@@ -6,7 +6,7 @@ import java.util.concurrent.*
 
 /**
  * @author logcat
- * @date 2020/08/19 17:07
+ * @since 2020/08/19 17:07
  */
 class DefaultPoolExecutor private constructor(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long, unit: TimeUnit, workQueue: BlockingQueue<Runnable>, threadFactory: ThreadFactory) : ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, RejectedExecutionHandler { r, executor -> GoLogger.error(Consts.TAG + "Task rejected, too many task!") }) {
 

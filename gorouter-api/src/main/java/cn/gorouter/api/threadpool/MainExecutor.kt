@@ -13,10 +13,10 @@ class MainExecutor(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long,
     }
 
     companion object {
-        var CPU_COUNT: Int = Runtime.getRuntime().availableProcessors()
-        var INIT_THREAD_COUNT: Int = CPU_COUNT + 1
-        var MAX_THREAD_COUNT: Int = INIT_THREAD_COUNT
-        var SURPLUS_THREAD_LIFE: Long = 30L
+        private var CPU_COUNT: Int = Runtime.getRuntime().availableProcessors()
+        private var INIT_THREAD_COUNT: Int = CPU_COUNT + 1
+        private var MAX_THREAD_COUNT: Int = INIT_THREAD_COUNT
+        private var SURPLUS_THREAD_LIFE: Long = 30L
 
         @Volatile
         var instance: MainExecutor? = null
@@ -69,7 +69,7 @@ class MainExecutor(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long,
      * @param stackTrace
      * @return
      */
-    fun formatStackTrace(stackTrace: Array<StackTraceElement>): String? {
+    private fun formatStackTrace(stackTrace: Array<StackTraceElement>): String? {
         val sb = StringBuilder()
         for (element in stackTrace) {
             sb.append("    at ").append(element.toString())

@@ -31,12 +31,6 @@ class FragmentMonitor {
 
 
     var fragmentMonitorCallback: FragmentMonitorCallback? = null
-        get() {
-            return field
-        }
-        set(value) {
-            field = value
-        }
 
 
     /**
@@ -60,19 +54,13 @@ class FragmentMonitor {
         if (callCount == 0) {
             manager?.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
 
-
-                override fun onFragmentCreated(fm: FragmentManager, f: Fragment, savedInstanceState: Bundle?) {
-                    super.onFragmentCreated(fm, f, savedInstanceState)
-                    GoLogger.debug("onFragmentCreated: ")
-                    pageList.add(f)
-                }
-
-
-
                 override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
                     super.onFragmentDestroyed(fm, f)
                     GoLogger.debug("onFragmentDestroyed: ")
-                    pageList.remove(f)
+                    if(f in pageList){
+                        pageList.remove(f)
+                    }
+
                 }
 
 
@@ -101,6 +89,16 @@ class FragmentMonitor {
                 return field
             }
             private set
+    }
+
+
+    /**
+     * 将fragment添加进容器中
+     *
+     * @param fragment
+     */
+    fun addToList(fragment: Fragment){
+        pageList.add(fragment)
     }
 
 
@@ -156,7 +154,7 @@ class FragmentMonitor {
             }
 
         }
-        transaction?.replace(container!!, fragment)?.commit()
+        transaction?.replace(container, fragment)?.commit()
     }
 
 
@@ -180,8 +178,37 @@ class FragmentMonitor {
             fragment.sharedElementReturnTransition = exitTransition
 
         }
-        transaction?.replace(container!!, fragment)?.commit()
+        transaction?.replace(container, fragment)?.commit()
     }
+
+
+    /**
+     * 根据fragment类名销毁fragment
+     *
+     * @param name fragment的类名（simpleName）
+     */
+    fun finishByName(name : String){
+        val manager = getManager()
+
+        var removeFragment : Fragment ?= null
+        if(!pageList.isNullOrEmpty()){
+            for (fragment : Fragment in pageList){
+                if(fragment.javaClass.simpleName == name){
+                    removeFragment = fragment;
+                    break
+                }
+            }
+
+            if(removeFragment != null){
+                manager?.beginTransaction()?.remove(removeFragment)?.commit()
+                pageList.remove(removeFragment)
+            }
+        }
+
+    }
+
+
+
 
 
     /**
@@ -215,10 +242,23 @@ class FragmentMonitor {
 
 
     /**
+     * 获取栈内所有fragment
+     *
+     * @return
+     */
+    fun getAllFragment() : List<Fragment>{
+        return pageList
+    }
+
+
+    /**
      * activity中无fragment时，回调此接口
      *
      */
     interface FragmentMonitorCallback {
         fun noFragment();
     }
+
+
+
 }

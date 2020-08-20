@@ -2,7 +2,7 @@ package cn.gorouter.api.logger;
 
 /**
  * @author logcat
- * @date 2020/07/11 16:25
+ * @since 2020/07/11 16:25
  * @version 1.0.0
  */
 public interface ILogger {
