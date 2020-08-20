@@ -144,7 +144,7 @@ fragment2
         android:textSize="50sp"></TextView>
 ```
 ```java
-
+   //Fragment1
    //Navigate to a fragment with animation right away
    GoRouter.getInstance()
                         .build("fragment2 's routeKey")
@@ -189,6 +189,7 @@ activity2
 ```
 
 ```java
+   //Activity1
    //navigation to another activity with animation.
 
    tv = findViewById(R.id.tv);
