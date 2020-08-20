@@ -32,3 +32,184 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.10-blue)](https://b
 4. **支持MultiDex support（google）**
 5. **支持AndroidX**
 6. **支持kotlin混合编译**
+
+
+
+
+#### 如何引入?
+gradle
+```groovy
+   implementation 'cn.rubintry:gorouter-api:1.0.12'
+```
+
+maven
+```groovy
+    <dependency>
+        <groupId>cn.rubintry</groupId>
+        <artifactId>gorouter-api</artifactId>
+        <version>1.0.12</version>
+        <type>pom</type>
+    </dependency>
+```
+
+#### 如何使用此框架?
+
+Fragment篇
+```java
+
+   //导航到某个fragment
+   GoRouter.getInstance().build("routeKey1")
+                   .setFragmentContainer(fragment's containerId)
+                   .go()
+
+
+     //携带数据
+     Bundle data = new Bundle()
+     data.putInt(key , value);
+     GoRouter.getInstance().build("routeKey1" , data)
+                   .setFragmentContainer(fragment's containerId)
+                   .go();               
+
+    //至此，你已导航到指定的fragment
+    
+        
+```
+目标 Fragment
+```java
+   @Route(url = "routeKey1")
+   public class RouteFragment extends Fragment {
+
+      @Nullable
+      @Override
+      public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+          value = getArguments().getInt(key)
+
+          return YourView;
+      }    
+   }    
+```
+
+
+Activity篇
+
+```java
+   //导航到指定activity
+   GoRouter.getInstance().build("routeKey2").go()
+
+
+   //携带数据
+   Bundle data = new Bundle()
+   data.putInt(key , value);
+   GoRouter.getInstance().build("routeKey2" , data).go()
+```
+
+Target Activity
+```java
+    /**
+    * @author logcat
+    */
+    @Route(url = "routeKey2")
+    public class LoginActivity extends AppCompatActivity {
+
+
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_login);
+
+            value = getIntent().getInt(key)
+        }
+    }
+```
+
+
+#### 带有共享元素的跳转
+
+Fragment篇
+
+##### Layout
+
+fragment1
+```xml
+   <TextView
+        android:id="@+id/tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="fragment1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:transitionName="sharedFragment"
+        android:textSize="50sp"></TextView>
+```
+
+fragment2
+```xml
+   <TextView
+        android:id="@+id/tv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="fragment2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:transitionName="sharedFragment"
+        android:textSize="50sp"></TextView>
+```
+```java
+   //Fragment1
+   //以带有共享元素动画的方式跳转
+   GoRouter.getInstance()
+                        .build("fragment2 's routeKey")
+                        .addSharedFragment(tv , ViewCompat.getTransitionName(tv) , "tag" , containerId , true)
+                        .go();
+
+
+    
+    
+        
+```
+
+
+Activity篇
+
+##### Layout
+
+activity1
+```xml
+   <TextView
+        android:id="@+id/tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="activity1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:transitionName="sharedActivity"
+        android:textSize="50sp"></TextView>
+```
+
+activity2
+```xml
+   <TextView
+        android:id="@+id/tv1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="activity1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:transitionName="sharedActivity"
+        android:textSize="50sp"></TextView>
+```
+
+```java
+   //Activity1
+   //以带有共享元素动画的方式跳转
+
+   tv = findViewById(R.id.tv);
+   GoRouter.getInstance().build("activity1 's routeKey")
+   .go(ActivityOptions.makeSceneTransitionAnimation(this , tv , "sharedActivity").toBundle())
+```
