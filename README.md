@@ -22,7 +22,7 @@ The most lightweight Framework about router in android.
 
 |module|GoRouter-api|GoRouter-compiler|GoRouter-annotation|
 |:---:|:---:|:---:|:---:|
-version|[![Version](https://img.shields.io/badge/Version-1.0.10-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
+version|[![Version](https://img.shields.io/badge/Version-1.0.12-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
 
 
 
@@ -38,6 +38,22 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.10-blue)](https://b
 6. **Support kotlin**
 
 
+
+#### How to introduce?
+gradle
+```groovy
+   implementation 'cn.rubintry:gorouter-api:1.0.12'
+```
+
+maven
+```groovy
+    <dependency>
+        <groupId>cn.rubintry</groupId>
+        <artifactId>gorouter-api</artifactId>
+        <version>1.0.12</version>
+        <type>pom</type>
+    </dependency>
+```
 
 #### How to use?
 
