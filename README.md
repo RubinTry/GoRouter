@@ -41,10 +41,10 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.10-blue)](https://b
 
 #### How to use?
 
-In any fragment
+Fragment
 ```java
 
-   //Navigation to any fragment right away
+   //Navigate to a fragment right away
    GoRouter.getInstance().build("routeKey1")
                    .setFragmentContainer(fragment's containerId)
                    .go()
@@ -61,7 +61,7 @@ In any fragment
     
         
 ```
-Another Fragment
+Target Fragment
 ```java
    @Route(url = "routeKey1")
    public class RouteFragment extends Fragment {
@@ -78,10 +78,10 @@ Another Fragment
 ```
 
 
-In any Activity
+Activity
 
 ```java
-   //Navigation to any Activity right away
+   //Navigation to an Activity right away
    GoRouter.getInstance().build("routeKey2").go()
 
 
@@ -91,7 +91,7 @@ In any Activity
    GoRouter.getInstance().build("routeKey2" , data).go()
 ```
 
-
+Target Activity
 ```java
     /**
     * @author logcat
