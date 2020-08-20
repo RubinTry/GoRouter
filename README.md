@@ -110,3 +110,87 @@ Target Activity
         }
     }
 ```
+
+
+#### With sharedElements
+##### Layout
+Fragment
+
+fragment1
+```xml
+   <TextView
+        android:id="@+id/tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="fragment1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:transitionName="sharedFragment"
+        android:textSize="50sp"></TextView>
+```
+
+fragment2
+```xml
+   <TextView
+        android:id="@+id/tv2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="fragment2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:transitionName="sharedFragment"
+        android:textSize="50sp"></TextView>
+```
+```java
+
+   //Navigate to a fragment with animation right away
+   GoRouter.getInstance()
+                        .build("fragment2 's routeKey")
+                        .addSharedFragment(tv , ViewCompat.getTransitionName(tv) , "tag" , containerId , true)
+                        .go();
+
+
+    //Here you will navigation to RouteFragment  
+    
+        
+```
+
+
+Activity
+
+activity1
+```xml
+   <TextView
+        android:id="@+id/tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="activity1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:transitionName="sharedActivity"
+        android:textSize="50sp"></TextView>
+```
+
+activity2
+```xml
+   <TextView
+        android:id="@+id/tv1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="activity1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:transitionName="sharedActivity"
+        android:textSize="50sp"></TextView>
+```
+
+```java
+   //navigation to another activity with animation.
+
+   tv = findViewById(R.id.tv);
+   GoRouter.getInstance().build("activity1 's routeKey").go(ActivityOptions.makeSceneTransitionAnimation(this , tv , "sharedActivity").toBundle())
+```
