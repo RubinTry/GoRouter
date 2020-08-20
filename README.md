@@ -49,12 +49,64 @@ In any fragment
                    .setFragmentContainer(fragment's containerId)
                    .go()
 
-    //Here you will navigation to RouteFragment      
+
+     //With data
+     Bundle data = new Bundle()
+     data.putInt(key , value);
+     GoRouter.getInstance().build("routeKey1" , data)
+                   .setFragmentContainer(fragment's containerId)
+                   .go();               
+
+    //Here you will navigation to RouteFragment  
+    
+        
 ```
 Another Fragment
 ```java
    @Route(url = "routeKey1")
    public class RouteFragment extends Fragment {
+
+      @Nullable
+      @Override
+      public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+          value = getArguments().getInt(key)
+
+          return YourView;
+      }    
+   }    
 ```
 
 
+In any Activity
+
+```java
+   //Navigation to any Activity right away
+   GoRouter.getInstance().build("routeKey2").go()
+
+
+   //With data
+   Bundle data = new Bundle()
+   data.putInt(key , value);
+   GoRouter.getInstance().build("routeKey2" , data).go()
+```
+
+
+```java
+    /**
+    * @author logcat
+    */
+    @Route(url = "routeKey2")
+    public class LoginActivity extends AppCompatActivity {
+
+
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_login);
+
+            value = getIntent().getInt(key)
+        }
+    }
+```
