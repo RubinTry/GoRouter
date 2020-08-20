@@ -193,5 +193,6 @@ activity2
    //navigation to another activity with animation.
 
    tv = findViewById(R.id.tv);
-   GoRouter.getInstance().build("activity1 's routeKey").go(ActivityOptions.makeSceneTransitionAnimation(this , tv , "sharedActivity").toBundle())
+   GoRouter.getInstance().build("activity1 's routeKey")
+   .go(ActivityOptions.makeSceneTransitionAnimation(this , tv , "sharedActivity").toBundle())
 ```
