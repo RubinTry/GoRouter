@@ -2,7 +2,7 @@
 
 <div style="text-align: center;">
 
-[![logo](https://gorouter-1258359008.cos.ap-shanghai.myqcloud.com/logo.png)](https://github.com/RubinTry/GoRouter)
+![logo(https://github.com/RubinTry/GoRouter)](https://gorouter-1258359008.cos.ap-shanghai.myqcloud.com/logo.png)
 
 </div>
 
