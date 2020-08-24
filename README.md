@@ -26,7 +26,7 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.15-blue)](https://b
 
 
 
-#### [Example](https://github.com/RubinTry/GoRouter/tree/master/GoRouterExample)
+#### [Example Code](https://github.com/RubinTry/GoRouterExample)
 
 
 #### Feature

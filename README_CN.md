@@ -22,7 +22,7 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.15-blue)](https://b
 
 
 
-#### [示例](https://github.com/RubinTry/GoRouter/tree/master/GoRouterExample)
+#### [示例代码](https://github.com/RubinTry/GoRouterExample)
 
 
 #### 特性
