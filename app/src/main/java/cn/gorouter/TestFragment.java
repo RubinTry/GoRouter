@@ -16,30 +16,41 @@ import androidx.fragment.app.Fragment;
 
 import cn.gorouter.annotation.Route;
 import cn.gorouter.api.launcher.GoRouter;
+import cn.gorouter.api.monitor.FragmentMonitor;
 
 
 @Route(url = "app/TestFragment")
-public class TestFragment extends Fragment {
+public class TestFragment extends BaseFragment {
 
     private TextView tv1;
     private String TAG = this.getClass().getSimpleName();
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_test , container , false);
-        Log.d("TAG", "onCreateView: ");
 
+    @Override
+    protected int attachedLayoutRes() {
+        return R.layout.fragment_test;
+    }
+
+    @Override
+    protected void processor() {
         tv1 = rootView.findViewById(R.id.tv1);
         tv1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+//                GoRouter.getInstance().build("app/TestFragment2")
+//                        .addSharedFragment(tv1, ViewCompat.getTransitionName(tv1), "tag", R.id.flContainer, true)
+//                        .go();
+
+                int resId = getArguments().getInt("containerId");
+
                 GoRouter.getInstance().build("app/TestFragment2")
-                        .addSharedFragment(tv1 , ViewCompat.getTransitionName(tv1) , "tag" , R.id.flContainer , true)
+                        .setFragmentContainer(resId)
                         .go();
+
+                FragmentMonitor.Companion.getInstance().finish(TestFragment.this);
             }
         });
-        return rootView;
     }
 
 

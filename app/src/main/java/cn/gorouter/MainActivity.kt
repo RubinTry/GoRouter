@@ -25,18 +25,24 @@ class MainActivity : AppCompatActivity(), FragmentMonitor.FragmentMonitorCallbac
 
         FragmentMonitor.instance?.fragmentMonitorCallback = this
 
-        GoRouter.getInstance().build("app/TestFragment")
+        var data = Bundle()
+        data.putInt("containerId" , R.id.flContainer)
+        GoRouter.getInstance().build("app/TestFragment" , data)
                 .setFragmentContainer(R.id.flContainer)
                 .go()
 
 
-        GoRouter.getInstance().build("/main/Login").go()
+//        GoRouter.getInstance().build("/main/Login").go()
     }
 
 
     override fun onBackPressed() {
-        FragmentMonitor.instance?.finishLast()
-        Log.d(TAG, "count: " + FragmentMonitor.instance?.getFragmentCount())
+        if (FragmentMonitor.instance?.getFragmentCount() == 1) {
+            //强制杀死当前进程
+            ActivityMonitor.instance?.exit()
+        } else {
+            FragmentMonitor.instance?.finishLast()
+        }
     }
 
 

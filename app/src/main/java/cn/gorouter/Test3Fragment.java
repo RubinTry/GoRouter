@@ -17,11 +17,15 @@ import cn.gorouter.api.monitor.FragmentMonitor;
  * @author logcat
  */
 @Route(url = "test3Fragment")
-public class Test3Fragment extends Fragment {
-    @Nullable
+public class Test3Fragment extends BaseFragment {
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_test3 , container , false);
-        return rootView;
+    protected int attachedLayoutRes() {
+        return R.layout.fragment_test3;
+    }
+
+    @Override
+    protected void processor() {
+
     }
 }

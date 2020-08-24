@@ -1,4 +1,4 @@
-if(isApplication.toBoolean().booleanValue()){
+if(moduleIsApplication.toBoolean().booleanValue()){
     apply plugin: 'com.android.application'
 }else{
     apply plugin: 'com.android.library'
@@ -9,7 +9,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        if(isApplication.toBoolean().booleanValue()){
+        if(moduleIsApplication.toBoolean().booleanValue()){
             applicationId "cn.gorouter.another.module"
         }
         minSdkVersion 19
@@ -30,7 +30,7 @@ android {
 
     sourceSets{
         main {
-            if(isApplication.toBoolean().booleanValue()){
+            if(moduleIsApplication.toBoolean().booleanValue()){
                 manifest.srcFile 'src/main/AndroidManifest.xml'
             }else{
                 manifest.srcFile 'src/main/manifest/AndroidManifest.xml'
@@ -48,6 +48,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    annotationProcessor 'cn.rubintry:gorouter-compiler:1.0.3'
+    annotationProcessor 'cn.rubintry:gorouter-compiler:1.0.5'
 
 }

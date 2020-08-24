@@ -39,18 +39,80 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.10-blue)](https://b
 #### 如何引入?
 gradle
 ```groovy
-   implementation 'cn.rubintry:gorouter-api:1.0.12'
+   implementation 'cn.rubintry:gorouter-api:1.0.15'
+   //Java
+   annotationProcessor  'cn.rubintry:gorouter-compiler:1.0.5'
+   //Kotlin
+   kapt  'cn.rubintry:gorouter-compiler:1.0.5'
 ```
 
-maven
-```groovy
-    <dependency>
-        <groupId>cn.rubintry</groupId>
-        <artifactId>gorouter-api</artifactId>
-        <version>1.0.12</version>
-        <type>pom</type>
-    </dependency>
+#### 如何构建?
+
+gradle.properties
+```xml
+    //如果你需要将module作为application来运行，你需要将moduleIsApplication设为true
+    moduleIsApplication = false
 ```
+
+mainModule.gradle
+```groovy
+    apply plugin: 'com.android.application'
+    apply from: '../config.gradle'
+
+    dependencies {
+    
+    if(!moduleIsApplication.toBoolean().booleanValue()){
+        implementation project(path: ':anothermodule')
+    }
+}
+```
+
+
+anotherModule.gradle
+```groovy
+    if(moduleIsApplication.toBoolean().booleanValue()){
+        apply plugin: 'com.android.application'
+    }else{
+        apply plugin: 'com.android.library'
+    }
+
+    android {
+
+    defaultConfig {
+        if(moduleIsApplication.toBoolean().booleanValue()){
+            applicationId "子模块的包名"
+        }
+        ...
+    }
+
+    sourceSets{
+        main {
+            if(moduleIsApplication.toBoolean().booleanValue()){
+                //如果你想将其以application的方式来运行module，使用默认生成的AndroidManifest.xml即可
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            }else{
+                //若你想将其以library的方式来运行module，你需要在一下目录下创建一个AndroidManifest.xml文件并按照以下格式编写
+                manifest.srcFile 'src/main/manifest/AndroidManifest.xml'
+            }
+        }
+    }
+}
+```
+
+以library方式运行module时所需的AndroidManifest.xml
+```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        package="your package name">
+
+        <application>
+            <activity android:name="your activity in another module">
+            </activity>
+        </application>
+
+    </manifest>
+```
+
 
 #### 如何使用此框架?
 

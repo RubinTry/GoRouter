@@ -22,7 +22,7 @@ The most lightweight Framework about router in android.
 
 |module|GoRouter-api|GoRouter-compiler|GoRouter-annotation|
 |:---:|:---:|:---:|:---:|
-version|[![Version](https://img.shields.io/badge/Version-1.0.12-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
+version|[![Version](https://img.shields.io/badge/Version-1.0.15-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
 
 
 
@@ -39,20 +39,81 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.12-blue)](https://b
 
 
 
-#### How to introduce?
-gradle
+#### How to implement?
 ```groovy
-   implementation 'cn.rubintry:gorouter-api:1.0.12'
+   implementation 'cn.rubintry:gorouter-api:1.0.15'
+   //Java
+   annotationProcessor  'cn.rubintry:gorouter-compiler:1.0.5'
+   //Kotlin
+   kapt  'cn.rubintry:gorouter-compiler:1.0.5'
 ```
 
-maven
+
+#### How to build it?
+
+gradle.properties
+```xml
+    //If you need run sub module as Application, you should make moduleIsApplication true
+    moduleIsApplication = false
+```
+
+mainModule.gradle
 ```groovy
-    <dependency>
-        <groupId>cn.rubintry</groupId>
-        <artifactId>gorouter-api</artifactId>
-        <version>1.0.12</version>
-        <type>pom</type>
-    </dependency>
+    apply plugin: 'com.android.application'
+    apply from: '../config.gradle'
+
+    dependencies {
+    
+    if(!moduleIsApplication.toBoolean().booleanValue()){
+        implementation project(path: ':anothermodule')
+    }
+}
+```
+
+
+anotherModule.gradle
+```groovy
+    if(moduleIsApplication.toBoolean().booleanValue()){
+        apply plugin: 'com.android.application'
+    }else{
+        apply plugin: 'com.android.library'
+    }
+
+    android {
+
+    defaultConfig {
+        if(moduleIsApplication.toBoolean().booleanValue()){
+            applicationId "Your sub module's package name"
+        }
+        ...
+    }
+
+    sourceSets{
+        main {
+            if(moduleIsApplication.toBoolean().booleanValue()){
+                //If you run this module as application , you can use the default AndroidManifest.xml
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            }else{
+                //If you run this module as library , you should create a new AndroidManifest liked follows
+                manifest.srcFile 'src/main/manifest/AndroidManifest.xml'
+            }
+        }
+    }
+}
+```
+
+The AndroidManifest.xml when you run module as library
+```xml
+    <?xml version="1.0" encoding="utf-8"?>
+    <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        package="your package name">
+
+        <application>
+            <activity android:name="your activity in another module">
+            </activity>
+        </application>
+
+    </manifest>
 ```
 
 #### How to use?
@@ -60,7 +121,7 @@ maven
 Fragment
 ```java
 
-   //Navigate to a fragment right away
+   //Navigate to a fragment immediately
    GoRouter.getInstance().build("routeKey1")
                    .setFragmentContainer(fragment's containerId)
                    .go()
@@ -97,7 +158,7 @@ Target Fragment
 Activity
 
 ```java
-   //Navigation to an Activity right away
+   //Navigation to an Activity immediately
    GoRouter.getInstance().build("routeKey2").go()
 
 
@@ -163,7 +224,7 @@ fragment2
 ```
 ```java
    //Fragment1
-   //Navigate to a fragment with animation right away
+   //Navigate to a fragment with animation immediately
    GoRouter.getInstance()
                         .build("fragment2 's routeKey")
                         .addSharedFragment(tv , ViewCompat.getTransitionName(tv) , "tag" , containerId , true)
