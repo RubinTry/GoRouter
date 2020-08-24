@@ -105,10 +105,10 @@ anotherModule.gradle
 ```xml
     <?xml version="1.0" encoding="utf-8"?>
     <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="your package name">
+        package="你的子模块包名">
 
         <application>
-            <activity android:name="your activity in another module">
+            <activity android:name="你的子模块里的activity">
             </activity>
         </application>
 
