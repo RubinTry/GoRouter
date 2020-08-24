@@ -37,13 +37,15 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.10-blue)](https://b
 
 
 #### 如何引入?
-gradle
+config.gradle
 ```groovy
-   implementation 'cn.rubintry:gorouter-api:1.0.15'
-   //Java
-   annotationProcessor  'cn.rubintry:gorouter-compiler:1.0.5'
-   //Kotlin
-   kapt  'cn.rubintry:gorouter-compiler:1.0.5'
+    dependencies{
+    implementation 'cn.rubintry:gorouter-api:1.0.15'
+    //Java
+    annotationProcessor  'cn.rubintry:gorouter-compiler:1.0.5'
+    //Kotlin
+    kapt  'cn.rubintry:gorouter-compiler:1.0.5'
+    }
 ```
 
 #### 如何构建?
@@ -75,7 +77,7 @@ anotherModule.gradle
     }else{
         apply plugin: 'com.android.library'
     }
-
+    apply from: '../config.gradle'
     android {
 
     defaultConfig {
