@@ -37,6 +37,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     annotationProcessor project(path: ':gorouter-compiler')
     kapt project(path: ':gorouter-compiler')
+    implementation project(path: ':gorouter-annotation')
+    implementation project(path: ':gorouter-api')
 
 }
 

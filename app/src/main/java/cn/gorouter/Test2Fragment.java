@@ -21,21 +21,18 @@ import cn.gorouter.api.launcher.GoRouter;
  * @author logcat
  */
 @Route(url = "app/TestFragment2")
-public class Test2Fragment extends Fragment {
+public class Test2Fragment extends BaseFragment {
     private String TAG = this.getClass().getSimpleName();
     private TextView tv2;
 
+
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
+    protected int attachedLayoutRes() {
+        return R.layout.fragment_test2;
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_test2 , container , false);
+    protected void processor() {
         tv2 = rootView.findViewById(R.id.tv2);
         tv2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +43,6 @@ public class Test2Fragment extends Fragment {
                         .go();
             }
         });
-        return rootView;
     }
 
 

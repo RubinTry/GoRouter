@@ -214,8 +214,8 @@ public class _GoRouter {
         //the prefix of extracted file, ie: test.classes
         String extractedFilePrefix = sourceApk.getName() + EXTRACTED_NAME_EXT;
 
-//        如果VM已经支持了MultiDex，就不要去Secondary Folder加载 Classesx.zip了，那里已经么有了
-//        通过是否存在sp中的multidex.version是不准确的，因为从低版本升级上来的用户，是包含这个sp配置的
+       //如果VM已经支持了MultiDex，就不要去Secondary Folder加载 Classesx.zip了，那里已经么有了
+       //通过是否存在sp中的multidex.version是不准确的，因为从低版本升级上来的用户，是包含这个sp配置的
         if (!isVMMultidexCapable()) {
             //the total dex numbers
             int totalDexNumber = getMultiDexPreferences(context).getInt(KEY_DEX_NUMBER, 1);
@@ -452,7 +452,7 @@ public class _GoRouter {
                         FragmentMonitor.Companion.getInstance().replace(curFragment, container);
                     }
 
-                    FragmentMonitor.Companion.getInstance().addToList(curFragment);
+                    FragmentMonitor.Companion.getInstance().add(curFragment);
                     mFragmentSharedCard = null;
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -463,6 +463,7 @@ public class _GoRouter {
         }
 
 
+        currentData = null;
     }
 
 

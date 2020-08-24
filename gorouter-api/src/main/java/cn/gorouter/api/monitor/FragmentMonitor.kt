@@ -2,13 +2,8 @@ package cn.gorouter.api.monitor
 
 import android.R
 import android.app.Application
-import android.content.Context
-import android.os.Bundle
 import android.transition.Transition
 import android.transition.TransitionInflater
-import android.util.Log
-import android.view.FrameStats
-import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import cn.gorouter.api.card.FragmentSharedCard
@@ -23,11 +18,8 @@ class FragmentMonitor {
 
     private var callCount: Int = 0
     private var application: Application? = null
-    private var pageList: LinkedList<Fragment> = LinkedList()
+    private var pageContainer: TreeMap<String  , Fragment> = TreeMap()
     private var fragmentSharedCard: FragmentSharedCard? = null
-        get() {
-            return field
-        }
 
 
     var fragmentMonitorCallback: FragmentMonitorCallback? = null
@@ -56,11 +48,16 @@ class FragmentMonitor {
 
                 override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
                     super.onFragmentDestroyed(fm, f)
-                    GoLogger.debug("onFragmentDestroyed: ")
-                    if(f in pageList){
-                        pageList.remove(f)
-                    }
+                    GoLogger.debug("onFragmentDestroyed: $f")
+                    pageContainer.remove(f.javaClass.name)
+                }
 
+
+                override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+                    super.onFragmentResumed(fm, f)
+                    if(GoLogger.isOpen()){
+                        GoLogger.info(getFragmentCount().toString() + "  name: " + f)
+                    }
                 }
 
 
@@ -97,8 +94,8 @@ class FragmentMonitor {
      *
      * @param fragment
      */
-    fun addToList(fragment: Fragment){
-        pageList.add(fragment)
+    fun add(fragment: Fragment){
+        pageContainer[fragment.javaClass.name] = fragment
     }
 
 
@@ -185,27 +182,19 @@ class FragmentMonitor {
     /**
      * 根据fragment类名销毁fragment
      *
-     * @param name fragment的类名（simpleName）
+     * @param fragment fragment对象
      */
-    fun finishByName(name : String){
+    fun finish(fragment: Fragment){
         val manager = getManager()
 
-        var removeFragment : Fragment ?= null
-        if(!pageList.isNullOrEmpty()){
-            for (fragment : Fragment in pageList){
-                if(fragment.javaClass.simpleName == name){
-                    removeFragment = fragment;
-                    break
-                }
-            }
-
-            if(removeFragment != null){
-                manager?.beginTransaction()?.remove(removeFragment)?.commit()
-                pageList.remove(removeFragment)
-            }
+        if(!pageContainer.isNullOrEmpty() && pageContainer.contains(fragment.javaClass.name)){
+            manager?.beginTransaction()?.remove(fragment)?.commit()
+            pageContainer.remove(fragment.javaClass.name)
         }
 
+
     }
+
 
 
 
@@ -217,37 +206,29 @@ class FragmentMonitor {
      */
     fun finishLast() {
 
-        if (!pageList.isNullOrEmpty()) {
-            pageList.removeLast()
-            getManager()?.popBackStack()
-        }
+        getManager()?.popBackStack()
+        GoLogger.info("GoRouter::Fragment count -----> " + getManager()?.backStackEntryCount)
 
-
-        if (pageList.isNullOrEmpty()) {
-            if (fragmentMonitorCallback != null) {
-                fragmentMonitorCallback?.noFragment()
-            }
-        }
     }
 
 
     /**
      * 获取当前fragment总数
      *
-     * @return
+     * @return 返回fragment的个数
      */
     fun getFragmentCount(): Int {
-        return pageList.size
+        return pageContainer.size
     }
 
 
     /**
      * 获取栈内所有fragment
      *
-     * @return
+     * @return fragment的map容器
      */
     fun getAllFragment() : List<Fragment>{
-        return pageList
+        return getManager()?.fragments!!
     }
 
 
