@@ -48,7 +48,7 @@ config.gradle
     }
 ```
 
-#### 如何构建?
+#### 如何构建你的工程?
 
 gradle.properties
 ```xml

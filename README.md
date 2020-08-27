@@ -52,7 +52,7 @@ config.gradle
 ```
 
 
-#### How to build it?
+#### How to build your project?
 
 gradle.properties
 ```xml
