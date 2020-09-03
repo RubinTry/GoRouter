@@ -13,7 +13,7 @@ The most lightweight Framework about router in android.
 
 
 
-[中文文档](https://github.com/RubinTry/GoRouter/blob/readme/README_CN.md)
+[中文文档](https://github.com/RubinTry/GoRouter/blob/master/README_CN.md)
 
 [![GitHub license](https://img.shields.io/github/license/RubinTry/GoRouter)](https://www.apache.org/licenses/LICENSE-2.0)
 
