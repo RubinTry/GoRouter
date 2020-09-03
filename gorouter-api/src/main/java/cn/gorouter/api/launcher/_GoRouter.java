@@ -461,7 +461,7 @@ public class _GoRouter {
         }
 
 
-        currentData = null;
+
     }
 
 
@@ -534,7 +534,7 @@ public class _GoRouter {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ActivityCompat.startActivity(currentContext, intent, options);
         }
-
+        currentData = null;
     }
 
 
