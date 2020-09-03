@@ -523,7 +523,7 @@ public class _GoRouter {
         }
 
 
-        if (requestCode != null && requestCode.intValue() >= 0) {
+        if (requestCode != null && requestCode >= 0) {
             if (currentContext instanceof Activity) {
                 ActivityCompat.startActivityForResult((Activity) currentContext, intent, requestCode, options);
             } else {
