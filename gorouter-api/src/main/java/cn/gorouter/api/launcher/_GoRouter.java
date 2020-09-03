@@ -55,7 +55,6 @@ public class _GoRouter {
     private Bundle currentData;
     private Map<String, Class> nodeTargetContainer;
     private static Context mContext;
-    private static ClassLoader mCurrentClassLoader;
     private FragmentSharedCard mFragmentSharedCard;
 
 
@@ -71,9 +70,6 @@ public class _GoRouter {
     private static final int VM_WITH_MULTIDEX_VERSION_MINOR = 1;
 
 
-    static {
-        mCurrentClassLoader = Thread.currentThread().getContextClassLoader();
-    }
 
     private int container;
 
@@ -122,8 +118,9 @@ public class _GoRouter {
      */
     private static synchronized boolean initAllRoute(Context context) {
         try {
-            List<Class> classNames = getClasses(context.getApplicationContext(), "cn.gorouter.route");
-            for (Class aClass : classNames) {
+            List<String> classNames = getClasses(context.getApplicationContext(), "cn.gorouter.route");
+            for (String aClassName : classNames) {
+                Class aClass = Class.forName(aClassName);
                 if (IRouter.class.isAssignableFrom(aClass)) {
                     IRouter iRouter = (IRouter) aClass.newInstance();
                     iRouter.put();
@@ -144,8 +141,8 @@ public class _GoRouter {
      * @param packageName Witch package we want scan.
      * @return
      */
-    private static List<Class> getClasses(Context context, String packageName) throws PackageManager.NameNotFoundException, IOException, InterruptedException {
-        List<Class> classList = new ArrayList<>();
+    private static List<String> getClasses(Context context, String packageName) throws PackageManager.NameNotFoundException, IOException, InterruptedException {
+        List<String> classList = new ArrayList<>();
 
         List<String> paths = getSourcePaths(context);
         //线程总数锁存器
@@ -162,13 +159,12 @@ public class _GoRouter {
                         } else {
                             dexFile = new DexFile(path);
                         }
-                        PathClassLoader pathClassLoader = new PathClassLoader(path, mCurrentClassLoader);
+
                         Enumeration<String> dexEntries = dexFile.entries();
                         while (dexEntries.hasMoreElements()) {
                             String className = dexEntries.nextElement();
                             if (className.startsWith(packageName)) {
-                                Class aClass = pathClassLoader.loadClass(className);
-                                classList.add(aClass);
+                                classList.add(className);
                             }
                         }
                     } catch (Throwable ignore) {
@@ -337,34 +333,36 @@ public class _GoRouter {
      * 通过路由键访问具体页面
      */
     public void go(Context context, Integer requestCode, @Nullable Bundle options) throws NullPointerException {
-        Context currentContext = null == context ? mContext : context;
-        if (currentUrl == null) {
-            throw new IllegalArgumentException("Please set currentUrl");
-        }
-
-        if (nodeTargetContainer == null) {
-            throw new NullPointerException("container is empty!!!");
-        }
-
-        //Get all the node and type classes.
-        Class nodeTarget = nodeTargetContainer.get(currentUrl);
-
-        if (nodeTarget != null) {
-            if (Activity.class.isAssignableFrom(nodeTarget)) {
-                //If the node type is Activity,the jump is made in the form of Activity.
-                go(currentContext, requestCode, ACTIVITY, nodeTarget, options);
-            } else if (Fragment.class.isAssignableFrom(nodeTarget)) {
-                //If the node type is Fragment,the jump is made in the form of Fragment.
-                go(currentContext, requestCode, FRAGMENT, nodeTarget, options);
-            } else if (android.app.Fragment.class.isAssignableFrom(nodeTarget)) {
-                //If the node type is Fragment in package app,we should go to fragment
-                go(currentContext, requestCode, FRAGMENT_IN_APP_PACKAGE, nodeTarget, options);
+        try {
+            Context currentContext = null == context ? mContext : context;
+            if (currentUrl == null) {
+                throw new IllegalArgumentException("Please set currentUrl");
             }
-        } else {
-            throw new NullPointerException("route \"" + currentUrl + "\" is not found!!!");
+
+            if (nodeTargetContainer == null) {
+                throw new NullPointerException("container is empty!!!");
+            }
+
+            //Get all the node and type classes.
+            Class nodeTarget = nodeTargetContainer.get(currentUrl);
+
+            if (nodeTarget != null) {
+                if (Activity.class.isAssignableFrom(nodeTarget)) {
+                    //If the node type is Activity,the jump is made in the form of Activity.
+                    go(currentContext, requestCode, ACTIVITY, nodeTarget, options);
+                } else if (Fragment.class.isAssignableFrom(nodeTarget)) {
+                    //If the node type is Fragment,the jump is made in the form of Fragment.
+                    go(currentContext, requestCode, FRAGMENT, nodeTarget, options);
+                } else if (android.app.Fragment.class.isAssignableFrom(nodeTarget)) {
+                    //If the node type is Fragment in package app,we should go to fragment
+                    go(currentContext, requestCode, FRAGMENT_IN_APP_PACKAGE, nodeTarget, options);
+                }
+            } else {
+                throw new IllegalArgumentException("route \"" + currentUrl + "\" is not found!!!");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
-
     }
 
 

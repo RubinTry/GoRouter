@@ -17,7 +17,7 @@ class DefaultPoolExecutor private constructor(corePoolSize: Int, maximumPoolSize
      * @param r the runnable that has completed
      * @param t the exception that caused termination, or null if
      */
-    override fun afterExecute(r: Runnable, t: Throwable) {
+    override fun afterExecute(r: Runnable?, t: Throwable?) {
         var t: Throwable? = t
         super.afterExecute(r, t)
         if (t == null && r is Future<*>) {

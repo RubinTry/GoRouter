@@ -11,7 +11,7 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -42,4 +42,9 @@ dependencies {
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 
+
+    annotationProcessor project(path: ':gorouter-compiler')
+    kapt project(path: ':gorouter-compiler')
+    implementation project(path: ':gorouter-annotation')
+    implementation project(path: ':gorouter-api')
 }
