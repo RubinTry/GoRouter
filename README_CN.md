@@ -40,11 +40,11 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.19-blue)](https://b
 config.gradle
 ```groovy
     dependencies{
-    implementation 'cn.rubintry:gorouter-api:1.0.19'
-    //Java
-    annotationProcessor  'cn.rubintry:gorouter-compiler:1.0.5'
-    //Kotlin
-    kapt  'cn.rubintry:gorouter-compiler:1.0.5'
+        implementation 'cn.rubintry:gorouter-api:1.0.19'
+        //Java
+        annotationProcessor  'cn.rubintry:gorouter-compiler:1.0.5'
+        //Kotlin
+        kapt  'cn.rubintry:gorouter-compiler:1.0.5'
     }
 ```
 
@@ -52,16 +52,17 @@ config.gradle
 
 gradle.properties
 ```xml
-    //如果你需要将module作为application来运行，你需要将moduleIsApplication设为true
+    //如果你需要将module作为application来运行，你需要将moduleIsApplication
+    true
     moduleIsApplication = false
 ```
 
 mainModule.gradle
 ```groovy
-    apply plugin: 'com.android.application'
-    apply from: '../config.gradle'
+apply plugin: 'com.android.application'
+apply from: '../config.gradle'
 
-    dependencies {
+dependencies {
     
     if(!moduleIsApplication.toBoolean().booleanValue()){
         implementation project(path: ':anothermodule')
@@ -93,7 +94,7 @@ anotherModule.gradle
                 //如果你想将其以application的方式来运行module，使用默认生成的AndroidManifest.xml即可
                 manifest.srcFile 'src/main/AndroidManifest.xml'
             }else{
-                //若你想将其以library的方式来运行module，你需要在一下目录下创建一个AndroidManifest.xml文件并按照以下格式编写
+                //若你想将其以library的方式来运行module，你需要在以下目录下创建一个AndroidManifest.xml文件并按照以下格式编写
                 manifest.srcFile 'src/main/manifest/AndroidManifest.xml'
             }
         }
@@ -168,7 +169,7 @@ Activity篇
    GoRouter.getInstance().build("routeKey2" , data).go()
 ```
 
-Target Activity
+目标 Activity
 ```java
     /**
     * @author logcat
