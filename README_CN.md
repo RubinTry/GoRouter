@@ -52,8 +52,7 @@ config.gradle
 
 gradle.properties
 ```xml
-    //如果你需要将module作为application来运行，你需要将moduleIsApplication
-    true
+    //如果你需要将module作为application来运行，你需要将moduleIsApplication设为true
     moduleIsApplication = false
 ```
 
