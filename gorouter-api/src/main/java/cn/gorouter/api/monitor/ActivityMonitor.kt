@@ -63,12 +63,13 @@ class ActivityMonitor {
      *
      */
     fun exit() {
-        for (activity in activityList!!) {
-            activity.finish()
-            activity.overridePendingTransition(0, 0)
-        }
-        Process.killProcess(Process.myPid())
-        exitProcess(0)
+        FragmentMonitor.instance?.finishAllFragment()
+//        for (activity in activityList!!) {
+//            activity.finish()
+//            activity.overridePendingTransition(0, 0)
+//        }
+//        Process.killProcess(Process.myPid())
+//        exitProcess(0)
     }
 
 

@@ -44,11 +44,13 @@ public class TestFragment extends BaseFragment {
 
                 int resId = getArguments().getInt("containerId");
 
+//                FragmentMonitor.Companion.getInstance().finish();
+
                 GoRouter.getInstance().build("app/TestFragment2")
                         .setFragmentContainer(resId)
                         .go();
 
-                FragmentMonitor.Companion.getInstance().finish(TestFragment.this);
+
             }
         });
     }

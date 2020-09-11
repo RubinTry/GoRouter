@@ -16,14 +16,13 @@ import cn.gorouter.api.monitor.FragmentMonitor
  * @author logcat
  */
 @Route(url = "/main/MainActivity")
-class MainActivity : AppCompatActivity(), FragmentMonitor.FragmentMonitorCallback {
+class MainActivity : AppCompatActivity(){
     private val TAG = this.javaClass.simpleName
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
 
-        FragmentMonitor.instance?.fragmentMonitorCallback = this
 
         var data = Bundle()
         data.putInt("containerId" , R.id.flContainer)
@@ -31,8 +30,6 @@ class MainActivity : AppCompatActivity(), FragmentMonitor.FragmentMonitorCallbac
                 .setFragmentContainer(R.id.flContainer)
                 .go()
 
-
-//        GoRouter.getInstance().build("/main/Login").go()
     }
 
 
@@ -40,8 +37,8 @@ class MainActivity : AppCompatActivity(), FragmentMonitor.FragmentMonitorCallbac
         if (FragmentMonitor.instance?.getFragmentCount() == 1) {
             //强制杀死当前进程
             ActivityMonitor.instance?.exit()
-        } else {
-            FragmentMonitor.instance?.finishLast()
+        } else{
+            FragmentMonitor.instance?.finish()
         }
     }
 
@@ -61,9 +58,7 @@ class MainActivity : AppCompatActivity(), FragmentMonitor.FragmentMonitorCallbac
                 .go(this, ActivityOptionsCompat.makeBasic().toBundle(), 0)
     }
 
-    override fun noFragment() {
-        ActivityMonitor.instance?.exit()
-    }
+
 
 
 }

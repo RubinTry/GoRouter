@@ -12,14 +12,14 @@ import androidx.fragment.app.Fragment;
 public abstract class BaseFragment extends Fragment {
 
 
-    protected View rootView;
+    protected ViewGroup rootView;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if(rootView == null){
-            rootView = inflater.inflate(attachedLayoutRes() , container , false);
+            rootView = (ViewGroup) inflater.inflate(attachedLayoutRes() , container , false);
             processor();
         }
         return rootView;
@@ -29,4 +29,10 @@ public abstract class BaseFragment extends Fragment {
     protected abstract int attachedLayoutRes();
 
     protected abstract void processor();
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
 }

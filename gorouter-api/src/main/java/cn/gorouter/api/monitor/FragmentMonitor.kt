@@ -1,13 +1,15 @@
 package cn.gorouter.api.monitor
 
-import android.R
 import android.app.Application
 import android.transition.Transition
 import android.transition.TransitionInflater
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import cn.gorouter.api.FragmentInfo
 import cn.gorouter.api.card.FragmentSharedCard
 import cn.gorouter.api.logger.GoLogger
+import java.lang.IllegalArgumentException
 import java.util.*
 
 /**
@@ -16,13 +18,31 @@ import java.util.*
  */
 class FragmentMonitor {
 
-    private var callCount: Int = 0
+    private var container: Int = 0
+    private var fragmentStack: Stack<FragmentInfo> = Stack();
     private var application: Application? = null
-    private var pageContainer: TreeMap<String  , Fragment> = TreeMap()
     private var fragmentSharedCard: FragmentSharedCard? = null
 
+    private var fragmentManager: FragmentManager? = null
 
-    var fragmentMonitorCallback: FragmentMonitorCallback? = null
+
+    private val callback : FragmentManager.FragmentLifecycleCallbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
+
+        override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
+            super.onFragmentDestroyed(fm, f)
+            GoLogger.debug("onFragmentDestroyed: $f")
+        }
+
+
+        override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+            super.onFragmentResumed(fm, f)
+            if (GoLogger.isOpen()) {
+                GoLogger.info("onFragmentResumed: $f")
+            }
+        }
+
+
+    }
 
 
     /**
@@ -32,7 +52,6 @@ class FragmentMonitor {
      */
     fun initialize(application: Application) {
         this.application = application
-
     }
 
 
@@ -42,31 +61,13 @@ class FragmentMonitor {
      * @return
      */
     private fun getManager(): FragmentManager? {
-        val manager = ActivityMonitor.instance?.lastFragmentActivity?.supportFragmentManager
-        if (callCount == 0) {
-            manager?.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
 
-                override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
-                    super.onFragmentDestroyed(fm, f)
-                    GoLogger.debug("onFragmentDestroyed: $f")
-                    pageContainer.remove(f.javaClass.name)
-                }
-
-
-                override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
-                    super.onFragmentResumed(fm, f)
-                    if(GoLogger.isOpen()){
-                        GoLogger.info(getFragmentCount().toString() + "  name: " + f)
-                    }
-                }
-
-
-
-            }, true)
-            callCount++
+        if (fragmentManager == null) {
+            fragmentManager = ActivityMonitor.instance?.lastFragmentActivity?.supportFragmentManager
+            fragmentManager?.registerFragmentLifecycleCallbacks(callback, true)
         }
 
-        return manager;
+        return fragmentManager;
     }
 
     /**
@@ -89,13 +90,55 @@ class FragmentMonitor {
     }
 
 
+    private fun addToStack(fragment: Fragment, isShareElement: Boolean , fragmentSharedCard: FragmentSharedCard?) {
+        val fragmentInfo = FragmentInfo(fragment, isShareElement, fragmentSharedCard)
+        val search = fragmentStack.search(fragmentInfo)
+        //If search is -1 , it means this fragment is not on the stack.
+        if (search == -1) {
+            fragmentStack.push(fragmentInfo)
+        }
+    }
+
+
     /**
-     * 将fragment添加进容器中
+     * Is contains on stack.
      *
      * @param fragment
+     * @return
      */
-    fun add(fragment: Fragment){
-        pageContainer[fragment.javaClass.name] = fragment
+    private fun contains(fragment: Fragment): Boolean {
+        if (!fragmentStack.empty()) {
+            for (fragmentInfo in fragmentStack) {
+                if (fragmentInfo?.currentFragment != null && fragmentInfo?.currentFragment.equals(fragment)) {
+                    return true;
+                }
+            }
+        }
+        return false
+    }
+
+
+    /**
+     * Is not contains on stack
+     *
+     * @param fragment
+     * @return
+     */
+    private fun notContains(fragment: Fragment): Boolean {
+        return !contains(fragment)
+    }
+
+
+    /**
+     * Get top fragment
+     *
+     * @return
+     */
+    fun getTopFragment(): Fragment? {
+        if (!fragmentStack.empty()) {
+            return fragmentStack.peek()?.currentFragment;
+        }
+        return null
     }
 
 
@@ -112,22 +155,42 @@ class FragmentMonitor {
 
 
     /**
+     * Set the container view of fragment
+     *
+     * @param container
+     */
+    fun setFragmentContainer(container: Int) {
+        this.container = container
+    }
+
+
+    /**
      * 替换fragment
      *
      * @param fragment 目标fragment
      * @param container  fragment的容器
      */
-    fun replace(fragment: Fragment, container: Int) {
+    fun replace(fragment: Fragment) {
         if (fragmentSharedCard != null) {
             if (fragmentSharedCard?.isUseDefaultTransition!!) {
                 replace(fragment, container, true)
             } else {
                 replace(fragment, container, fragmentSharedCard?.enterTransition!!, fragmentSharedCard?.exitTransition!!)
             }
+
         } else {
             replace(fragment, container, false)
         }
+        if (fragmentSharedCard != null) {
+            addToStack(fragment, true , fragmentSharedCard)
+        } else {
+            addToStack(fragment, false , fragmentSharedCard)
+        }
+
+        fragmentSharedCard = null
     }
+
+
 
 
     /**
@@ -184,31 +247,46 @@ class FragmentMonitor {
      *
      * @param fragment fragment对象
      */
-    fun finish(fragment: Fragment){
-        val manager = getManager()
+    fun finish() {
 
-        if(!pageContainer.isNullOrEmpty() && pageContainer.contains(fragment.javaClass.name)){
-            manager?.beginTransaction()?.remove(fragment)?.commit()
-            pageContainer.remove(fragment.javaClass.name)
+        if (fragmentStack.isEmpty()) {
+            throw IllegalArgumentException("Stack is empty")
+        } else {
+            val topElement = fragmentStack.peek()
+            val manager = topElement.currentFragment.fragmentManager
+            val beginTransaction = manager?.beginTransaction()
+            if (topElement.isShareElement) {
+                manager?.popBackStackImmediate()
+                fragmentStack.pop()
+                beginTransaction?.remove(topElement.currentFragment)
+            }else{
+
+                beginTransaction?.remove(topElement.currentFragment)
+                fragmentStack.pop()
+                //If stack is not empty , we should show the last fragment.
+                if(!fragmentStack.isEmpty()){
+                    val lastElement = fragmentStack.peek()
+                    beginTransaction?.replace(container , lastElement.currentFragment)
+                }
+            }
+            beginTransaction?.commit()
+            topElement.release()
         }
-
-
+        clearFragmentManager()
     }
 
+    fun finishAllFragment() {
+        if(!fragmentStack.isEmpty()){
+            val size = fragmentStack.size
+            for (index in 0 until size){
+                finish()
+            }
+        }
+    }
 
-
-
-
-
-    /**
-     * 移除栈顶的fragment
-     *
-     */
-    fun finishLast() {
-
-        getManager()?.popBackStack()
-        GoLogger.info("GoRouter::Fragment count -----> " + getManager()?.backStackEntryCount)
-
+    private fun clearFragmentManager() {
+        fragmentManager?.unregisterFragmentLifecycleCallbacks(callback)
+        fragmentManager = null
     }
 
 
@@ -218,7 +296,7 @@ class FragmentMonitor {
      * @return 返回fragment的个数
      */
     fun getFragmentCount(): Int {
-        return pageContainer.size
+        return fragmentStack.size
     }
 
 
@@ -227,18 +305,10 @@ class FragmentMonitor {
      *
      * @return fragment的map容器
      */
-    fun getAllFragment() : List<Fragment>{
+    fun getAllFragment(): List<Fragment> {
         return getManager()?.fragments!!
     }
 
-
-    /**
-     * activity中无fragment时，回调此接口
-     *
-     */
-    interface FragmentMonitorCallback {
-        fun noFragment();
-    }
 
 
 

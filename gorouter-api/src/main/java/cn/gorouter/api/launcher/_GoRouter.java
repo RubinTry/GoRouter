@@ -38,7 +38,6 @@ import cn.gorouter.api.threadpool.MainExecutor;
 import cn.gorouter.api.monitor.ActivityMonitor;
 import cn.gorouter.api.utils.Consts;
 import dalvik.system.DexFile;
-import dalvik.system.PathClassLoader;
 
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.ACTIVITY;
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT;
@@ -71,7 +70,7 @@ public class _GoRouter {
 
 
 
-    private int container;
+//    private int container;
 
 
     private _GoRouter() {
@@ -412,7 +411,8 @@ public class _GoRouter {
             if (container == View.NO_ID) {
                 throw new IllegalArgumentException("Can't add fragment with no id");
             }
-            this.container = container;
+//            this.container = container;
+            FragmentMonitor.Companion.getInstance().setFragmentContainer(container);
         }
     }
 
@@ -445,12 +445,11 @@ public class _GoRouter {
                     }
 
                     if (mFragmentSharedCard != null) {
-                        FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).replace(curFragment, container);
+                        FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).replace(curFragment);
                     } else {
-                        FragmentMonitor.Companion.getInstance().replace(curFragment, container);
+                        FragmentMonitor.Companion.getInstance().replace(curFragment);
                     }
 
-                    FragmentMonitor.Companion.getInstance().add(curFragment);
                     mFragmentSharedCard = null;
                 } catch (Exception e) {
                     e.printStackTrace();
