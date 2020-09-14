@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
+import butterknife.BindView;
 import cn.gorouter.annotation.Route;
 import cn.gorouter.api.launcher.GoRouter;
 
@@ -23,7 +24,8 @@ import cn.gorouter.api.launcher.GoRouter;
 @Route(url = "app/TestFragment2")
 public class Test2Fragment extends BaseFragment {
     private String TAG = this.getClass().getSimpleName();
-    private TextView tv2;
+    @BindView(R.id.tv2)
+    TextView tv2;
 
 
     @Override
@@ -33,13 +35,12 @@ public class Test2Fragment extends BaseFragment {
 
     @Override
     protected void processor() {
-        tv2 = rootView.findViewById(R.id.tv2);
         tv2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 GoRouter.getInstance()
                         .build("test3Fragment")
-                        .addSharedFragment(tv2 , ViewCompat.getTransitionName(tv2) , "tag" , R.id.flContainer , true)
+                        .addSharedFragment(tv2, "tag", R.id.flContainer, true)
                         .go();
             }
         });
@@ -49,8 +50,6 @@ public class Test2Fragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-
         Log.d(TAG, "onDestroyView: ");
     }
 

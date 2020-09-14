@@ -64,12 +64,12 @@ class ActivityMonitor {
      */
     fun exit() {
         FragmentMonitor.instance?.finishAllFragment()
-//        for (activity in activityList!!) {
-//            activity.finish()
-//            activity.overridePendingTransition(0, 0)
-//        }
-//        Process.killProcess(Process.myPid())
-//        exitProcess(0)
+        for (activity in activityList!!) {
+            activity.finish()
+            activity.overridePendingTransition(0, 0)
+        }
+        Process.killProcess(Process.myPid())
+        exitProcess(0)
     }
 
 

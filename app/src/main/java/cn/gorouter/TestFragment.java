@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
+import butterknife.BindView;
 import cn.gorouter.annotation.Route;
 import cn.gorouter.api.launcher.GoRouter;
 import cn.gorouter.api.monitor.FragmentMonitor;
@@ -22,7 +23,8 @@ import cn.gorouter.api.monitor.FragmentMonitor;
 @Route(url = "app/TestFragment")
 public class TestFragment extends BaseFragment {
 
-    private TextView tv1;
+    @BindView(R.id.tv1)
+    TextView tv1;
     private String TAG = this.getClass().getSimpleName();
 
 
@@ -33,7 +35,6 @@ public class TestFragment extends BaseFragment {
 
     @Override
     protected void processor() {
-        tv1 = rootView.findViewById(R.id.tv1);
         tv1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +60,7 @@ public class TestFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        tv1 = null;
         Log.d(TAG, "onDestroyView: ");
     }
 

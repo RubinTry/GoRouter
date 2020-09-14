@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(){
 
 
     override fun onBackPressed() {
-        if (FragmentMonitor.instance?.getFragmentCount() == 1) {
+        if (FragmentMonitor.instance?.canExit()!!) {
             //强制杀死当前进程
             ActivityMonitor.instance?.exit()
         } else{

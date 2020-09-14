@@ -2,7 +2,7 @@ package cn.gorouter.api.threadpool
 
 import androidx.annotation.NonNull
 import cn.gorouter.api.logger.GoLogger
-import cn.gorouter.api.utils.Consts
+import cn.gorouter.api.utils.Const
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -34,7 +34,7 @@ class DefaultThreadFactory : ThreadFactory{
      */
     override fun newThread(@NonNull runnable: Runnable?): Thread? {
         val threadName = namePrefix + threadNumber.getAndIncrement()
-        GoLogger.info(Consts.TAG +  "Thread production, name is [$threadName]")
+        GoLogger.info(Const.TAG +  "Thread production, name is [$threadName]")
         val thread = Thread(group, runnable, threadName, 0)
         if (thread.isDaemon) {   //设为非后台线程
             thread.isDaemon = false
@@ -44,7 +44,7 @@ class DefaultThreadFactory : ThreadFactory{
         }
 
         // 捕获多线程处理中的异常
-        thread.uncaughtExceptionHandler = Thread.UncaughtExceptionHandler { thread, ex -> GoLogger.info(Consts.TAG +"Running task appeared exception! Thread [" + thread.name + "], because [" + ex.message + "]") }
+        thread.uncaughtExceptionHandler = Thread.UncaughtExceptionHandler { thread, ex -> GoLogger.info(Const.TAG +"Running task appeared exception! Thread [" + thread.name + "], because [" + ex.message + "]") }
         return thread
     }
 }

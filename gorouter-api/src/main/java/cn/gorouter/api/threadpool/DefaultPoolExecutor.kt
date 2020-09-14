@@ -1,14 +1,14 @@
 package cn.gorouter.api.threadpool
 
 import cn.gorouter.api.logger.GoLogger
-import cn.gorouter.api.utils.Consts
+import cn.gorouter.api.utils.Const
 import java.util.concurrent.*
 
 /**
  * @author logcat
  * @since 2020/08/19 17:07
  */
-class DefaultPoolExecutor private constructor(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long, unit: TimeUnit, workQueue: BlockingQueue<Runnable>, threadFactory: ThreadFactory) : ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, RejectedExecutionHandler { r, executor -> GoLogger.error(Consts.TAG + "Task rejected, too many task!") }) {
+class DefaultPoolExecutor private constructor(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long, unit: TimeUnit, workQueue: BlockingQueue<Runnable>, threadFactory: ThreadFactory) : ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, RejectedExecutionHandler { r, executor -> GoLogger.error(Const.TAG + "Task rejected, too many task!") }) {
 
 
     /**
@@ -32,7 +32,7 @@ class DefaultPoolExecutor private constructor(corePoolSize: Int, maximumPoolSize
             }
         }
         if (t != null) {
-            GoLogger.warn(Consts.TAG + """
+            GoLogger.warn(Const.TAG + """
      Running task appeared exception! Thread [${Thread.currentThread().name}], because [${t.message}]
      ${formatStackTrace(t.stackTrace)}
      """.trimIndent())

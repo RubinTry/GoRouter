@@ -36,7 +36,7 @@ import cn.gorouter.api.monitor.FragmentMonitor;
 import cn.gorouter.api.threadpool.DefaultPoolExecutor;
 import cn.gorouter.api.threadpool.MainExecutor;
 import cn.gorouter.api.monitor.ActivityMonitor;
-import cn.gorouter.api.utils.Consts;
+import cn.gorouter.api.utils.Const;
 import dalvik.system.DexFile;
 
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.ACTIVITY;
@@ -185,7 +185,7 @@ public class _GoRouter {
 
         //一直等待，直到线程总数降为0
         pathParserCtl.await();
-        GoLogger.debug(Consts.TAG + "Filter " + classList.size() + " classes by packageName <" + packageName + ">");
+        GoLogger.debug(Const.TAG + "Filter " + classList.size() + " classes by packageName <" + packageName + ">");
         return classList;
     }
 
@@ -245,7 +245,7 @@ public class _GoRouter {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && null != applicationInfo.splitSourceDirs) {
             // add the split apk, normally for InstantRun, and newest version.
             instantRunSourcePaths.addAll(Arrays.asList(applicationInfo.splitSourceDirs));
-            Log.d(Consts.TAG, "Found InstantRun support");
+            Log.d(Const.TAG, "Found InstantRun support");
         } else {
             try {
                 // This man is reflection from Google instant run sdk, he will tell me where the dex files go.
@@ -261,11 +261,11 @@ public class _GoRouter {
                             instantRunSourcePaths.add(file.getAbsolutePath());
                         }
                     }
-                    Log.d(Consts.TAG, "Found InstantRun support");
+                    Log.d(Const.TAG, "Found InstantRun support");
                 }
 
             } catch (Exception e) {
-                Log.e(Consts.TAG, "InstantRun support error, " + e.getMessage());
+                Log.e(Const.TAG, "InstantRun support error, " + e.getMessage());
             }
         }
 
@@ -309,7 +309,7 @@ public class _GoRouter {
 
         }
 
-        Log.i(Consts.TAG, "VM with name " + vmName + (isMultidexCapable ? " has multidex support" : " does not have multidex support"));
+        Log.i(Const.TAG, "VM with name " + vmName + (isMultidexCapable ? " has multidex support" : " does not have multidex support"));
         return isMultidexCapable;
     }
 
@@ -374,12 +374,11 @@ public class _GoRouter {
      * @param containerId          容器的视图id
      * @param useDefaultTransition 是否启用默认动画
      */
-    public void addSharedFragment(View element, String name, String backStackTAG, int containerId, boolean useDefaultTransition) {
+    public void addSharedFragment(View element, String backStackTAG, int containerId, boolean useDefaultTransition) {
         if (mFragmentSharedCard == null) {
             mFragmentSharedCard = new FragmentSharedCard();
         }
         mFragmentSharedCard.setSharedElement(element);
-        mFragmentSharedCard.setName(name);
         mFragmentSharedCard.setTAG(backStackTAG);
         mFragmentSharedCard.setContainerId(containerId);
         mFragmentSharedCard.setUseDefaultTransition(useDefaultTransition);
@@ -445,9 +444,9 @@ public class _GoRouter {
                     }
 
                     if (mFragmentSharedCard != null) {
-                        FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).replace(curFragment);
+                        FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).show(curFragment);
                     } else {
-                        FragmentMonitor.Companion.getInstance().replace(curFragment);
+                        FragmentMonitor.Companion.getInstance().show(curFragment);
                     }
 
                     mFragmentSharedCard = null;

@@ -8,7 +8,6 @@ import android.view.View;
  */
 class SharedCard {
     private View sharedElement;
-    private String name;
 
     public View getSharedElement() {
         return sharedElement;
@@ -18,11 +17,4 @@ class SharedCard {
         this.sharedElement = sharedElement;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

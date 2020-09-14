@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply from: '../config.gradle'
+apply plugin: 'com.jakewharton.butterknife'
 
 android {
     compileSdkVersion 29
@@ -47,4 +48,7 @@ dependencies {
     kapt project(path: ':gorouter-compiler')
     implementation project(path: ':gorouter-annotation')
     implementation project(path: ':gorouter-api')
+    implementation 'com.jakewharton:butterknife:10.2.3'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
+    kapt 'com.jakewharton:butterknife-compiler:10.2.3'
 }

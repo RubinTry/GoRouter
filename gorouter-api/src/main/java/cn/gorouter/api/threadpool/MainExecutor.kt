@@ -3,7 +3,7 @@ package cn.gorouter.api.threadpool
 import android.os.Handler
 import android.os.Looper
 import cn.gorouter.api.logger.GoLogger
-import cn.gorouter.api.utils.Consts
+import cn.gorouter.api.utils.Const
 import java.util.concurrent.*
 
 class MainExecutor(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long, unit: TimeUnit?, workQueue: BlockingQueue<Runnable>?, threadFactory: ThreadFactory?) : ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory) {
@@ -55,7 +55,7 @@ class MainExecutor(corePoolSize: Int, maximumPoolSize: Int, keepAliveTime: Long,
             }
         }
         if (t != null) {
-            GoLogger.warn(Consts.TAG + """
+            GoLogger.warn(Const.TAG + """
      Running task appeared exception! Thread [${Thread.currentThread().name}], because [${t.message}]
      ${formatStackTrace(t.stackTrace)}
      """.trimIndent())

@@ -9,10 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
+/**
+ * @author logcat
+ */
 public abstract class BaseFragment extends Fragment {
 
-
     protected ViewGroup rootView;
+    private Unbinder unbinder;
 
 
     @Nullable
@@ -20,19 +26,36 @@ public abstract class BaseFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if(rootView == null){
             rootView = (ViewGroup) inflater.inflate(attachedLayoutRes() , container , false);
-            processor();
+            unbinder = ButterKnife.bind(this ,rootView);
         }
         return rootView;
     }
 
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        processor();
+    }
+
     protected abstract int attachedLayoutRes();
 
     protected abstract void processor();
 
+
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroyView() {
+        if(rootView != null){
+            rootView.removeAllViews();
+            rootView = null;
+        }
+        if(unbinder != null){
+            unbinder.unbind();
+        }
+        super.onDestroyView();
 
     }
+
+
+
 }
