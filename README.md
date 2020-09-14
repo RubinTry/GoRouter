@@ -229,6 +229,7 @@ fragment2
 ```java
    //Fragment1
    //Navigate to a fragment with animation immediately
+   //This may cause a memory leak , try to check your views in this page was cleared，It is recommended to use frameworks such as ButterKnife to complete this operation.
    GoRouter.getInstance()
                         .build("fragment2 's routeKey")
                         .addSharedFragment(tv , "tag" , containerId , true)

@@ -225,6 +225,7 @@ fragment2
 ```java
    //Fragment1
    //以带有共享元素动画的方式跳转
+   //此操作可能会导致内存泄漏，请确保该fragment跳转前已清除页面中的所有视图，建议使用ButterKnife等框架来完成此项操作
    GoRouter.getInstance()
                         .build("fragment2 's routeKey")
                         .addSharedFragment(tv , "tag" , containerId , true)
