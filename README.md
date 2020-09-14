@@ -231,7 +231,7 @@ fragment2
    //Navigate to a fragment with animation immediately
    GoRouter.getInstance()
                         .build("fragment2 's routeKey")
-                        .addSharedFragment(tv , ViewCompat.getTransitionName(tv) , "tag" , containerId , true)
+                        .addSharedFragment(tv , "tag" , containerId , true)
                         .go();
 
 

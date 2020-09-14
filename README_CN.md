@@ -227,7 +227,7 @@ fragment2
    //以带有共享元素动画的方式跳转
    GoRouter.getInstance()
                         .build("fragment2 's routeKey")
-                        .addSharedFragment(tv , ViewCompat.getTransitionName(tv) , "tag" , containerId , true)
+                        .addSharedFragment(tv , "tag" , containerId , true)
                         .go();
 
 
