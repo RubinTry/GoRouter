@@ -121,7 +121,7 @@ anotherModule.gradle
 Fragment篇
 ```java
 
-   //导航到某个fragment
+   //从某个fragment导航到某个fragment
    GoRouter.getInstance().build("routeKey1")
                    .setFragmentContainer(fragment's containerId)
                    .go()

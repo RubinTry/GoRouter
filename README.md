@@ -125,7 +125,7 @@ The AndroidManifest.xml when you run module as library
 Fragment
 ```java
 
-   //Navigate to a fragment immediately
+   //Navigate from a fragment to a fragment
    GoRouter.getInstance().build("routeKey1")
                    .setFragmentContainer(fragment's containerId)
                    .go()
