@@ -444,9 +444,9 @@ public class _GoRouter {
                     }
 
                     if (mFragmentSharedCard != null) {
-                        FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).show(curFragment);
+                        FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).show(curFragment , currentUrl);
                     } else {
-                        FragmentMonitor.Companion.getInstance().show(curFragment);
+                        FragmentMonitor.Companion.getInstance().show(curFragment , currentUrl);
                     }
 
                     mFragmentSharedCard = null;

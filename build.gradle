@@ -21,6 +21,8 @@ buildscript {
 
 allprojects {
     repositories {
+        // 本地 maven 仓库
+
         maven {
             url 'https://maven.aliyun.com/repository/google'
         }

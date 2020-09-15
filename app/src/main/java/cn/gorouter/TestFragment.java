@@ -69,4 +69,7 @@ public class TestFragment extends BaseFragment {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
     }
+
+
+
 }
