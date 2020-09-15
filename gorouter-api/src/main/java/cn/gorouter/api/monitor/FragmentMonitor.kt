@@ -317,22 +317,31 @@ class FragmentMonitor {
     }
 
 
-
+    /**
+     * 销毁当前fragment，并显示上一个fragment
+     *
+     * @param fragment
+     */
     fun finish(fragment: Fragment){
         //找到当前fragment的位置
         val index = fragmentMap.values.indexOf(fragment)
         val currentKey = fragmentMap.keys.elementAt(index)
+        val beginTransaction = getManager()?.beginTransaction()
+        beginTransaction?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+        beginTransaction?.detach(fragment)
+        getManager()?.popBackStackImmediate(currentKey , FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
         if(index > 0){
-            val beginTransaction = getManager()?.beginTransaction()
             val lastFragment = fragmentMap.values.elementAt(index - 1)
-            beginTransaction?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-            beginTransaction?.detach(fragment)
-            getManager()?.popBackStackImmediate(currentKey , FragmentManager.POP_BACK_STACK_INCLUSIVE)
             beginTransaction?.attach(lastFragment)
-            beginTransaction?.commit()
         }
+        beginTransaction?.commit()
         clearFragmentManager()
         fragmentMap.remove(currentKey)
+
+        if(fragmentMap.size == 0){
+            ActivityMonitor.instance?.exit()
+        }
     }
 
 

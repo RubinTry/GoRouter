@@ -68,7 +68,6 @@ class ActivityMonitor {
             activity.finish()
             activity.overridePendingTransition(0, 0)
         }
-//        Process.killProcess(Process.myPid())
     }
 
 
