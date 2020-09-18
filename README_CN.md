@@ -8,7 +8,7 @@
 最轻量级的安卓路由框架
 ```
 
-
+[Javadoc](https://rubintry.cn/go-router-doc/)
 
 
 [![GitHub license](https://img.shields.io/github/license/RubinTry/GoRouter)](https://www.apache.org/licenses/LICENSE-2.0)
