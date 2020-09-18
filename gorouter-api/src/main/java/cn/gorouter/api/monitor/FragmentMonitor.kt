@@ -82,16 +82,6 @@ class FragmentMonitor {
             }
         }
 
-        fragmentManager?.addOnBackStackChangedListener(object : FragmentManager.OnBackStackChangedListener {
-            override fun onBackStackChanged() {
-                var manager = fragmentManager
-                if (manager != null) {
-                    val fragment = manager.findFragmentByTag(tagList.last)
-                    Log.d(TAG, "fragmentBack: " + fragment)
-                }
-            }
-
-        })
         return fragmentManager;
     }
 
@@ -217,8 +207,6 @@ class FragmentMonitor {
         transaction?.addToBackStack(tag)
         if (fragmentSharedCard != null) {
             transaction?.addSharedElement(fragmentSharedCard?.sharedElement!!, ViewCompat.getTransitionName(fragmentSharedCard?.sharedElement!!)!!)
-
-
 
             if (useDefaultTransition) {
                 fragment.sharedElementEnterTransition = TransitionInflater.from(ActivityMonitor.instance?.lastFragmentActivity).inflateTransition(android.R.transition.move)
@@ -376,21 +364,5 @@ class FragmentMonitor {
     fun canExit(): Boolean {
         return tagList.size == 1
     }
-
-//
-//    /**
-//     * 获取栈内所有fragment
-//     *
-//     * @return fragment的map容器
-//     */
-//    fun getAllFragment(): LinkedList<Fragment> {
-//        var fragments: LinkedList<Fragment> = LinkedList()
-//        for (s in tagList) {
-//            val fragment = getManager()?.findFragmentByTag(s)
-//            fragments.add(fragment!!)
-//        }
-//        return fragments
-//    }
-
 
 }
