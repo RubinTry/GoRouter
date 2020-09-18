@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Handler
 import android.transition.Transition
 import android.transition.TransitionInflater
+import android.util.Log
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
@@ -11,9 +12,11 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import cn.gorouter.api.card.FragmentSharedCard
 import cn.gorouter.api.logger.GoLogger
+import cn.gorouter.api.threadpool.DefaultPoolExecutor
 import cn.gorouter.api.threadpool.MainExecutor
 import java.lang.IllegalArgumentException
 import java.util.*
+import java.util.concurrent.CountDownLatch
 import kotlin.collections.LinkedHashMap
 
 /**
@@ -22,9 +25,10 @@ import kotlin.collections.LinkedHashMap
  */
 class FragmentMonitor {
 
+    private val TAG: String? = this.javaClass.simpleName
     private var container: Int = 0
 
-    private var fragmentMap: LinkedHashMap<String , Fragment> = LinkedHashMap()
+    private var tagList: LinkedList<String> = LinkedList()
     private var application: Application? = null
     private var fragmentSharedCard: FragmentSharedCard? = null
 
@@ -78,6 +82,16 @@ class FragmentMonitor {
             }
         }
 
+        fragmentManager?.addOnBackStackChangedListener(object : FragmentManager.OnBackStackChangedListener {
+            override fun onBackStackChanged() {
+                var manager = fragmentManager
+                if (manager != null) {
+                    val fragment = manager.findFragmentByTag(tagList.last)
+                    Log.d(TAG, "fragmentBack: " + fragment)
+                }
+            }
+
+        })
         return fragmentManager;
     }
 
@@ -109,7 +123,7 @@ class FragmentMonitor {
      */
     private fun contains(tag: String): Boolean {
         val fragment = getManager()?.findFragmentByTag(tag)
-        return fragmentMap.contains(tag) && fragment != null
+        return tagList.contains(tag) && fragment != null
     }
 
 
@@ -152,24 +166,24 @@ class FragmentMonitor {
      * @param fragment 目标fragment
      * @param container  fragment的容器
      */
-    fun show(fragment: Fragment , routeKey : String) {
+    fun show(fragment: Fragment, routeKey: String) {
         //先隐藏掉上一个显示着的fragment
         if (fragmentSharedCard != null) {
             if (fragmentSharedCard?.isUseDefaultTransition!!) {
-                show(fragment, container, true , routeKey)
+                show(fragment, container, true, routeKey)
             } else {
-                show(fragment, container, fragmentSharedCard?.enterTransition!!, fragmentSharedCard?.exitTransition!! , routeKey)
+                show(fragment, container, fragmentSharedCard?.enterTransition!!, fragmentSharedCard?.exitTransition!!, routeKey)
             }
 
         } else {
-            show(fragment, container, false , routeKey)
+            show(fragment, container, false, routeKey)
         }
 
         fragmentSharedCard = null
     }
 
     private fun hideLast() {
-        if(fragmentMap.isNotEmpty()){
+        if (tagList.isNotEmpty()) {
             val topFragment = getLastFragment()
             if (topFragment != null) {
                 getManager()?.beginTransaction()?.hide(topFragment)?.commit()
@@ -178,9 +192,10 @@ class FragmentMonitor {
     }
 
     private fun getLastFragment(): Fragment? {
-        if (fragmentMap.isNotEmpty()) {
-            val key = fragmentMap.keys.last()
-            return fragmentMap[key]
+        if (tagList.isNotEmpty()) {
+            val last = tagList.last
+            val lastFragment = getManager()?.findFragmentByTag(last)
+            return lastFragment
         }
         return null
     }
@@ -193,14 +208,16 @@ class FragmentMonitor {
      * @param container fragment的容器
      * @param useDefaultTransition 是否使用默认的转场动画
      */
-    private fun show(fragment: Fragment, container: Int, useDefaultTransition: Boolean , routeKey: String) {
+    private fun show(fragment: Fragment, container: Int, useDefaultTransition: Boolean, routeKey: String) {
         val manager = getManager()
         val transaction = manager?.beginTransaction()
         val lastFragment = getLastFragment()
+        val tag = routeKey + System.currentTimeMillis()
 
+        transaction?.addToBackStack(tag)
         if (fragmentSharedCard != null) {
             transaction?.addSharedElement(fragmentSharedCard?.sharedElement!!, ViewCompat.getTransitionName(fragmentSharedCard?.sharedElement!!)!!)
-                    ?.addToBackStack(fragmentSharedCard?.tag!!)
+
 
 
             if (useDefaultTransition) {
@@ -215,12 +232,8 @@ class FragmentMonitor {
                     ?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
 
-        if (notContains(fragment.javaClass.simpleName)) {
-            transaction?.add(container, fragment, routeKey)
-            fragmentMap[routeKey] = fragment
-        } else {
-            transaction?.attach(fragment)
-        }
+        transaction?.add(container, fragment, tag)
+        tagList.add(tag)
         transaction?.commit()
     }
 
@@ -233,16 +246,18 @@ class FragmentMonitor {
      * @param enterTransition 入场动画
      * @param exitTransition  出场动画
      */
-    private fun show(fragment: Fragment, container: Int, enterTransition: Transition?, exitTransition: Transition? , routeKey: String) {
+    private fun show(fragment: Fragment, container: Int, enterTransition: Transition?, exitTransition: Transition?, routeKey: String) {
         val manager = getManager()
         val transaction = manager?.beginTransaction()
         val lastFragment = getLastFragment()
 
-        hideLast()
+        val tag = routeKey + System.currentTimeMillis()
 
+        hideLast()
+        transaction?.addToBackStack(tag)
         if (fragmentSharedCard != null) {
             transaction?.addSharedElement(fragmentSharedCard?.sharedElement!!, ViewCompat.getTransitionName(fragmentSharedCard?.sharedElement!!)!!)
-                    ?.addToBackStack(fragmentSharedCard?.tag!!)
+
 
             fragment.sharedElementEnterTransition = enterTransition
             fragment.sharedElementReturnTransition = exitTransition
@@ -256,12 +271,8 @@ class FragmentMonitor {
                     ?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         }
 
-        if (notContains(fragment.javaClass.simpleName)) {
-            transaction?.add(container, fragment, routeKey)
-            fragmentMap[routeKey] = fragment
-        } else {
-            transaction?.attach(fragment)
-        }
+        transaction?.add(container, fragment, tag)
+        tagList.add(tag)
         transaction?.commit()
     }
 
@@ -272,25 +283,25 @@ class FragmentMonitor {
      * @param fragment fragment对象
      */
     fun finish() {
-
-        var allFragment = getAllFragment()
-        if (allFragment.isEmpty()) {
+        //current fragment
+        var topElement: Fragment? = null
+        var topKey: String? = null
+        //last fragment
+        var lastFragment: Fragment? = null
+        var lastKey: String? = null
+        if (tagList.isEmpty()) {
             throw IllegalArgumentException("Fragments is empty")
         } else {
 
-            //current fragment
-            var topElement : Fragment ?= null
-            var topKey : String ?= null
-            if(fragmentMap.isNotEmpty()){
-                topElement = fragmentMap.values.last()
-                topKey = fragmentMap.keys.last()
+
+            if (tagList.isNotEmpty()) {
+                topKey = tagList.last()
+                topElement = getManager()?.findFragmentByTag(topKey)
             }
-            //last fragment
-            var lastFragment: Fragment? = null
-            var lastKey : String ?= null
-            if (fragmentMap.size > 1) {
-                lastKey = fragmentMap.keys.elementAt(fragmentMap.size - 2)
-                lastFragment = fragmentMap[lastKey]
+
+            if (tagList.size > 1) {
+                lastKey = tagList[tagList.size - 2]
+                lastFragment = getManager()?.findFragmentByTag(lastKey)
             }
             val manager = getManager()
             var beginTransaction = manager?.beginTransaction()
@@ -299,21 +310,20 @@ class FragmentMonitor {
             if (topElement != null) {
                 beginTransaction?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                 beginTransaction?.detach(topElement)
-                getManager()?.popBackStackImmediate(topKey , FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                if(lastFragment != null){
+                getManager()?.popBackStackImmediate(topKey, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                if (lastFragment != null) {
                     beginTransaction?.attach(lastFragment)
                 }
-            }else if(lastFragment != null){
+            } else if (lastFragment != null) {
                 beginTransaction?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
                 beginTransaction?.detach(lastFragment!!)
-                getManager()?.popBackStackImmediate(lastKey , FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                getManager()?.popBackStackImmediate(lastKey, FragmentManager.POP_BACK_STACK_INCLUSIVE)
             }
 
             beginTransaction?.commit()
         }
         clearFragmentManager()
-        val last = fragmentMap.keys.last()
-        fragmentMap.remove(last)
+        tagList.removeLast()
     }
 
 
@@ -322,39 +332,39 @@ class FragmentMonitor {
      *
      * @param fragment
      */
-    fun finish(fragment: Fragment){
+    fun finish(fragment: Fragment) {
         //找到当前fragment的位置
-        val index = fragmentMap.values.indexOf(fragment)
-        val currentKey = fragmentMap.keys.elementAt(index)
+
+        val index = tagList.indexOf(fragment.tag)
+        val currentKey = tagList[index]
         val beginTransaction = getManager()?.beginTransaction()
         beginTransaction?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
         beginTransaction?.detach(fragment)
-        getManager()?.popBackStackImmediate(currentKey , FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        getManager()?.popBackStackImmediate(currentKey, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
-        if(index > 0){
-            val lastFragment = fragmentMap.values.elementAt(index - 1)
-            beginTransaction?.attach(lastFragment)
+        if (index > 0) {
+            val key = tagList[index - 1]
+            val lastFragment = getManager()?.findFragmentByTag(key)
+            beginTransaction?.attach(lastFragment!!)
         }
         beginTransaction?.commit()
         clearFragmentManager()
-        fragmentMap.remove(currentKey)
+        tagList.remove(currentKey)
 
-        if(fragmentMap.size == 0){
+        if (tagList.size == 0) {
             ActivityMonitor.instance?.exit()
         }
     }
 
 
-
     fun finishAllFragment() {
-        val size = fragmentMap.size
-        for (index in  (size - 1) downTo 0){
-            val key = fragmentMap.keys.elementAt(index)
-            val fragment = fragmentMap[key]
-            val beginTransaction = getManager()?.beginTransaction()
-            beginTransaction?.remove(fragment!!)?.commit()
+        val size = tagList.size
+        for (index in (size - 1) downTo 0) {
+            val key = tagList[index]
+            getManager()?.popBackStack(key , FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            tagList.remove(key)
         }
-
+        Log.d(TAG, "finishAllFragment: " + getManager()?.fragments?.size + "  tagList: " + tagList.size)
     }
 
     private fun clearFragmentManager() {
@@ -364,18 +374,23 @@ class FragmentMonitor {
 
 
     fun canExit(): Boolean {
-        return fragmentMap.size == 1
+        return tagList.size == 1
     }
 
-
-    /**
-     * 获取栈内所有fragment
-     *
-     * @return fragment的map容器
-     */
-    fun getAllFragment(): LinkedHashMap<String , Fragment> {
-        return fragmentMap
-    }
+//
+//    /**
+//     * 获取栈内所有fragment
+//     *
+//     * @return fragment的map容器
+//     */
+//    fun getAllFragment(): LinkedList<Fragment> {
+//        var fragments: LinkedList<Fragment> = LinkedList()
+//        for (s in tagList) {
+//            val fragment = getManager()?.findFragmentByTag(s)
+//            fragments.add(fragment!!)
+//        }
+//        return fragments
+//    }
 
 
 }

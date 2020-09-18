@@ -8,5 +8,8 @@ package cn.gorouter.api.launcher;
  * @since 2020/07/11 16:25
  */
 public interface IRouter {
+    /**
+     * Put the node into the route's container.
+     */
     void put();
 }
