@@ -39,17 +39,18 @@ public class TestFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
 
-//                GoRouter.getInstance().build("app/TestFragment2")
-//                        .addSharedFragment(tv1, ViewCompat.getTransitionName(tv1), "tag", R.id.flContainer, true)
-//                        .go();
+
 
                 int resId = getArguments().getInt("containerId");
 
-//                FragmentMonitor.Companion.getInstance().finish();
 
                 GoRouter.getInstance().build("app/TestFragment2")
-                        .setFragmentContainer(resId)
+                        .addSharedFragment(tv1,  "tag", R.id.flContainer, true)
                         .go();
+
+//                GoRouter.getInstance().build("app/TestFragment2")
+//                        .setFragmentContainer(resId)
+//                        .go();
 
 
             }
@@ -69,6 +70,7 @@ public class TestFragment extends BaseFragment {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
     }
+
 
 
 

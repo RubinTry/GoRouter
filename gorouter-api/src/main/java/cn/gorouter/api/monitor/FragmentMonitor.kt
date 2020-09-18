@@ -25,7 +25,6 @@ import kotlin.collections.LinkedHashMap
  */
 class FragmentMonitor {
 
-    private val TAG: String? = this.javaClass.simpleName
     private var container: Int = 0
 
     private var tagList: LinkedList<String> = LinkedList()
@@ -106,7 +105,7 @@ class FragmentMonitor {
 
 
     /**
-     * Is contains on stack.
+     * 检查fragment的tag是否包含在tagList中
      *
      * @param fragment
      * @return
@@ -118,7 +117,7 @@ class FragmentMonitor {
 
 
     /**
-     * Is not contains on stack
+     * 检查fragment的tag是否不包含在tagList中
      *
      * @param fragment
      * @return
@@ -141,7 +140,7 @@ class FragmentMonitor {
 
 
     /**
-     * Set the container view of fragment
+     * 设置用于显示fragment的容器
      *
      * @param container
      */
@@ -172,6 +171,11 @@ class FragmentMonitor {
         fragmentSharedCard = null
     }
 
+
+    /**
+     * 隐藏掉上一个fragment（如果存在）
+     *
+     */
     private fun hideLast() {
         if (tagList.isNotEmpty()) {
             val topFragment = getLastFragment()
@@ -192,7 +196,7 @@ class FragmentMonitor {
 
 
     /**
-     * 替换fragment
+     * 将fragment添加进来并显示
      *
      * @param fragment 目标fragment
      * @param container fragment的容器
@@ -227,7 +231,7 @@ class FragmentMonitor {
 
 
     /**
-     * 替换fragment
+     * 将fragment添加进来并显示
      *
      * @param fragment 目标fragment
      * @param container fragment的容器
@@ -266,7 +270,7 @@ class FragmentMonitor {
 
 
     /**
-     * 根据fragment类名销毁fragment
+     * 销毁顶端fragment
      *
      * @param fragment fragment对象
      */
@@ -316,7 +320,7 @@ class FragmentMonitor {
 
 
     /**
-     * 销毁当前fragment，并显示上一个fragment
+     * 销毁指定fragment
      *
      * @param fragment
      */
@@ -341,10 +345,18 @@ class FragmentMonitor {
 
         if (tagList.size == 0) {
             ActivityMonitor.instance?.exit()
+        }else{
+            clearFragmentManager()
         }
+
+
     }
 
 
+    /**
+     * 销毁所有fragment
+     *
+     */
     fun finishAllFragment() {
         val size = tagList.size
         for (index in (size - 1) downTo 0) {
@@ -352,17 +364,27 @@ class FragmentMonitor {
             getManager()?.popBackStack(key , FragmentManager.POP_BACK_STACK_INCLUSIVE)
             tagList.remove(key)
         }
-        Log.d(TAG, "finishAllFragment: " + getManager()?.fragments?.size + "  tagList: " + tagList.size)
+        clearFragmentManager()
     }
 
+
+    /**
+     * 销毁FragmentManager
+     *
+     */
     private fun clearFragmentManager() {
         fragmentManager?.unregisterFragmentLifecycleCallbacks(callback)
         fragmentManager = null
     }
 
 
+    /**
+     * 是否可退出（定义为fragment仅剩一个时，可让APP退出）
+     *
+     * @return
+     */
     fun canExit(): Boolean {
-        return tagList.size == 1
+        return tagList.size == 1 && getManager()?.fragments?.size == 1
     }
 
 }
