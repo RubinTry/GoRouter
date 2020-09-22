@@ -24,10 +24,11 @@ class MainActivity : AppCompatActivity(){
 
 
 
-        var data = Bundle()
-        data.putInt("containerId" , R.id.flContainer)
+//        var data = Bundle()
+//        data.putInt("containerId" , R.id.flContainer)
         GoRouter.getInstance().build("app/TestFragment")
-                .withExtra(data)
+//                .withExtra(data)
+                .withInt("containerId" , R.id.flContainer)
                 .withContainer(R.id.flContainer)
                 .go()
 

@@ -26,7 +26,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if(rootView == null){
-            rootView = (ViewGroup) inflater.inflate(attachedLayoutRes() , container , false);
+            rootView = (ViewGroup) inflater.inflate(attachLayoutRes() , container , false);
             unbinder = ButterKnife.bind(this ,rootView);
         }
         return rootView;
@@ -40,8 +40,17 @@ public abstract class BaseFragment extends Fragment {
         processor();
     }
 
-    protected abstract int attachedLayoutRes();
 
+    /**
+     * UI布局绑定
+     * @return
+     */
+    protected abstract int attachLayoutRes();
+
+
+    /**
+     * 进一步的逻辑处理
+     */
     protected abstract void processor();
 
 

@@ -12,11 +12,9 @@ import android.os.Bundle;
 import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
-
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -26,10 +24,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import cn.gorouter.api.card.FragmentSharedCard;
 import cn.gorouter.api.card.GoBoard;
 import cn.gorouter.api.logger.GoLogger;
@@ -39,7 +37,6 @@ import cn.gorouter.api.threadpool.MainExecutor;
 import cn.gorouter.api.monitor.ActivityMonitor;
 import cn.gorouter.api.utils.Const;
 import dalvik.system.DexFile;
-
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.ACTIVITY;
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT;
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAGE;
@@ -67,10 +64,6 @@ public class _GoRouter {
 
     private static final int VM_WITH_MULTIDEX_VERSION_MAJOR = 2;
     private static final int VM_WITH_MULTIDEX_VERSION_MINOR = 1;
-
-
-
-//    private int container;
 
 
     private _GoRouter() {
@@ -139,7 +132,7 @@ public class _GoRouter {
      *
      * @param context
      * @param packageName Witch package we want scan.
-     * @return
+     * @return All the classes from a package
      */
     private static List<String> getClasses(Context context, String packageName) throws PackageManager.NameNotFoundException, IOException, InterruptedException {
         List<String> classList = new ArrayList<>();
@@ -373,16 +366,14 @@ public class _GoRouter {
      *
      * @param element              需要添加共享元素效果的视图
      * @param backStackTAG         返回栈tag
-     * @param containerId          容器的视图id
      * @param useDefaultTransition 是否启用默认动画
      */
-    public void addSharedFragment(View element, String backStackTAG, int containerId, boolean useDefaultTransition) {
+    public void addSharedFragment(View element, String backStackTAG,  boolean useDefaultTransition) {
         if (mFragmentSharedCard == null) {
             mFragmentSharedCard = new FragmentSharedCard();
         }
         mFragmentSharedCard.setSharedElement(element);
         mFragmentSharedCard.setTAG(backStackTAG);
-        mFragmentSharedCard.setContainerId(containerId);
         mFragmentSharedCard.setUseDefaultTransition(useDefaultTransition);
     }
 
@@ -408,14 +399,6 @@ public class _GoRouter {
      * @param containerId
      */
     public void setFragmentContainerId(int containerId) {
-//        if (container != 0) {
-//            if (container == View.NO_ID) {
-//                throw new IllegalArgumentException("Can't add fragment with no id");
-//            }
-////            this.container = container;
-//            FragmentMonitor.Companion.getInstance().setFragmentContainerId(container);
-//        }
-
         if(containerId == View.NO_ID){
             throw new IllegalArgumentException("Can't add fragment with no id");
         }
@@ -466,6 +449,7 @@ public class _GoRouter {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                goBoard.release();
                 break;
             default:
                 break;
@@ -634,6 +618,6 @@ public class _GoRouter {
      * @param runnable
      */
     private void runOnMainThread(Runnable runnable) {
-        MainExecutor.Companion.getInstance().execute(runnable);
+        Objects.requireNonNull(MainExecutor.Companion.getInstance()).execute(runnable);
     }
 }

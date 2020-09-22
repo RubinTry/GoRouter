@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import cn.gorouter.api.exception.DataEmptyException;
-
 /**
  * @author logcat
  */
@@ -47,93 +45,113 @@ public class GoBoard {
         this.routeKey = routeKey;
     }
 
-    public void putInt(String key , int intValue){
-        try {
-            checkDataNotNull();
-        } catch (DataEmptyException e) {
-            e.printStackTrace();
-            data = new Bundle();
-        }
 
-        data.putInt(key , intValue);
-    }
-
-    public void putFloat(String key , float floatValue){
-        try {
-            checkDataNotNull();
-        } catch (DataEmptyException e) {
-            e.printStackTrace();
-            data = new Bundle();
-        }
-        data.putFloat(key , floatValue);
+    /**
+     * 向bundle插入一个整型数据
+     *
+     * @param key
+     * @param intValue
+     */
+    public void putInt(String key, int intValue) {
+        checkDataNotNull();
+        data.putInt(key, intValue);
     }
 
 
-    public void putLong(String key , long longValue){
-        try {
-            checkDataNotNull();
-        } catch (DataEmptyException e) {
-            e.printStackTrace();
-            data = new Bundle();
-        }
-
-        data.putLong(key , longValue);
+    /**
+     * 向bundle插入一个单精度浮点型数据
+     *
+     * @param key
+     * @param floatValue
+     */
+    public void putFloat(String key, float floatValue) {
+        checkDataNotNull();
+        data.putFloat(key, floatValue);
     }
 
 
-    public void putShort(String key , short shortValue){
-        try {
-            checkDataNotNull();
-        } catch (DataEmptyException e) {
-            e.printStackTrace();
-            data = new Bundle();
-        }
-        data.putShort(key , shortValue);
-    }
-
-    public void putDouble(String key , double doubleValue){
-        try {
-            checkDataNotNull();
-        } catch (DataEmptyException e) {
-            e.printStackTrace();
-            data = new Bundle();
-        }
-        data.putDouble(key , doubleValue);
-    }
-
-    public void putString(String key , String value){
-        try {
-            checkDataNotNull();
-        } catch (DataEmptyException e) {
-            e.printStackTrace();
-            data = new Bundle();
-        }
-        data.putString(key , value);
+    /**
+     * 向bundle插入一个长整型数据
+     *
+     * @param key
+     * @param longValue
+     */
+    public void putLong(String key, long longValue) {
+        checkDataNotNull();
+        data.putLong(key, longValue);
     }
 
 
-    public void putCharSequence(String key , CharSequence charSequenceValue){
-        try {
-            checkDataNotNull();
-        } catch (DataEmptyException e) {
-            e.printStackTrace();
-            data = new Bundle();
-        }
+    /**
+     * 向bundle插入一个短整型数据
+     *
+     * @param key
+     * @param shortValue
+     */
+    public void putShort(String key, short shortValue) {
 
-        data.putCharSequence(key , charSequenceValue);
+        checkDataNotNull();
+        data.putShort(key, shortValue);
     }
 
 
-    public void release(){
+    /**
+     * 向bundle插入一个双经度浮点型数据
+     *
+     * @param key
+     * @param doubleValue
+     */
+    public void putDouble(String key, double doubleValue) {
+
+        checkDataNotNull();
+        data.putDouble(key, doubleValue);
+    }
+
+
+    /**
+     * 向bundle插入一个字符串数据
+     *
+     * @param key
+     * @param value
+     */
+    public void putString(String key, String value) {
+        checkDataNotNull();
+        data.putString(key, value);
+    }
+
+
+    /**
+     * 向bundle插入一个字符序列数据
+     *
+     * @param key
+     * @param charSequenceValue
+     */
+    public void putCharSequence(String key, CharSequence charSequenceValue) {
+        checkDataNotNull();
+        data.putCharSequence(key, charSequenceValue);
+    }
+
+
+    /**
+     * 释放掉相关数据内容
+     */
+    public void release() {
+        if(this.data != null){
+            this.data.clear();
+        }
         this.data = null;
         this.routeKey = null;
         this.flag = Intent.FLAG_ACTIVITY_NEW_TASK;
         this.fragmentContainerId = View.NO_ID;
     }
 
-    private void checkDataNotNull() throws DataEmptyException {
-        if(this.data == null){
-            throw new DataEmptyException("Data is empty!!!");
+
+    /**
+     * 确保data不为空
+     */
+    private void checkDataNotNull() {
+        if (this.data == null) {
+            this.data = new Bundle();
         }
     }
 }

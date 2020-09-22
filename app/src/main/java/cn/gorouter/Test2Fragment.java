@@ -29,7 +29,7 @@ public class Test2Fragment extends BaseFragment {
 
 
     @Override
-    protected int attachedLayoutRes() {
+    protected int attachLayoutRes() {
         return R.layout.fragment_test2;
     }
 
@@ -40,7 +40,8 @@ public class Test2Fragment extends BaseFragment {
             public void onClick(View v) {
                 GoRouter.getInstance()
                         .build("test3Fragment")
-                        .addSharedFragment(tv2, "tag", R.id.flContainer, true)
+                        .withContainer(R.id.flContainer)
+                        .addSharedFragment(tv2, "tag", true)
                         .go();
             }
         });

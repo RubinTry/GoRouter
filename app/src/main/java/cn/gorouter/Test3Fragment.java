@@ -20,7 +20,7 @@ import cn.gorouter.api.monitor.FragmentMonitor;
 public class Test3Fragment extends BaseFragment {
 
     @Override
-    protected int attachedLayoutRes() {
+    protected int attachLayoutRes() {
         return R.layout.fragment_test3;
     }
 

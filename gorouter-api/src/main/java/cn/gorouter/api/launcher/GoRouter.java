@@ -117,11 +117,10 @@ public class GoRouter {
      * @param element      需要添加共享元素效果的视图
      * @param name         视图名称
      * @param backStackTAG 返回栈tag
-     * @param containerId  fragment的容器的id
      * @return
      */
-    public GoRouter addSharedFragment(View element, String name, String backStackTAG, int containerId) {
-        addSharedFragment(element, backStackTAG, containerId, false);
+    public GoRouter addSharedFragment(View element, String name, String backStackTAG) {
+        addSharedFragment(element, backStackTAG, false);
         return this;
     }
 
@@ -131,12 +130,11 @@ public class GoRouter {
      *
      * @param element              需要添加共享元素效果的视图
      * @param backStackTAG         返回栈tag
-     * @param containerId          fragment的容器的id
      * @param useDefaultTransition 是否使用默认的转场动画
      * @return
      */
-    public GoRouter addSharedFragment(View element, String backStackTAG, int containerId, boolean useDefaultTransition) {
-        _GoRouter.getInstance().addSharedFragment(element, backStackTAG, containerId, useDefaultTransition);
+    public GoRouter addSharedFragment(View element, String backStackTAG , boolean useDefaultTransition) {
+        _GoRouter.getInstance().addSharedFragment(element, backStackTAG, useDefaultTransition);
         return this;
     }
 
@@ -177,37 +175,84 @@ public class GoRouter {
     }
 
 
+    /**
+     * 携带整型数据
+     * @param key
+     * @param intValue
+     * @return
+     */
     public GoRouter withInt(String key, int intValue) {
         _GoRouter.getInstance().withInt(key , intValue);
         return this;
     }
 
 
+    /**
+     * 携带单精度浮点型数据
+     * @param key
+     * @param floatValue
+     * @return
+     */
     public GoRouter withFloat(String key, float floatValue) {
         _GoRouter.getInstance().withFloat(key, floatValue);
         return this;
     }
 
+
+    /**
+     * 携带双精度浮点型数据
+     * @param key
+     * @param doubleValue
+     * @return
+     */
     public GoRouter withDouble(String key, double doubleValue) {
         _GoRouter.getInstance().withDouble(key, doubleValue);
         return this;
     }
 
+
+    /**
+     * 携带长整型数据
+     * @param key
+     * @param longValue
+     * @return
+     */
     public GoRouter withLong(String key, long longValue) {
         _GoRouter.getInstance().withLong(key, longValue);
         return this;
     }
 
+
+    /**
+     * 携带短整型数据
+     * @param key
+     * @param shortValue
+     * @return
+     */
     public GoRouter withShort(String key, short shortValue) {
         _GoRouter.getInstance().withShort(key, shortValue);
         return this;
     }
 
+
+    /**
+     * 携带字符串数据
+     * @param key
+     * @param stringValue
+     * @return
+     */
     public GoRouter withString(String key , String stringValue){
         _GoRouter.getInstance().withString(key , stringValue);
         return this;
     }
 
+
+    /**
+     * 携带字符序列数据
+     * @param key
+     * @param charSequenceValue
+     * @return
+     */
     public GoRouter withCharSequence(String key , CharSequence charSequenceValue){
         _GoRouter.getInstance().withCharSequence(key , charSequenceValue);
         return this;

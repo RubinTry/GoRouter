@@ -8,7 +8,6 @@ import android.transition.Transition;
  */
 public class FragmentSharedCard extends SharedCard {
     private String TAG;
-    private int containerId;
     private boolean useDefaultTransition;
     private Transition enterTransition;
     private Transition exitTransition;
@@ -84,19 +83,5 @@ public class FragmentSharedCard extends SharedCard {
     }
 
 
-    /**
-     * 获取fragment的容器的id
-     * @return
-     */
-    public int getContainerId() {
-        return containerId;
-    }
 
-    /**
-     * 设置fragment的容器的id
-     * @param containerId
-     */
-    public void setContainerId(int containerId) {
-        this.containerId = containerId;
-    }
 }
