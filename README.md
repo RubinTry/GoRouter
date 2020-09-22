@@ -129,7 +129,7 @@ Fragment
 
    //Navigate from a fragment to a fragment
    GoRouter.getInstance().build("routeKey1")
-                   .setFragmentContainer(fragment's containerId)
+                   .setFragmentContainerId(fragment's containerId)
                    .go()
 
 
@@ -137,7 +137,7 @@ Fragment
      Bundle data = new Bundle()
      data.putInt(key , value);
      GoRouter.getInstance().build("routeKey1" , data)
-                   .setFragmentContainer(fragment's containerId)
+                   .setFragmentContainerId(fragment's containerId)
                    .go();               
 
     //Here you will navigation to RouteFragment  

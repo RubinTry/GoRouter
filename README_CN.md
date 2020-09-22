@@ -123,7 +123,7 @@ Fragment篇
 
    //从某个fragment导航到某个fragment
    GoRouter.getInstance().build("routeKey1")
-                   .setFragmentContainer(fragment's containerId)
+                   .setFragmentContainerId(fragment's containerId)
                    .go()
 
 
@@ -131,7 +131,7 @@ Fragment篇
      Bundle data = new Bundle()
      data.putInt(key , value);
      GoRouter.getInstance().build("routeKey1" , data)
-                   .setFragmentContainer(fragment's containerId)
+                   .setFragmentContainerId(fragment's containerId)
                    .go();               
 
     //至此，你已导航到指定的fragment

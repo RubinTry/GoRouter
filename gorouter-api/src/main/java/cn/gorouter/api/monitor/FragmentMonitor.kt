@@ -1,23 +1,16 @@
 package cn.gorouter.api.monitor
 
 import android.app.Application
-import android.os.Handler
 import android.transition.Transition
 import android.transition.TransitionInflater
-import android.util.Log
-import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import cn.gorouter.api.card.FragmentSharedCard
 import cn.gorouter.api.logger.GoLogger
-import cn.gorouter.api.threadpool.DefaultPoolExecutor
-import cn.gorouter.api.threadpool.MainExecutor
 import java.lang.IllegalArgumentException
 import java.util.*
-import java.util.concurrent.CountDownLatch
-import kotlin.collections.LinkedHashMap
 
 /**
  * @author logcat
@@ -144,8 +137,9 @@ class FragmentMonitor {
      *
      * @param container
      */
-    fun setFragmentContainer(container: Int) {
+    fun setFragmentContainerId(container: Int) : FragmentMonitor {
         this.container = container
+        return this
     }
 
 
@@ -286,10 +280,9 @@ class FragmentMonitor {
         } else {
 
 
-            if (tagList.isNotEmpty()) {
-                topKey = tagList.last()
-                topElement = getManager()?.findFragmentByTag(topKey)
-            }
+            topKey = tagList.last()
+            topElement = getManager()?.findFragmentByTag(topKey)
+
 
             if (tagList.size > 1) {
                 lastKey = tagList[tagList.size - 2]
@@ -327,28 +320,26 @@ class FragmentMonitor {
     fun finish(fragment: Fragment) {
         //找到当前fragment的位置
 
+        if (tagList.isEmpty()) {
+            return
+        }
+
         val index = tagList.indexOf(fragment.tag)
-        val currentKey = tagList[index]
         val beginTransaction = getManager()?.beginTransaction()
         beginTransaction?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
         beginTransaction?.detach(fragment)
-        getManager()?.popBackStackImmediate(currentKey, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        getManager()?.popBackStackImmediate(fragment.tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
         if (index > 0) {
             val key = tagList[index - 1]
             val lastFragment = getManager()?.findFragmentByTag(key)
+            beginTransaction?.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             beginTransaction?.attach(lastFragment!!)
         }
         beginTransaction?.commit()
+        tagList.removeAt(index)
+
         clearFragmentManager()
-        tagList.remove(currentKey)
-
-        if (tagList.size == 0) {
-            ActivityMonitor.instance?.exit()
-        }else{
-            clearFragmentManager()
-        }
-
 
     }
 
@@ -361,7 +352,7 @@ class FragmentMonitor {
         val size = tagList.size
         for (index in (size - 1) downTo 0) {
             val key = tagList[index]
-            getManager()?.popBackStack(key , FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            getManager()?.popBackStack(key, FragmentManager.POP_BACK_STACK_INCLUSIVE)
             tagList.remove(key)
         }
         clearFragmentManager()
@@ -384,7 +375,11 @@ class FragmentMonitor {
      * @return
      */
     fun canExit(): Boolean {
-        return tagList.size == 1 && getManager()?.fragments?.size == 1
+        return tagList.size == 1
     }
 
+
+    fun getTagList(): LinkedList<String> {
+        return tagList;
+    }
 }

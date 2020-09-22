@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.gorouter.api.card.FragmentSharedCard;
+import cn.gorouter.api.card.GoBoard;
 import cn.gorouter.api.logger.GoLogger;
 import cn.gorouter.api.monitor.FragmentMonitor;
 import cn.gorouter.api.threadpool.DefaultPoolExecutor;
@@ -50,11 +51,10 @@ import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAG
  */
 public class _GoRouter {
     private static volatile _GoRouter instance;
-    private String currentUrl;
-    private Bundle currentData;
     private Map<String, Class> nodeTargetContainer;
     private static Context mContext;
     private FragmentSharedCard mFragmentSharedCard;
+    private GoBoard goBoard;
 
 
     private static final String EXTRACTED_NAME_EXT = ".classes";
@@ -75,6 +75,7 @@ public class _GoRouter {
 
     private _GoRouter() {
         nodeTargetContainer = new HashMap<>();
+        goBoard = new GoBoard();
     }
 
     /**
@@ -319,12 +320,12 @@ public class _GoRouter {
      * Build a route
      * 通过路由键构建一个路由
      *
-     * @param url  route url address
-     * @param data The data that needs to be passed to the target page
+     * @param routeKey  route key address
+     * @param extra The data that needs to be passed to the target page
      */
-    public void build(String url, Bundle data) {
-        this.currentUrl = url;
-        this.currentData = data;
+    public void build(String routeKey, Bundle extra) {
+        goBoard.setRouteKey(routeKey);
+        goBoard.setData(extra);
     }
 
 
@@ -333,6 +334,7 @@ public class _GoRouter {
      * 通过路由键访问具体页面
      */
     public void go(Context context, Integer requestCode, @Nullable Bundle options) throws NullPointerException {
+        String currentUrl = goBoard.getRouteKey();
         try {
             Context currentContext = null == context ? mContext : context;
             if (currentUrl == null) {
@@ -370,7 +372,6 @@ public class _GoRouter {
      * 为fragment添加共享元素以便在跳转时自动携带炫酷动画
      *
      * @param element              需要添加共享元素效果的视图
-     * @param name                 视图名称
      * @param backStackTAG         返回栈tag
      * @param containerId          容器的视图id
      * @param useDefaultTransition 是否启用默认动画
@@ -404,16 +405,25 @@ public class _GoRouter {
     /**
      * 设置供fragment跳转用的容器id
      *
-     * @param container
+     * @param containerId
      */
-    public void setFragmentContainer(int container) {
-        if (container != 0) {
-            if (container == View.NO_ID) {
-                throw new IllegalArgumentException("Can't add fragment with no id");
-            }
-//            this.container = container;
-            FragmentMonitor.Companion.getInstance().setFragmentContainer(container);
+    public void setFragmentContainerId(int containerId) {
+//        if (container != 0) {
+//            if (container == View.NO_ID) {
+//                throw new IllegalArgumentException("Can't add fragment with no id");
+//            }
+////            this.container = container;
+//            FragmentMonitor.Companion.getInstance().setFragmentContainerId(container);
+//        }
+
+        if(containerId == View.NO_ID){
+            throw new IllegalArgumentException("Can't add fragment with no id");
         }
+
+        if(goBoard == null){
+            goBoard = new GoBoard();
+        }
+        goBoard.setFragmentContainerId(containerId);
     }
 
 
@@ -437,6 +447,8 @@ public class _GoRouter {
 
                 break;
             case FRAGMENT:
+                Bundle currentData = goBoard.getData();
+                String currentUrl = goBoard.getRouteKey();
                 try {
                     Fragment curFragment = (Fragment) nodeTarget.getConstructor().newInstance();
 
@@ -445,9 +457,9 @@ public class _GoRouter {
                     }
 
                     if (mFragmentSharedCard != null) {
-                        FragmentMonitor.Companion.getInstance().setFragmentSharedCard(mFragmentSharedCard).show(curFragment , currentUrl);
+                        FragmentMonitor.Companion.getInstance().setFragmentContainerId(goBoard.getFragmentContainerId()).setFragmentSharedCard(mFragmentSharedCard).show(curFragment , currentUrl);
                     } else {
-                        FragmentMonitor.Companion.getInstance().show(curFragment , currentUrl);
+                        FragmentMonitor.Companion.getInstance().setFragmentContainerId(goBoard.getFragmentContainerId()).show(curFragment , currentUrl);
                     }
 
                     mFragmentSharedCard = null;
@@ -484,6 +496,84 @@ public class _GoRouter {
         }
     }
 
+    /**
+     * 设置需要携带的数据
+     * @param extra 数据Bundle
+     */
+    public void withExtra(Bundle extra) {
+        goBoard.setData(extra);
+    }
+
+    /**
+     * 携带int数据
+     * @param key
+     * @param intValue 需要携带的int值
+     */
+    public void withInt(String key , int intValue) {
+        goBoard.putInt(key , intValue);
+    }
+
+
+    /**
+     * 携带float数据
+     * @param key
+     * @param floatValue
+     */
+    public void withFloat(String key , float floatValue){
+        goBoard.putFloat(key , floatValue);
+    }
+
+
+    /**
+     * 携带长整型数据
+     * @param key
+     * @param longValue
+     */
+    public void withLong(String key , long longValue){
+        goBoard.putLong(key , longValue);
+    }
+
+
+    /**
+     * 携带双精度浮点数
+     * @param key
+     * @param doubleValue
+     */
+    public void withDouble(String key , double doubleValue){
+        goBoard.putDouble(key , doubleValue);
+    }
+
+
+    /**
+     * 携带字符串数据
+     * @param key
+     * @param stringValue
+     */
+    public void withString(String key , String stringValue){
+        goBoard.putString(key , stringValue);
+    }
+
+
+    /**
+     * 携带字符序列
+     * @param key
+     * @param charSequenceValue
+     */
+    public void withCharSequence(String key , CharSequence charSequenceValue){
+        goBoard.putCharSequence(key , charSequenceValue);
+    }
+
+
+    /**
+     * 携带短整型数据
+     * @param key
+     * @param shortValue
+     */
+    public void withShort(String key , short shortValue){
+        goBoard.putShort(key , shortValue);
+    }
+
+
 
     /**
      * Page type.
@@ -516,6 +606,7 @@ public class _GoRouter {
      */
     private void startActivity(Context currentContext, Class activityClazz, @Nullable Bundle options, Integer requestCode) {
 
+        Bundle currentData = goBoard.getData();
         Intent intent = new Intent(currentContext, activityClazz);
         if (currentData != null) {
             intent.putExtras(currentData);
@@ -529,11 +620,10 @@ public class _GoRouter {
                 GoLogger.warn("Must use [go(activity, ...)] to support [startActivityForResult]");
             }
         } else {
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ActivityCompat.startActivity(currentContext, intent, options);
         }
-        currentData = null;
+        goBoard.release();
     }
 
 

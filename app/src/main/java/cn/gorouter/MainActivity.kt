@@ -26,8 +26,9 @@ class MainActivity : AppCompatActivity(){
 
         var data = Bundle()
         data.putInt("containerId" , R.id.flContainer)
-        GoRouter.getInstance().build("app/TestFragment" , data)
-                .setFragmentContainer(R.id.flContainer)
+        GoRouter.getInstance().build("app/TestFragment")
+                .withExtra(data)
+                .withContainer(R.id.flContainer)
                 .go()
 
     }

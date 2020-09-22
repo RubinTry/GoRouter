@@ -49,7 +49,7 @@ public class TestFragment extends BaseFragment {
                         .go();
 
 //                GoRouter.getInstance().build("app/TestFragment2")
-//                        .setFragmentContainer(resId)
+//                        .setFragmentContainerId(resId)
 //                        .go();
 
 
