@@ -1,6 +1,6 @@
 <div align=center>
     <a href="https://github.com/RubinTry/GoRouter">
-        <img src="http://cdn.rubintry.cn/image/GoRouterGoRouter.png"/>
+        <img src="http://cdn.rubintry.cn/image/GoRouter.png"/>
     </a>
 </div>
 
