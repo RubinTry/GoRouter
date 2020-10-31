@@ -46,7 +46,7 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.29-blue)](https://b
 config.gradle
 ```groovy
     dependencies{
-    implementation 'cn.rubintry:gorouter-api:1.0.28'
+    implementation 'cn.rubintry:gorouter-api:1.0.29'
     //Java
     annotationProcessor  'cn.rubintry:gorouter-compiler:1.0.5'
     //Kotlin
