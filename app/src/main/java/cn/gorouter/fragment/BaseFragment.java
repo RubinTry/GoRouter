@@ -1,4 +1,4 @@
-package cn.gorouter;
+package cn.gorouter.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

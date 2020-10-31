@@ -1,5 +1,6 @@
 package cn.gorouter.api.launcher;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
@@ -291,16 +292,14 @@ public class GoRouter {
         }
     }
 
-
     /**
      * 通过先前设置好的路由键访问具体页面
-     *
-     * @param options 这是一个配置项，用来决定如何启动activity
+     * @param context     当前页面上下文
+     * @param options     这是一个配置项，用来决定如何启动activity
      */
-    public void go(@Nullable Bundle options) {
-        go(applicationContext, options, null);
+    public void go(Context context , @Nullable Bundle options){
+        go(context , options , null);
     }
-
 
     /**
      * 通过先前设置好的路由键访问具体页面
@@ -315,6 +314,9 @@ public class GoRouter {
                 throw new IllegalArgumentException("You haven't initialized yet！");
             }
             _GoRouter.getInstance().go(context, requestCode, options);
+            if(context instanceof Activity){
+                ((Activity)context).overridePendingTransition(0 , 0);
+            }
         } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);
         }

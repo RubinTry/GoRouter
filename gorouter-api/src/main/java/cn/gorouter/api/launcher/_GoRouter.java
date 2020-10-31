@@ -330,19 +330,19 @@ public class _GoRouter {
      * 通过路由键访问具体页面
      */
     public void go(Context context, Integer requestCode, @Nullable Bundle options) {
-        String currentUrl = goBoard.getRouteKey();
+        String routeKey = goBoard.getRouteKey();
         try {
             Context currentContext = null == context ? mContext : context;
-            if (currentUrl == null) {
-                throw new IllegalArgumentException("Please set routeKey");
+            if (routeKey == null) {
+                GoLogger.error("Please set routeKey");
             }
 
             if (nodeTargetContainer == null) {
-                throw new NullPointerException("container is empty!!!");
+                GoLogger.error("container is empty!!!");
             }
 
             //Get all the node and type classes.
-            Class nodeTarget = nodeTargetContainer.get(currentUrl);
+            Class nodeTarget = nodeTargetContainer.get(routeKey);
 
             if (nodeTarget != null) {
                 if (Activity.class.isAssignableFrom(nodeTarget)) {
@@ -356,7 +356,7 @@ public class _GoRouter {
                     go(currentContext, requestCode, FRAGMENT_IN_APP_PACKAGE, nodeTarget, options);
                 }
             } else {
-                throw new IllegalArgumentException("route \"" + currentUrl + "\" is not found!!!");
+                GoLogger.error("Route node \"" + routeKey + "\" is not found!!!");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -403,7 +403,7 @@ public class _GoRouter {
      */
     public void setFragmentContainerId(int containerId) {
         if (containerId == View.NO_ID) {
-            throw new IllegalArgumentException("Can't add fragment with no id");
+            GoLogger.error("Can't add fragment with no id");
         }
 
         if (goBoard == null) {
@@ -472,8 +472,10 @@ public class _GoRouter {
     public void put(String url, Class target) {
         if (url != null && target != null) {
             nodeTargetContainer.put(url, target);
+            GoLogger.debug("target added!");
             try {
-                GoLogger.info(target.getSimpleName() + "  added!");
+                GoLogger.info(target.getSimpleName());
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -481,6 +483,9 @@ public class _GoRouter {
     }
 
     /**
+     *
+     * Jump with Extra
+     *
      * 设置需要携带的数据
      *
      * @param extra 数据Bundle
@@ -490,6 +495,8 @@ public class _GoRouter {
     }
 
     /**
+     * Jump with integer data
+     *
      * 携带int数据
      *
      * @param key
@@ -501,6 +508,8 @@ public class _GoRouter {
 
 
     /**
+     * Jump with float data
+     *
      * 携带float数据
      *
      * @param key
@@ -512,6 +521,8 @@ public class _GoRouter {
 
 
     /**
+     * Jump with long data
+     *
      * 携带长整型数据
      *
      * @param key
@@ -523,6 +534,8 @@ public class _GoRouter {
 
 
     /**
+     * Jump with double data
+     *
      * 携带双精度浮点数
      *
      * @param key
@@ -534,6 +547,8 @@ public class _GoRouter {
 
 
     /**
+     * Jump with string data
+     *
      * 携带字符串数据
      *
      * @param key
@@ -545,6 +560,8 @@ public class _GoRouter {
 
 
     /**
+     * Jump with CharSequence
+     *
      * 携带字符序列
      *
      * @param key
@@ -556,6 +573,8 @@ public class _GoRouter {
 
 
     /**
+     * Jump with short data
+     *
      * 携带短整型数据
      *
      * @param key
@@ -609,6 +628,12 @@ public class _GoRouter {
                 ActivityCompat.startActivityForResult((Activity) currentContext, intent, requestCode, options);
             } else {
                 GoLogger.warn("Must use [go(activity, ...)] to support [startActivityForResult]");
+            }
+        } else if(requestCode == null && options != null){
+            if(currentContext instanceof Activity){
+                ActivityCompat.startActivity(((Activity) currentContext) , intent , options);
+            }else{
+                GoLogger.warn("Must use [go(activity, ...)] to support [startActivity]");
             }
         } else {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

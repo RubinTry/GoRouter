@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import cn.gorouter.annotation.Route
@@ -17,32 +18,15 @@ import cn.gorouter.api.monitor.FragmentMonitor
  */
 @Route(url = "/main/MainActivity")
 class MainActivity : AppCompatActivity(){
-    private val TAG = this.javaClass.simpleName
+    private lateinit var tvLogin : TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-
-
-//        var data = Bundle()
-//        data.putInt("containerId" , R.id.flContainer)
-        GoRouter.getInstance().build("app/TestFragment")
-//                .withExtra(data)
-                .withInt("containerId" , R.id.flContainer)
-                .withContainer(R.id.flContainer)
-                .go()
+        tvLogin = findViewById(R.id.tvLogin)
 
     }
 
 
-    override fun onBackPressed() {
-        if (FragmentMonitor.instance?.canExit()!!) {
-            //强制杀死当前进程
-            ActivityMonitor.instance?.exit()
-        } else{
-            FragmentMonitor.instance?.finish()
-        }
-    }
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -55,9 +39,11 @@ class MainActivity : AppCompatActivity(){
     fun toLogin(view: View?) {
 
         //visit LoginActivity
-        GoRouter.getInstance()
-                .build("/main/Login")
-                .go(this, ActivityOptionsCompat.makeBasic().toBundle(), 0)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            GoRouter.getInstance()
+                    .build("/main/Login")
+                    .go(this , ActivityOptionsCompat.makeSceneTransitionAnimation(this , tvLogin , tvLogin.transitionName).toBundle())
+        }
     }
 
 

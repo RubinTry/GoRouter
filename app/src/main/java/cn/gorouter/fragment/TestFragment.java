@@ -1,48 +1,44 @@
-package cn.gorouter;
+package cn.gorouter.fragment;
 
-import android.os.Bundle;
-import android.transition.TransitionInflater;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
-import androidx.fragment.app.Fragment;
-
 import butterknife.BindView;
+import cn.gorouter.R;
 import cn.gorouter.annotation.Route;
 import cn.gorouter.api.launcher.GoRouter;
 
 
-/**
- * @author logcat
- */
-@Route(url = "app/TestFragment2")
-public class Test2Fragment extends BaseFragment {
+@Route(url = "app/TestFragment")
+public class TestFragment extends BaseFragment {
+
+    @BindView(R.id.tv1)
+    TextView tv1;
     private String TAG = this.getClass().getSimpleName();
-    @BindView(R.id.tv2)
-    TextView tv2;
 
 
     @Override
     protected int attachLayoutRes() {
-        return R.layout.fragment_test2;
+        return R.layout.fragment_test;
     }
 
     @Override
     protected void processor() {
-        tv2.setOnClickListener(new View.OnClickListener() {
+        tv1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GoRouter.getInstance()
-                        .build("test3Fragment")
+
+
+
+                int resId = getArguments().getInt("containerId");
+
+
+                GoRouter.getInstance().build("app/TestActivity")
                         .withContainer(R.id.flContainer)
-                        .addSharedFragment(tv2, "tag", true)
+                        .addSharedFragment(tv1,  "tag",  true)
                         .go();
+
             }
         });
     }
@@ -51,6 +47,7 @@ public class Test2Fragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        tv1 = null;
         Log.d(TAG, "onDestroyView: ");
     }
 
@@ -59,4 +56,8 @@ public class Test2Fragment extends BaseFragment {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
     }
+
+
+
+
 }
