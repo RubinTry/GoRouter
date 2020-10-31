@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import cn.gorouter.api.monitor.FragmentMonitor;
 
 /**
  * @author logcat
@@ -70,7 +69,7 @@ public abstract class BaseFragment extends Fragment {
 
 
     protected void finish(){
-        FragmentMonitor.Companion.getInstance().finish(this);
+
     }
 
 }

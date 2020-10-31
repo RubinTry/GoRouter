@@ -1,4 +1,4 @@
-package cn.gorouter;
+package cn.gorouter.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 
+import cn.gorouter.R;
 import cn.gorouter.annotation.Route;
 import cn.gorouter.api.launcher.GoRouter;
 

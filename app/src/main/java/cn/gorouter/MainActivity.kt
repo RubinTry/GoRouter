@@ -10,8 +10,6 @@ import androidx.core.app.ActivityOptionsCompat
 import cn.gorouter.annotation.Route
 import cn.gorouter.api.launcher.GoRouter
 import cn.gorouter.api.logger.GoLogger
-import cn.gorouter.api.monitor.ActivityMonitor
-import cn.gorouter.api.monitor.FragmentMonitor
 
 /**
  * @author logcat
@@ -24,6 +22,11 @@ class MainActivity : AppCompatActivity(){
         setContentView(R.layout.activity_main)
         tvLogin = findViewById(R.id.tvLogin)
 
+        val fragment = GoRouter.getInstance()
+                .build("app/TestFragment2")
+                .fragment
+
+        Log.d("TAG", "onCreate: ${fragment}")
     }
 
 

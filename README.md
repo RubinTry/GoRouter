@@ -24,7 +24,7 @@ The most lightweight Framework about router in android.
 
 |module|GoRouter-api|GoRouter-compiler|GoRouter-annotation|
 |:---:|:---:|:---:|:---:|
-version|[![Version](https://img.shields.io/badge/Version-1.0.28-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
+version|[![Version](https://img.shields.io/badge/Version-1.0.29-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
 
 
 
@@ -33,11 +33,12 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.28-blue)](https://b
 
 #### Feature
 1. **Support for multi-modules**
-2. **Full Activity and Fragment support**
-3. **InstantRun support**
-4. **MultiDex support**
-5. **AndroidX Support**
-6. **Support kotlin**
+2. **Full Activity support**
+3. **Support get Fragment instance**
+4. **InstantRun support**
+5. **MultiDex support**
+6. **AndroidX Support**
+7. **Support kotlin**
 
 
 
@@ -127,38 +128,13 @@ The AndroidManifest.xml when you run module as library
 Fragment
 ```java
 
-   //Navigate from a fragment to a fragment
-   GoRouter.getInstance().build("routeKey1")
-                   .setFragmentContainerId(fragment's containerId)
-                   .go()
-
-
-     //With data
-     Bundle data = new Bundle()
-     data.putInt(key , value);
-     GoRouter.getInstance().build("routeKey1" , data)
-                   .setFragmentContainerId(fragment's containerId)
-                   .go();               
-
-    //Here you will navigation to RouteFragment  
+   //Get a fragment instance
+   Fragment instance = GoRouter.getInstance().build("routeKey1")
+                   .getFragment()
     
         
 ```
-Target Fragment
-```java
-   @Route(url = "routeKey1")
-   public class RouteFragment extends Fragment {
 
-      @Nullable
-      @Override
-      public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-          value = getArguments().getInt(key)
-
-          return YourView;
-      }    
-   }    
-```
 
 
 Activity
@@ -196,52 +172,6 @@ Target Activity
 
 
 #### With sharedElements
-
-Fragment
-
-##### Layout
-
-fragment1
-```xml
-   <TextView
-        android:id="@+id/tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="fragment1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:transitionName="sharedFragment"
-        android:textSize="50sp"></TextView>
-```
-
-fragment2
-```xml
-   <TextView
-        android:id="@+id/tv2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="fragment2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:transitionName="sharedFragment"
-        android:textSize="50sp"></TextView>
-```
-```java
-   //Fragment1
-   //Navigate to a fragment with animation immediately
-   //This may cause a memory leak , try to check your views in this page was cleared when you leave ，It is recommended to use frameworks such as ButterKnife to complete this operation.
-   GoRouter.getInstance()
-                        .build("fragment2 's routeKey")
-                        .addSharedFragment(tv , "tag" , containerId , true)
-                        .go();
-
-
-    //Here you will navigation to RouteFragment  
-    
-        
-```
 
 
 Activity
@@ -281,6 +211,7 @@ activity2
    //navigation to another activity with animation.
 
    tv = findViewById(R.id.tv);
+
    GoRouter.getInstance().build("activity1 's routeKey")
-   .go(ActivityOptions.makeSceneTransitionAnimation(this , tv , "sharedActivity").toBundle())
+   .go(this , ActivityOptionsCompat.makeSceneTransitionAnimation(this , tv , tv.getTransitionName()).toBundle())
 ```

@@ -34,7 +34,6 @@ import java.util.regex.Pattern;
 import cn.gorouter.api.card.FragmentSharedCard;
 import cn.gorouter.api.card.GoBoard;
 import cn.gorouter.api.logger.GoLogger;
-import cn.gorouter.api.monitor.FragmentMonitor;
 import cn.gorouter.api.threadpool.DefaultPoolExecutor;
 import cn.gorouter.api.threadpool.MainExecutor;
 import cn.gorouter.api.monitor.ActivityMonitor;
@@ -101,7 +100,6 @@ public class _GoRouter {
     public synchronized static boolean init(Application application) {
         mContext = application.getApplicationContext();
         ActivityMonitor.Companion.getInstance().initialize(application);
-        FragmentMonitor.Companion.getInstance().initialize(application);
         return initAllRoute(mContext);
     }
 
@@ -327,7 +325,9 @@ public class _GoRouter {
 
     /**
      * Go to target page.
+     * When you need open a fragment, you should get a fragment instance by {@link #getFragmentInstance()} then open it
      * 通过路由键访问具体页面
+     * 如果你需要打开一个fragment，你需要用{@link #getFragmentInstance()}得到一个fragment实例然后打开它
      */
     public void go(Context context, Integer requestCode, @Nullable Bundle options) {
         String routeKey = goBoard.getRouteKey();
@@ -348,19 +348,52 @@ public class _GoRouter {
                 if (Activity.class.isAssignableFrom(nodeTarget)) {
                     //If the node type is Activity,the jump is made in the form of Activity.
                     go(currentContext, requestCode, ACTIVITY, nodeTarget, options);
-                } else if (Fragment.class.isAssignableFrom(nodeTarget)) {
-                    //If the node type is Fragment,the jump is made in the form of Fragment.
-                    go(currentContext, requestCode, FRAGMENT, nodeTarget, options);
-                } else if (android.app.Fragment.class.isAssignableFrom(nodeTarget)) {
-                    //If the node type is Fragment in package app,we should go to fragment
-                    go(currentContext, requestCode, FRAGMENT_IN_APP_PACKAGE, nodeTarget, options);
+                } else {
+                    GoLogger.error("Don't use this method to open fragment, please get a fragment instance then open it.");
                 }
+//                else if (Fragment.class.isAssignableFrom(nodeTarget)) {
+//                    //If the node type is Fragment,the jump is made in the form of Fragment.
+//                    go(currentContext, requestCode, FRAGMENT, nodeTarget, options);
+//                } else if (android.app.Fragment.class.isAssignableFrom(nodeTarget)) {
+//                    //If the node type is Fragment in package app,we should go to fragment
+//                    go(currentContext, requestCode, FRAGMENT_IN_APP_PACKAGE, nodeTarget, options);
+//                }
             } else {
                 GoLogger.error("Route node \"" + routeKey + "\" is not found!!!");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * Get a fragment instance.
+     * 获得一个fragment实例
+     * @return
+     */
+    public Fragment getFragmentInstance() {
+        String routeKey = goBoard.getRouteKey();
+        try {
+            if (routeKey == null) {
+                GoLogger.error("Please set routeKey");
+            }
+
+            if (nodeTargetContainer == null) {
+                GoLogger.error("container is empty!!!");
+            }
+
+            //Get all the node and type classes.
+            Class nodeTarget = nodeTargetContainer.get(routeKey);
+            if (Fragment.class.isAssignableFrom(nodeTarget)) {
+                Fragment fragment = (Fragment) nodeTarget.newInstance();
+                return fragment;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
@@ -432,28 +465,6 @@ public class _GoRouter {
                 });
 
                 break;
-            case FRAGMENT:
-                Bundle currentData = goBoard.getData();
-                String currentUrl = goBoard.getRouteKey();
-                try {
-                    Fragment curFragment = (Fragment) nodeTarget.getConstructor().newInstance();
-
-                    if (currentData != null) {
-                        curFragment.setArguments(currentData);
-                    }
-
-                    if (mFragmentSharedCard != null) {
-                        FragmentMonitor.Companion.getInstance().setFragmentContainerId(goBoard.getFragmentContainerId()).setFragmentSharedCard(mFragmentSharedCard).show(curFragment, currentUrl);
-                    } else {
-                        FragmentMonitor.Companion.getInstance().setFragmentContainerId(goBoard.getFragmentContainerId()).show(curFragment, currentUrl);
-                    }
-
-                    mFragmentSharedCard = null;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                goBoard.release();
-                break;
             default:
                 break;
         }
@@ -483,9 +494,8 @@ public class _GoRouter {
     }
 
     /**
-     *
      * Jump with Extra
-     *
+     * <p>
      * 设置需要携带的数据
      *
      * @param extra 数据Bundle
@@ -496,7 +506,7 @@ public class _GoRouter {
 
     /**
      * Jump with integer data
-     *
+     * <p>
      * 携带int数据
      *
      * @param key
@@ -509,7 +519,7 @@ public class _GoRouter {
 
     /**
      * Jump with float data
-     *
+     * <p>
      * 携带float数据
      *
      * @param key
@@ -522,7 +532,7 @@ public class _GoRouter {
 
     /**
      * Jump with long data
-     *
+     * <p>
      * 携带长整型数据
      *
      * @param key
@@ -535,7 +545,7 @@ public class _GoRouter {
 
     /**
      * Jump with double data
-     *
+     * <p>
      * 携带双精度浮点数
      *
      * @param key
@@ -548,7 +558,7 @@ public class _GoRouter {
 
     /**
      * Jump with string data
-     *
+     * <p>
      * 携带字符串数据
      *
      * @param key
@@ -561,7 +571,7 @@ public class _GoRouter {
 
     /**
      * Jump with CharSequence
-     *
+     * <p>
      * 携带字符序列
      *
      * @param key
@@ -574,7 +584,7 @@ public class _GoRouter {
 
     /**
      * Jump with short data
-     *
+     * <p>
      * 携带短整型数据
      *
      * @param key
@@ -629,10 +639,10 @@ public class _GoRouter {
             } else {
                 GoLogger.warn("Must use [go(activity, ...)] to support [startActivityForResult]");
             }
-        } else if(requestCode == null && options != null){
-            if(currentContext instanceof Activity){
-                ActivityCompat.startActivity(((Activity) currentContext) , intent , options);
-            }else{
+        } else if (requestCode == null && options != null) {
+            if (currentContext instanceof Activity) {
+                ActivityCompat.startActivity(((Activity) currentContext), intent, options);
+            } else {
                 GoLogger.warn("Must use [go(activity, ...)] to support [startActivity]");
             }
         } else {

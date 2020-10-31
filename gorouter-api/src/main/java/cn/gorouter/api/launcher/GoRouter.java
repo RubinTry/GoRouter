@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.transition.Transition;
 import android.view.View;
 
+import androidx.fragment.app.Fragment;
+
 import org.jetbrains.annotations.Nullable;
 
 import cn.gorouter.api.logger.GoLogger;
@@ -134,7 +136,7 @@ public class GoRouter {
      * @param useDefaultTransition 是否使用默认的转场动画
      * @return
      */
-    public GoRouter addSharedFragment(View element, String backStackTAG , boolean useDefaultTransition) {
+    public GoRouter addSharedFragment(View element, String backStackTAG, boolean useDefaultTransition) {
         _GoRouter.getInstance().addSharedFragment(element, backStackTAG, useDefaultTransition);
         return this;
     }
@@ -178,18 +180,20 @@ public class GoRouter {
 
     /**
      * 携带整型数据
+     *
      * @param key
      * @param intValue
      * @return
      */
     public GoRouter withInt(String key, int intValue) {
-        _GoRouter.getInstance().withInt(key , intValue);
+        _GoRouter.getInstance().withInt(key, intValue);
         return this;
     }
 
 
     /**
      * 携带单精度浮点型数据
+     *
      * @param key
      * @param floatValue
      * @return
@@ -202,6 +206,7 @@ public class GoRouter {
 
     /**
      * 携带双精度浮点型数据
+     *
      * @param key
      * @param doubleValue
      * @return
@@ -214,6 +219,7 @@ public class GoRouter {
 
     /**
      * 携带长整型数据
+     *
      * @param key
      * @param longValue
      * @return
@@ -226,6 +232,7 @@ public class GoRouter {
 
     /**
      * 携带短整型数据
+     *
      * @param key
      * @param shortValue
      * @return
@@ -238,26 +245,34 @@ public class GoRouter {
 
     /**
      * 携带字符串数据
+     *
      * @param key
      * @param stringValue
      * @return
      */
-    public GoRouter withString(String key , String stringValue){
-        _GoRouter.getInstance().withString(key , stringValue);
+    public GoRouter withString(String key, String stringValue) {
+        _GoRouter.getInstance().withString(key, stringValue);
         return this;
     }
 
 
     /**
      * 携带字符序列数据
+     *
      * @param key
      * @param charSequenceValue
      * @return
      */
-    public GoRouter withCharSequence(String key , CharSequence charSequenceValue){
-        _GoRouter.getInstance().withCharSequence(key , charSequenceValue);
+    public GoRouter withCharSequence(String key, CharSequence charSequenceValue) {
+        _GoRouter.getInstance().withCharSequence(key, charSequenceValue);
         return this;
     }
+
+
+    public Fragment getFragment() {
+        return _GoRouter.getInstance().getFragmentInstance();
+    }
+
 
     /**
      * Go to target page.
@@ -294,11 +309,12 @@ public class GoRouter {
 
     /**
      * 通过先前设置好的路由键访问具体页面
-     * @param context     当前页面上下文
-     * @param options     这是一个配置项，用来决定如何启动activity
+     *
+     * @param context 当前页面上下文
+     * @param options 这是一个配置项，用来决定如何启动activity
      */
-    public void go(Context context , @Nullable Bundle options){
-        go(context , options , null);
+    public void go(Context context, @Nullable Bundle options) {
+        go(context, options, null);
     }
 
     /**
@@ -314,8 +330,8 @@ public class GoRouter {
                 throw new IllegalArgumentException("You haven't initialized yet！");
             }
             _GoRouter.getInstance().go(context, requestCode, options);
-            if(context instanceof Activity){
-                ((Activity)context).overridePendingTransition(0 , 0);
+            if (context instanceof Activity) {
+                ((Activity) context).overridePendingTransition(0, 0);
             }
         } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);

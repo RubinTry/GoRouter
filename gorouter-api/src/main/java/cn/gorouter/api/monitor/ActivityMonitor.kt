@@ -62,7 +62,6 @@ class ActivityMonitor {
      *
      */
     fun exit() {
-        FragmentMonitor.instance?.finishAllFragment()
         for (activity in activityList) {
             activity.finish()
             activity.overridePendingTransition(0, 0)

@@ -18,7 +18,7 @@
 
 |module|GoRouter-api|GoRouter-compiler|GoRouter-annotation|
 |:---:|:---:|:---:|:---:|
-version|[![Version](https://img.shields.io/badge/Version-1.0.28-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
+version|[![Version](https://img.shields.io/badge/Version-1.0.29-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
 
 
 
@@ -27,11 +27,12 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.28-blue)](https://b
 
 #### 特性
 1. **支持多模块开发**
-2. **完美支持Activity和Fragment**
-3. **支持InstantRun support**
-4. **支持MultiDex support（google）**
-5. **支持AndroidX**
-6. **支持kotlin混合编译**
+2. **完美支持Activity**
+3. **支持获取fragment实例**
+4. **支持InstantRun support**
+5. **支持MultiDex support（google）**
+6. **支持AndroidX**
+7. **支持kotlin混合编译**
 
 
 
@@ -121,38 +122,13 @@ anotherModule.gradle
 Fragment篇
 ```java
 
-   //从某个fragment导航到某个fragment
-   GoRouter.getInstance().build("routeKey1")
-                   .setFragmentContainerId(fragment's containerId)
-                   .go()
-
-
-     //携带数据
-     Bundle data = new Bundle()
-     data.putInt(key , value);
-     GoRouter.getInstance().build("routeKey1" , data)
-                   .setFragmentContainerId(fragment's containerId)
-                   .go();               
-
-    //至此，你已导航到指定的fragment
+   //获得一个fragment实例
+   Fragment instance = GoRouter.getInstance().build("routeKey1")
+                   .getFragment()
     
         
 ```
-目标 Fragment
-```java
-   @Route(url = "routeKey1")
-   public class RouteFragment extends Fragment {
 
-      @Nullable
-      @Override
-      public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-          value = getArguments().getInt(key)
-
-          return YourView;
-      }    
-   }    
-```
 
 
 Activity篇
@@ -191,51 +167,6 @@ Activity篇
 
 #### 带有共享元素的跳转
 
-Fragment篇
-
-##### Layout
-
-fragment1
-```xml
-   <TextView
-        android:id="@+id/tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="fragment1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:transitionName="sharedFragment"
-        android:textSize="50sp"></TextView>
-```
-
-fragment2
-```xml
-   <TextView
-        android:id="@+id/tv2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="fragment2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:transitionName="sharedFragment"
-        android:textSize="50sp"></TextView>
-```
-```java
-   //Fragment1
-   //以带有共享元素动画的方式跳转
-   //此操作可能会导致内存泄漏，请确保该fragment跳转前已清除页面中的所有视图，建议使用ButterKnife等框架来完成此项操作
-   GoRouter.getInstance()
-                        .build("fragment2 's routeKey")
-                        .addSharedFragment(tv , "tag" , containerId , true)
-                        .go();
-
-
-    
-    
-        
-```
 
 
 Activity篇
@@ -276,5 +207,5 @@ activity2
 
    tv = findViewById(R.id.tv);
    GoRouter.getInstance().build("activity1 's routeKey")
-   .go(ActivityOptions.makeSceneTransitionAnimation(this , tv , "sharedActivity").toBundle())
+   .go(this , ActivityOptionsCompat.makeSceneTransitionAnimation(this , tv , tv.getTransitionName()).toBundle())
 ```
