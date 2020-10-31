@@ -12,9 +12,11 @@ import android.os.Bundle;
 import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -28,6 +30,7 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import cn.gorouter.api.card.FragmentSharedCard;
 import cn.gorouter.api.card.GoBoard;
 import cn.gorouter.api.logger.GoLogger;
@@ -37,6 +40,7 @@ import cn.gorouter.api.threadpool.MainExecutor;
 import cn.gorouter.api.monitor.ActivityMonitor;
 import cn.gorouter.api.utils.Const;
 import dalvik.system.DexFile;
+
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.ACTIVITY;
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT;
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAGE;
@@ -184,7 +188,6 @@ public class _GoRouter {
     }
 
 
-
     /**
      * 获取所有的dex路径
      *
@@ -204,8 +207,8 @@ public class _GoRouter {
         //the prefix of extracted file, ie: test.classes
         String extractedFilePrefix = sourceApk.getName() + EXTRACTED_NAME_EXT;
 
-       //如果VM已经支持了MultiDex，就不要去Secondary Folder加载 Classesx.zip了，那里已经么有了
-       //通过是否存在sp中的multidex.version是不准确的，因为从低版本升级上来的用户，是包含这个sp配置的
+        //如果VM已经支持了MultiDex，就不要去Secondary Folder加载 Classesx.zip了，那里已经么有了
+        //通过是否存在sp中的multidex.version是不准确的，因为从低版本升级上来的用户，是包含这个sp配置的
         if (!isVMMultidexCapable()) {
             //the total dex numbers
             int totalDexNumber = getMultiDexPreferences(context).getInt(KEY_DEX_NUMBER, 1);
@@ -313,8 +316,8 @@ public class _GoRouter {
      * Build a route
      * 通过路由键构建一个路由
      *
-     * @param routeKey  route key address
-     * @param extra The data that needs to be passed to the target page
+     * @param routeKey route key address
+     * @param extra    The data that needs to be passed to the target page
      */
     public void build(String routeKey, Bundle extra) {
         goBoard.setRouteKey(routeKey);
@@ -326,20 +329,20 @@ public class _GoRouter {
      * Go to target page.
      * 通过路由键访问具体页面
      */
-    public void go(Context context, Integer requestCode, @Nullable Bundle options) throws NullPointerException {
-        String currentUrl = goBoard.getRouteKey();
+    public void go(Context context, Integer requestCode, @Nullable Bundle options) {
+        String routeKey = goBoard.getRouteKey();
         try {
             Context currentContext = null == context ? mContext : context;
-            if (currentUrl == null) {
-                throw new IllegalArgumentException("Please set currentUrl");
+            if (routeKey == null) {
+                GoLogger.error("Please set routeKey");
             }
 
             if (nodeTargetContainer == null) {
-                throw new NullPointerException("container is empty!!!");
+                GoLogger.error("container is empty!!!");
             }
 
             //Get all the node and type classes.
-            Class nodeTarget = nodeTargetContainer.get(currentUrl);
+            Class nodeTarget = nodeTargetContainer.get(routeKey);
 
             if (nodeTarget != null) {
                 if (Activity.class.isAssignableFrom(nodeTarget)) {
@@ -353,9 +356,9 @@ public class _GoRouter {
                     go(currentContext, requestCode, FRAGMENT_IN_APP_PACKAGE, nodeTarget, options);
                 }
             } else {
-                throw new IllegalArgumentException("route \"" + currentUrl + "\" is not found!!!");
+                GoLogger.error("Route node \"" + routeKey + "\" is not found!!!");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -368,7 +371,7 @@ public class _GoRouter {
      * @param backStackTAG         返回栈tag
      * @param useDefaultTransition 是否启用默认动画
      */
-    public void addSharedFragment(View element, String backStackTAG,  boolean useDefaultTransition) {
+    public void addSharedFragment(View element, String backStackTAG, boolean useDefaultTransition) {
         if (mFragmentSharedCard == null) {
             mFragmentSharedCard = new FragmentSharedCard();
         }
@@ -399,11 +402,11 @@ public class _GoRouter {
      * @param containerId
      */
     public void setFragmentContainerId(int containerId) {
-        if(containerId == View.NO_ID){
-            throw new IllegalArgumentException("Can't add fragment with no id");
+        if (containerId == View.NO_ID) {
+            GoLogger.error("Can't add fragment with no id");
         }
 
-        if(goBoard == null){
+        if (goBoard == null) {
             goBoard = new GoBoard();
         }
         goBoard.setFragmentContainerId(containerId);
@@ -435,14 +438,14 @@ public class _GoRouter {
                 try {
                     Fragment curFragment = (Fragment) nodeTarget.getConstructor().newInstance();
 
-                    if(currentData != null){
+                    if (currentData != null) {
                         curFragment.setArguments(currentData);
                     }
 
                     if (mFragmentSharedCard != null) {
-                        FragmentMonitor.Companion.getInstance().setFragmentContainerId(goBoard.getFragmentContainerId()).setFragmentSharedCard(mFragmentSharedCard).show(curFragment , currentUrl);
+                        FragmentMonitor.Companion.getInstance().setFragmentContainerId(goBoard.getFragmentContainerId()).setFragmentSharedCard(mFragmentSharedCard).show(curFragment, currentUrl);
                     } else {
-                        FragmentMonitor.Companion.getInstance().setFragmentContainerId(goBoard.getFragmentContainerId()).show(curFragment , currentUrl);
+                        FragmentMonitor.Companion.getInstance().setFragmentContainerId(goBoard.getFragmentContainerId()).show(curFragment, currentUrl);
                     }
 
                     mFragmentSharedCard = null;
@@ -454,7 +457,6 @@ public class _GoRouter {
             default:
                 break;
         }
-
 
 
     }
@@ -481,7 +483,11 @@ public class _GoRouter {
     }
 
     /**
+     *
+     * Jump with Extra
+     *
      * 设置需要携带的数据
+     *
      * @param extra 数据Bundle
      */
     public void withExtra(Bundle extra) {
@@ -489,74 +495,94 @@ public class _GoRouter {
     }
 
     /**
+     * Jump with integer data
+     *
      * 携带int数据
+     *
      * @param key
      * @param intValue 需要携带的int值
      */
-    public void withInt(String key , int intValue) {
-        goBoard.putInt(key , intValue);
+    public void withInt(String key, int intValue) {
+        goBoard.putInt(key, intValue);
     }
 
 
     /**
+     * Jump with float data
+     *
      * 携带float数据
+     *
      * @param key
      * @param floatValue
      */
-    public void withFloat(String key , float floatValue){
-        goBoard.putFloat(key , floatValue);
+    public void withFloat(String key, float floatValue) {
+        goBoard.putFloat(key, floatValue);
     }
 
 
     /**
+     * Jump with long data
+     *
      * 携带长整型数据
+     *
      * @param key
      * @param longValue
      */
-    public void withLong(String key , long longValue){
-        goBoard.putLong(key , longValue);
+    public void withLong(String key, long longValue) {
+        goBoard.putLong(key, longValue);
     }
 
 
     /**
+     * Jump with double data
+     *
      * 携带双精度浮点数
+     *
      * @param key
      * @param doubleValue
      */
-    public void withDouble(String key , double doubleValue){
-        goBoard.putDouble(key , doubleValue);
+    public void withDouble(String key, double doubleValue) {
+        goBoard.putDouble(key, doubleValue);
     }
 
 
     /**
+     * Jump with string data
+     *
      * 携带字符串数据
+     *
      * @param key
      * @param stringValue
      */
-    public void withString(String key , String stringValue){
-        goBoard.putString(key , stringValue);
+    public void withString(String key, String stringValue) {
+        goBoard.putString(key, stringValue);
     }
 
 
     /**
+     * Jump with CharSequence
+     *
      * 携带字符序列
+     *
      * @param key
      * @param charSequenceValue
      */
-    public void withCharSequence(String key , CharSequence charSequenceValue){
-        goBoard.putCharSequence(key , charSequenceValue);
+    public void withCharSequence(String key, CharSequence charSequenceValue) {
+        goBoard.putCharSequence(key, charSequenceValue);
     }
 
 
     /**
+     * Jump with short data
+     *
      * 携带短整型数据
+     *
      * @param key
      * @param shortValue
      */
-    public void withShort(String key , short shortValue){
-        goBoard.putShort(key , shortValue);
+    public void withShort(String key, short shortValue) {
+        goBoard.putShort(key, shortValue);
     }
-
 
 
     /**
@@ -602,6 +628,12 @@ public class _GoRouter {
                 ActivityCompat.startActivityForResult((Activity) currentContext, intent, requestCode, options);
             } else {
                 GoLogger.warn("Must use [go(activity, ...)] to support [startActivityForResult]");
+            }
+        } else if(requestCode == null && options != null){
+            if(currentContext instanceof Activity){
+                ActivityCompat.startActivity(((Activity) currentContext) , intent , options);
+            }else{
+                GoLogger.warn("Must use [go(activity, ...)] to support [startActivity]");
             }
         } else {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
