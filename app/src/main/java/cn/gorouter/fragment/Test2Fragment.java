@@ -30,11 +30,7 @@ public class Test2Fragment extends BaseFragment {
         tv2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GoRouter.getInstance()
-                        .build("test3Fragment")
-                        .withContainer(R.id.flContainer)
-                        .addSharedFragment(tv2, "tag", true)
-                        .go();
+
             }
         });
     }

@@ -31,7 +31,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.gorouter.api.card.FragmentSharedCard;
 import cn.gorouter.api.card.GoBoard;
 import cn.gorouter.api.logger.GoLogger;
 import cn.gorouter.api.threadpool.DefaultPoolExecutor;
@@ -53,7 +52,6 @@ public class _GoRouter {
     private static volatile _GoRouter instance;
     private Map<String, Class> nodeTargetContainer;
     private static Context mContext;
-    private FragmentSharedCard mFragmentSharedCard;
     private GoBoard goBoard;
 
 
@@ -397,53 +395,8 @@ public class _GoRouter {
     }
 
 
-    /**
-     * 为fragment添加共享元素以便在跳转时自动携带炫酷动画
-     *
-     * @param element              需要添加共享元素效果的视图
-     * @param backStackTAG         返回栈tag
-     * @param useDefaultTransition 是否启用默认动画
-     */
-    public void addSharedFragment(View element, String backStackTAG, boolean useDefaultTransition) {
-        if (mFragmentSharedCard == null) {
-            mFragmentSharedCard = new FragmentSharedCard();
-        }
-        mFragmentSharedCard.setSharedElement(element);
-        mFragmentSharedCard.setTAG(backStackTAG);
-        mFragmentSharedCard.setUseDefaultTransition(useDefaultTransition);
-    }
 
 
-    /**
-     * 添加共享元素动画
-     *
-     * @param enterTransition 入场动画
-     * @param exitTransition  出场动画
-     */
-    public void addTransition(Transition enterTransition, Transition exitTransition) {
-        if (mFragmentSharedCard == null) {
-            mFragmentSharedCard = new FragmentSharedCard();
-        }
-        mFragmentSharedCard.setEnterTransition(enterTransition);
-        mFragmentSharedCard.setExitTransition(exitTransition);
-    }
-
-
-    /**
-     * 设置供fragment跳转用的容器id
-     *
-     * @param containerId
-     */
-    public void setFragmentContainerId(int containerId) {
-        if (containerId == View.NO_ID) {
-            GoLogger.error("Can't add fragment with no id");
-        }
-
-        if (goBoard == null) {
-            goBoard = new GoBoard();
-        }
-        goBoard.setFragmentContainerId(containerId);
-    }
 
 
     /**

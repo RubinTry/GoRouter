@@ -114,56 +114,8 @@ public class GoRouter {
     }
 
 
-    /**
-     * 添加共享元素信息
-     *
-     * @param element      需要添加共享元素效果的视图
-     * @param name         视图名称
-     * @param backStackTAG 返回栈tag
-     * @return
-     */
-    public GoRouter addSharedFragment(View element, String name, String backStackTAG) {
-        addSharedFragment(element, backStackTAG, false);
-        return this;
-    }
 
 
-    /**
-     * 添加共享元素信息
-     *
-     * @param element              需要添加共享元素效果的视图
-     * @param backStackTAG         返回栈tag
-     * @param useDefaultTransition 是否使用默认的转场动画
-     * @return
-     */
-    public GoRouter addSharedFragment(View element, String backStackTAG, boolean useDefaultTransition) {
-        _GoRouter.getInstance().addSharedFragment(element, backStackTAG, useDefaultTransition);
-        return this;
-    }
-
-    /**
-     * 为共享元素添加自定义转场动画
-     *
-     * @param enterTransition
-     * @param exitTransition
-     * @return
-     */
-    public GoRouter addTransition(Transition enterTransition, Transition exitTransition) {
-        _GoRouter.getInstance().addTransition(enterTransition, exitTransition);
-        return this;
-    }
-
-
-    /**
-     * 设置fragment的容器
-     *
-     * @param containerId
-     * @return
-     */
-    public GoRouter withContainer(int containerId) {
-        _GoRouter.getInstance().setFragmentContainerId(containerId);
-        return this;
-    }
 
 
     /**

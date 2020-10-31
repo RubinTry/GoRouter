@@ -35,8 +35,6 @@ public class TestFragment extends BaseFragment {
 
 
                 GoRouter.getInstance().build("app/TestActivity")
-                        .withContainer(R.id.flContainer)
-                        .addSharedFragment(tv1,  "tag",  true)
                         .go();
 
             }

@@ -10,7 +10,6 @@ import android.view.View;
 public class GoBoard {
     private int flag;
     private String routeKey;
-    private int fragmentContainerId;
     private Bundle data;
 
     public Bundle getData() {
@@ -21,13 +20,6 @@ public class GoBoard {
         this.data = data;
     }
 
-    public int getFragmentContainerId() {
-        return fragmentContainerId;
-    }
-
-    public void setFragmentContainerId(int fragmentContainerId) {
-        this.fragmentContainerId = fragmentContainerId;
-    }
 
     public int getFlag() {
         return flag;
@@ -142,7 +134,6 @@ public class GoBoard {
         this.data = null;
         this.routeKey = null;
         this.flag = Intent.FLAG_ACTIVITY_NEW_TASK;
-        this.fragmentContainerId = View.NO_ID;
     }
 
 
