@@ -16,7 +16,7 @@ import cn.gorouter.api.logger.GoLogger;
 
 /**
  * @author logcat <a href="13857769302@163.com">Contact me.</a>
- * @version 1.0.10
+ * @version 1.0.29
  * @since 2020/07/11 16:25
  */
 public class GoRouter {

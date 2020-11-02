@@ -45,7 +45,7 @@ import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAG
 
 /**
  * @author logcat <a href="13857769302@163.com">Contact me.</a>
- * @version 1.0.10
+ * @version 1.0.29
  * @since 2020/07/11 16:25
  */
 public class _GoRouter {
