@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import org.jetbrains.annotations.Nullable;
 
 import cn.gorouter.api.logger.GoLogger;
+import cn.gorouter.api.utils.Callback;
 
 
 /**
@@ -19,7 +20,7 @@ import cn.gorouter.api.logger.GoLogger;
  * @version 1.0.29
  * @since 2020/07/11 16:25
  */
-public class GoRouter {
+public final class GoRouter {
     private static volatile GoRouter instance;
     private static boolean init;
     private static Context applicationContext;
@@ -116,6 +117,10 @@ public class GoRouter {
 
 
 
+    public void withArguments(Bundle arguments){
+        _GoRouter.getInstance().withArguments(arguments);
+    }
+
 
 
     /**
@@ -209,6 +214,17 @@ public class GoRouter {
 
 
     /**
+     * 携带布尔类型的数据
+     * @param key
+     * @param booleanValue
+     * @return
+     */
+    public GoRouter withBoolean(String key , Boolean booleanValue){
+        _GoRouter.getInstance().withBoolean(key , booleanValue);
+        return this;
+    }
+
+    /**
      * 携带字符序列数据
      *
      * @param key
@@ -225,22 +241,42 @@ public class GoRouter {
         return _GoRouter.getInstance().getFragmentInstance();
     }
 
+    /**
+     * Go to target node.
+     * 通过先前设置好的路由键访问具体节点
+     */
+    public Object go(){
+       return go(null);
+    }
 
     /**
-     * Go to target page.
-     * 通过先前设置好的路由键访问具体页面
+     * Go to target node.
+     * 通过先前设置好的路由键访问具体节点
+     * @param callback Current navigation's callback
+     * @return
      */
-    public void go() {
+    public Object go(Callback callback) {
         try {
             if (!init) {
                 throw new IllegalArgumentException("You haven't initialized yet！");
             }
-            _GoRouter.getInstance().go(applicationContext, null, null);
+            return _GoRouter.getInstance().go(applicationContext, null, null , callback);
         } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);
+            return null;
         }
     }
 
+
+    /**
+     * 通过先前设置好的路由键访问具体页面
+     * @param context 当前页面上下文
+     * @param requestCode 页面返回时回调的请求码
+     * @return
+     */
+    public Object go(Context context, Integer requestCode) {
+        return go(context , requestCode , null);
+    }
 
     /**
      * 通过先前设置好的路由键访问具体页面
@@ -248,14 +284,15 @@ public class GoRouter {
      * @param context     当前页面上下文
      * @param requestCode 页面返回时回调的请求码
      */
-    public void go(Context context, Integer requestCode) {
+    public Object go(Context context, Integer requestCode , Callback callback) {
         try {
             if (!init) {
                 throw new IllegalArgumentException("You haven't initialized yet！");
             }
-            _GoRouter.getInstance().go(context, requestCode, null);
+            return _GoRouter.getInstance().go(context, requestCode, null , callback);
         } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);
+            return null;
         }
     }
 
@@ -269,6 +306,18 @@ public class GoRouter {
         go(context, options, null);
     }
 
+
+    /**
+     * 通过先前设置好的路由键访问具体页面
+     * @param context 当前页面上下文
+     * @param options 这是一个配置项，用来决定如何启动activity
+     * @param requestCode 页面返回时回调的请求码
+     * @return
+     */
+    public Object go(Context context, @Nullable Bundle options, Integer requestCode ) {
+        return go(context , options , requestCode , null);
+    }
+
     /**
      * 通过先前设置好的路由键访问具体页面
      *
@@ -276,17 +325,19 @@ public class GoRouter {
      * @param options     这是一个配置项，用来决定如何启动activity
      * @param requestCode 页面返回时回调的请求码
      */
-    public void go(Context context, @Nullable Bundle options, Integer requestCode) {
+    public Object go(Context context, @Nullable Bundle options, Integer requestCode , Callback callback) {
         try {
             if (!init) {
                 throw new IllegalArgumentException("You haven't initialized yet！");
             }
-            _GoRouter.getInstance().go(context, requestCode, options);
+
             if (context instanceof Activity) {
                 ((Activity) context).overridePendingTransition(0, 0);
             }
+            return _GoRouter.getInstance().go(context, requestCode, options , callback);
         } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);
+            return null;
         }
     }
 

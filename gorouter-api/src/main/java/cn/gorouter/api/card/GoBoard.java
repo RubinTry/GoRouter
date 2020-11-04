@@ -11,6 +11,15 @@ public class GoBoard {
     private int flag;
     private String routeKey;
     private Bundle data;
+    private Bundle arguments;
+
+    public Bundle getArguments() {
+        return arguments;
+    }
+
+    public void setArguments(Bundle arguments) {
+        this.arguments = arguments;
+    }
 
     public Bundle getData() {
         return data;
@@ -111,6 +120,11 @@ public class GoBoard {
         data.putString(key, value);
     }
 
+    public void putBoolean(String key , Boolean booleanValue){
+        checkDataNotNull();
+        data.putBoolean(key , booleanValue);
+    }
+
 
     /**
      * 向bundle插入一个字符序列数据
@@ -132,6 +146,10 @@ public class GoBoard {
             this.data.clear();
         }
         this.data = null;
+        if(this.arguments != null){
+            this.arguments.clear();
+        }
+        this.arguments = null;
         this.routeKey = null;
         this.flag = Intent.FLAG_ACTIVITY_NEW_TASK;
     }

@@ -1,5 +1,5 @@
 include ':gorouter-annotation'
 include ':gorouter-compiler'
 include ':gorouter-api'
-include ':app'
+include ':demo'
 rootProject.name = "GoRouter"

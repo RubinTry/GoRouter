@@ -32,10 +32,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cn.gorouter.api.card.GoBoard;
+import cn.gorouter.api.exception.NoAnyNodeException;
+import cn.gorouter.api.exception.NotSupportException;
+import cn.gorouter.api.exception.RouteNotFoundException;
 import cn.gorouter.api.logger.GoLogger;
 import cn.gorouter.api.threadpool.DefaultPoolExecutor;
 import cn.gorouter.api.threadpool.MainExecutor;
 import cn.gorouter.api.monitor.ActivityMonitor;
+import cn.gorouter.api.utils.Callback;
 import cn.gorouter.api.utils.Const;
 import dalvik.system.DexFile;
 
@@ -48,7 +52,7 @@ import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAG
  * @version 1.0.29
  * @since 2020/07/11 16:25
  */
-public class _GoRouter {
+public final class _GoRouter {
     private static volatile _GoRouter instance;
     private Map<String, Class> nodeTargetContainer;
     private static Context mContext;
@@ -177,7 +181,7 @@ public class _GoRouter {
             });
         }
 
-        //一直等待，直到线程总数降为0
+        //一直等待，直到线程总数降为0(一开始的线程总数为 paths.size())
         pathParserCtl.await();
         GoLogger.debug(Const.TAG + "Filter " + classList.size() + " classes by packageName <" + packageName + ">");
         return classList;
@@ -327,16 +331,22 @@ public class _GoRouter {
      * 通过路由键访问具体页面
      * 如果你需要打开一个fragment，你需要用{@link #getFragmentInstance()}得到一个fragment实例然后打开它
      */
-    public void go(Context context, Integer requestCode, @Nullable Bundle options) {
+    public Object go(Context context, Integer requestCode, @Nullable Bundle options , Callback callback) {
         String routeKey = goBoard.getRouteKey();
         try {
             Context currentContext = null == context ? mContext : context;
             if (routeKey == null) {
                 GoLogger.error("Please set routeKey");
+                if(callback != null){
+                    callback.onFail(new RouteNotFoundException("Please set routeKey"));
+                }
             }
 
             if (nodeTargetContainer == null) {
                 GoLogger.error("container is empty!!!");
+                if(callback != null){
+                    callback.onFail(new NoAnyNodeException("No any node!!!"));
+                }
             }
 
             //Get all the node and type classes.
@@ -345,31 +355,31 @@ public class _GoRouter {
             if (nodeTarget != null) {
                 if (Activity.class.isAssignableFrom(nodeTarget)) {
                     //If the node type is Activity,the jump is made in the form of Activity.
-                    go(currentContext, requestCode, ACTIVITY, nodeTarget, options);
+                    return go(currentContext, requestCode, ACTIVITY, nodeTarget, options , callback);
+                } else if (Fragment.class.isAssignableFrom(nodeTarget)) {
+                    return go(currentContext, requestCode, FRAGMENT, nodeTarget, options , callback);
                 } else {
                     GoLogger.error("Don't use this method to open fragment, please get a fragment instance then open it.");
                 }
-//                else if (Fragment.class.isAssignableFrom(nodeTarget)) {
-//                    //If the node type is Fragment,the jump is made in the form of Fragment.
-//                    go(currentContext, requestCode, FRAGMENT, nodeTarget, options);
-//                } else if (android.app.Fragment.class.isAssignableFrom(nodeTarget)) {
-//                    //If the node type is Fragment in package app,we should go to fragment
-//                    go(currentContext, requestCode, FRAGMENT_IN_APP_PACKAGE, nodeTarget, options);
-//                }
             } else {
-                GoLogger.error("Route node \"" + routeKey + "\" is not found!!!");
+                throw new RouteNotFoundException("Route node \"" + routeKey + "\" is not found!!!");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return "";
     }
 
 
     /**
      * Get a fragment instance.
      * 获得一个fragment实例
+     * <p>
+     * This method is deprecated , please use {@link #go(Context, Integer, TypeKind, Class, Bundle , Callback)} instead.
+     *
      * @return
      */
+    @Deprecated
     public Fragment getFragmentInstance() {
         String routeKey = goBoard.getRouteKey();
         try {
@@ -395,10 +405,6 @@ public class _GoRouter {
     }
 
 
-
-
-
-
     /**
      * Go to target page.
      * 通过路由键访问具体页面
@@ -406,23 +412,33 @@ public class _GoRouter {
      * @param type       页面类型 {@link TypeKind#ACTIVITY} activity类型   {@link TypeKind#FRAGMENT} fragment 类型
      * @param nodeTarget
      */
-    private void go(Context currentContext, Integer requestCode, TypeKind type, Class nodeTarget, @Nullable Bundle options) throws NullPointerException {
+    private Object go(Context currentContext, Integer requestCode, TypeKind type, Class nodeTarget, @Nullable Bundle options , Callback callback) {
         switch (type) {
             case ACTIVITY:
 
                 runOnMainThread(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(currentContext, nodeTarget, options, requestCode);
+                        startActivity(currentContext, nodeTarget, options, requestCode , callback);
                     }
                 });
 
                 break;
+            case FRAGMENT:
+                try {
+                    Object instance = nodeTarget.getConstructor().newInstance();
+                    if(goBoard.getArguments() != null){
+                        ((Fragment) instance).setArguments(goBoard.getArguments());
+                    }
+                    return instance;
+                } catch (Exception e) {
+                    throw new RouteNotFoundException("The fragment is not found!!!");
+                }
             default:
                 break;
         }
 
-
+        return "";
     }
 
 
@@ -523,6 +539,18 @@ public class _GoRouter {
 
 
     /**
+     * Jump with boolean data.
+     * 携带布尔类型的数据
+     *
+     * @param key
+     * @param booleanValue
+     */
+    public void withBoolean(String key, Boolean booleanValue) {
+        goBoard.putBoolean(key, booleanValue);
+    }
+
+
+    /**
      * Jump with CharSequence
      * <p>
      * 携带字符序列
@@ -545,6 +573,15 @@ public class _GoRouter {
      */
     public void withShort(String key, short shortValue) {
         goBoard.putShort(key, shortValue);
+    }
+
+
+    /**
+     * When the node is Fragment , you can set the argument to your fragment by this method.
+     * @param arguments
+     */
+    public void withArguments(Bundle arguments) {
+        goBoard.setArguments(arguments);
     }
 
 
@@ -577,7 +614,7 @@ public class _GoRouter {
      * @param activityClazz  目标activity的类对象
      * @param requestCode    页面返回时回调的请求码
      */
-    private void startActivity(Context currentContext, Class activityClazz, @Nullable Bundle options, Integer requestCode) {
+    private void startActivity(Context currentContext, Class activityClazz, @Nullable Bundle options, Integer requestCode , Callback callback) {
 
         Bundle currentData = goBoard.getData();
         Intent intent = new Intent(currentContext, activityClazz);
@@ -591,16 +628,25 @@ public class _GoRouter {
                 ActivityCompat.startActivityForResult((Activity) currentContext, intent, requestCode, options);
             } else {
                 GoLogger.warn("Must use [go(activity, ...)] to support [startActivityForResult]");
+                if(callback != null){
+                    callback.onFail(new Exception("Must use [go(activity, ...)] to support [startActivityForResult]"));
+                }
             }
         } else if (requestCode == null && options != null) {
             if (currentContext instanceof Activity) {
                 ActivityCompat.startActivity(((Activity) currentContext), intent, options);
             } else {
                 GoLogger.warn("Must use [go(activity, ...)] to support [startActivity]");
+                if(callback != null){
+                    callback.onFail(new Exception("Must use [go(activity, ...)] to support [startActivity]"));
+                }
             }
         } else {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ActivityCompat.startActivity(currentContext, intent, options);
+        }
+        if(callback != null){
+            callback.onArrival();
         }
         goBoard.release();
     }
