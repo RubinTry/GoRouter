@@ -366,6 +366,9 @@ public final class _GoRouter {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            if(callback != null){
+                callback.onFail(e);
+            }
         }
         return "";
     }
@@ -440,6 +443,10 @@ public final class _GoRouter {
 
         return "";
     }
+
+
+
+
 
 
     /**

@@ -324,6 +324,7 @@ public final class GoRouter {
      * @param context     当前页面上下文
      * @param options     这是一个配置项，用来决定如何启动activity
      * @param requestCode 页面返回时回调的请求码
+     * @param callback 页面跳转时的回调
      */
     public Object go(Context context, @Nullable Bundle options, Integer requestCode , Callback callback) {
         try {

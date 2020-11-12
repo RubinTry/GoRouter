@@ -119,13 +119,11 @@ anotherModule.gradle
 
 #### 如何使用此框架?
 
-Fragment篇
+Fragment
 ```java
 
    //获得一个fragment实例
-   Fragment instance = GoRouter.getInstance().build("routeKey1")
-                   .getFragment()
-    
+   Fragment instance = GoRouter.getInstance().build("fragmentRouteKey").go()
         
 ```
 

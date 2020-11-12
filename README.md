@@ -129,9 +129,7 @@ Fragment
 ```java
 
    //Get a fragment instance
-   Fragment instance = GoRouter.getInstance().build("routeKey1")
-                   .getFragment()
-    
+   Fragment instance = GoRouter.getInstance().build("fragmentRouteKey").go()
         
 ```
 
