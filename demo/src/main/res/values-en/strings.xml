@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GoRouter</string>
+    <string name="simple_jump">Simple jump in application</string>
+    <string name="jump_with_param">Jump with params.</string>
+    <string name="find_param">Find param</string>
+    <string name="you_jump_to_a_simple_page">You jump to a simple page</string>
+</resources>

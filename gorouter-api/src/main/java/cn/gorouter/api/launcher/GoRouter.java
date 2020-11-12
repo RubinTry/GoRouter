@@ -260,6 +260,7 @@ public final class GoRouter {
             if (!init) {
                 throw new IllegalArgumentException("You haven't initialized yet！");
             }
+
             return _GoRouter.getInstance().go(applicationContext, null, null , callback);
         } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);
@@ -289,6 +290,9 @@ public final class GoRouter {
             if (!init) {
                 throw new IllegalArgumentException("You haven't initialized yet！");
             }
+            if (context instanceof Activity) {
+                ((Activity) context).overridePendingTransition(0, 0);
+            }
             return _GoRouter.getInstance().go(context, requestCode, null , callback);
         } catch (Exception e) {
             GoLogger.error("Exception happen: " + e);
@@ -303,6 +307,9 @@ public final class GoRouter {
      * @param options 这是一个配置项，用来决定如何启动activity
      */
     public void go(Context context, @Nullable Bundle options) {
+        if (context instanceof Activity) {
+            ((Activity) context).overridePendingTransition(0, 0);
+        }
         go(context, options, null);
     }
 

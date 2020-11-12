@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">GoRouter</string>
+    <string name="simple_jump">简单的应用内跳转</string>
+    <string name="jump_with_param">携带参数的跳转</string>
+    <string name="find_param">发现参数</string>
+    <string name="you_jump_to_a_simple_page">你跳到了一个简单的页面里</string>
 </resources>

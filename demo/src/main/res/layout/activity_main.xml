@@ -1,13 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/flContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000"
-    tools:context=".activity.MainActivity">
+    android:orientation="vertical"
+    tools:context=".activity.MainActivity"
+    android:fitsSystemWindows="true">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize" />
+
+
+    <Button
+        android:id="@+id/btnSimpleJump"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="@string/simple_jump"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="16dp"/>
 
 
 
-</FrameLayout>
+    <Button
+        android:id="@+id/btnJumpWithParams"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:text="@string/jump_with_param"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="16dp"/>
+
+
+
+</LinearLayout>
