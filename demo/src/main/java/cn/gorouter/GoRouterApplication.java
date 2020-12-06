@@ -17,6 +17,7 @@ public class GoRouterApplication extends MultiDexApplication {
 
         GoRouter.openLog();
         GoRouter.setLogSplitChar("*");
+        GoRouter.setDebugable(true);
         GoRouter.init(this);
     }
 }

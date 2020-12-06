@@ -1,5 +1,6 @@
 package cn.gorouter.api.launcher;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -24,9 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,11 +44,14 @@ import cn.gorouter.api.threadpool.MainExecutor;
 import cn.gorouter.api.monitor.ActivityMonitor;
 import cn.gorouter.api.utils.Callback;
 import cn.gorouter.api.utils.Const;
+import cn.gorouter.api.utils.PackageUtils;
 import dalvik.system.DexFile;
 
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.ACTIVITY;
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT;
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAGE;
+import static cn.gorouter.api.utils.Const.GOROUTER_SP_CACHE_KEY;
+import static cn.gorouter.api.utils.Const.GOROUTER_SP_KEY_SET;
 
 /**
  * @author logcat <a href="13857769302@163.com">Contact me.</a>
@@ -54,6 +60,7 @@ import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAG
  */
 public final class _GoRouter {
     private static volatile _GoRouter instance;
+    private static boolean debugable = false;
     private Map<String, Class> nodeTargetContainer;
     private static Context mContext;
     private GoBoard goBoard;
@@ -113,9 +120,21 @@ public final class _GoRouter {
      * @param context
      * @return
      */
+    @SuppressLint("CommitPrefEdits")
     private static synchronized boolean initAllRoute(Context context) {
+        Set<String> classNames;
         try {
-            List<String> classNames = getClasses(context.getApplicationContext(), "cn.gorouter.route");
+            if(isDebugable() || PackageUtils.isNewVersion(context)){
+                classNames = getClasses(context.getApplicationContext(), "cn.gorouter.route");
+                if(!classNames.isEmpty()){
+                    context.getSharedPreferences(GOROUTER_SP_CACHE_KEY , Context.MODE_PRIVATE).edit().putStringSet(GOROUTER_SP_KEY_SET , classNames).apply();
+                }
+                PackageUtils.updateVersion(context);
+            }else{
+                GoLogger.info("Load router map from cache.");
+                classNames = new HashSet<>(context.getSharedPreferences(GOROUTER_SP_CACHE_KEY , Context.MODE_PRIVATE).getStringSet(GOROUTER_SP_KEY_SET , new HashSet<String>()));
+            }
+
             for (String aClassName : classNames) {
                 Class aClass = Class.forName(aClassName);
                 if (IRouter.class.isAssignableFrom(aClass)) {
@@ -130,6 +149,15 @@ public final class _GoRouter {
     }
 
 
+    public static void setDebugable(boolean debugable){
+        _GoRouter.debugable = debugable;
+    }
+
+    public static boolean isDebugable(){
+        return debugable;
+    }
+
+
     /**
      * Scan all class names under the specified package name.
      * 扫描某个包名下的所有类
@@ -138,8 +166,8 @@ public final class _GoRouter {
      * @param packageName Witch package we want scan.
      * @return All the classes from a package
      */
-    private static List<String> getClasses(Context context, String packageName) throws PackageManager.NameNotFoundException, IOException, InterruptedException {
-        List<String> classList = new ArrayList<>();
+    private static Set<String> getClasses(Context context, String packageName) throws PackageManager.NameNotFoundException, IOException, InterruptedException {
+        Set<String> classList = new HashSet<>();
 
         List<String> paths = getSourcePaths(context);
         //线程总数锁存器
@@ -227,7 +255,7 @@ public final class _GoRouter {
             }
         }
         // Search instant run support only debuggable
-        if (GoLogger.isOpen()) {
+        if (GoLogger.isOpen() && isDebugable()) {
             sourcePaths.addAll(tryLoadInstantRunDexFile(applicationInfo));
         }
         return sourcePaths;
@@ -668,4 +696,5 @@ public final class _GoRouter {
     private void runOnMainThread(Runnable runnable) {
         Objects.requireNonNull(MainExecutor.Companion.getInstance()).execute(runnable);
     }
+
 }

@@ -49,6 +49,14 @@ public final class GoRouter {
 
 
     /**
+     * 设置是否为调试模式
+     * @param debugable
+     */
+    public static void setDebugable(boolean debugable){
+        _GoRouter.setDebugable(debugable);
+    }
+
+    /**
      * open log printer.
      * 开启日志打印
      */
