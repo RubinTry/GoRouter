@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".activity.SimpleActivity" />
         <activity android:name=".activity.ParamsActivity" />
+        <activity android:name=".activity.ForResultActivity" />
     </application>
 
 </manifest>

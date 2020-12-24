@@ -39,6 +39,7 @@ import cn.gorouter.api.exception.NoAnyNodeException;
 import cn.gorouter.api.exception.NotSupportException;
 import cn.gorouter.api.exception.RouteNotFoundException;
 import cn.gorouter.api.logger.GoLogger;
+import cn.gorouter.api.pub.IProvider;
 import cn.gorouter.api.threadpool.DefaultPoolExecutor;
 import cn.gorouter.api.threadpool.MainExecutor;
 import cn.gorouter.api.monitor.ActivityMonitor;
@@ -386,7 +387,9 @@ public final class _GoRouter {
                     return go(currentContext, requestCode, ACTIVITY, nodeTarget, options , callback);
                 } else if (Fragment.class.isAssignableFrom(nodeTarget)) {
                     return go(currentContext, requestCode, FRAGMENT, nodeTarget, options , callback);
-                } else {
+                } else if(IProvider.class.isAssignableFrom(nodeTarget)){
+                    return nodeTarget.newInstance();
+                }else {
                     GoLogger.error("Don't use this method to open fragment, please get a fragment instance then open it.");
                 }
             } else {
@@ -399,6 +402,28 @@ public final class _GoRouter {
             }
         }
         return "";
+    }
+
+
+    @Nullable
+    public <T> T go(Class<T> clazz) {
+        String routeKey = goBoard.getRouteKey();
+        //Get all the node and type classes.
+        try {
+            Class nodeTarget = nodeTargetContainer.get(routeKey);
+            if(nodeTarget != null){
+                if(IProvider.class.isAssignableFrom(nodeTarget)){
+                    T node = clazz.cast(nodeTarget.newInstance());
+                    ((IProvider) node).init(mContext);
+                    return node;
+                }
+            }else{
+                throw new RouteNotFoundException("Provider \"" + routeKey + "\" is not found!!!");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
@@ -618,6 +643,8 @@ public final class _GoRouter {
     public void withArguments(Bundle arguments) {
         goBoard.setArguments(arguments);
     }
+
+
 
 
     /**

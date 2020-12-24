@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SimpleModule</string>
+    <string name="you_called_method_simple_in_SimpleServiceImpl">You called method simple() in SimpleServiceImpl</string>
+</resources>

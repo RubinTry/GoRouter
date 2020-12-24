@@ -77,7 +77,6 @@ public class GoRouterCompiler extends AbstractProcessor {
         //ExecutableElement 方法节点
         // VariableElement成员变量节点
         Map<String, String> map = new HashMap<>();
-//        Map<String, String> typeMap = new HashMap<>();
         for (Element element : elementsAnnotatedWith) {
             TypeElement typeElement = (TypeElement) element;
             String url = typeElement.getAnnotation(Route.class).url();

@@ -13,8 +13,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/you_jump_to_a_simple_page"
+        android:text="@string/the_SimpleServiceImpl_is_a_service_in_another_module"
         android:textSize="16sp"
         android:gravity="center"
-        android:textColor="@android:color/white"/>
+        android:textColor="@android:color/white"
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"/>
 </LinearLayout>

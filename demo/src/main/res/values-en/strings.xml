@@ -5,4 +5,8 @@
     <string name="find_param">Find param</string>
     <string name="you_jump_to_a_simple_page">You jump to a simple page</string>
     <string name="get_data_from_another_module">Get some data from another module(Invoke the method from another module)</string>
+    <string name="for_result">for result</string>
+    <string name="back_from_page_for_result">Back from page "For result"</string>
+    <string name="you_are_in_for_result_now">Now you are in page "For result"</string>
+    <string name="the_SimpleServiceImpl_is_a_service_in_another_module">SimpleServiceImpl is a service in another module.</string>
 </resources>

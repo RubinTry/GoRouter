@@ -5,4 +5,8 @@
     <string name="find_param">发现参数</string>
     <string name="you_jump_to_a_simple_page">你跳到了一个简单的页面里</string>
     <string name="get_data_from_another_module">从另一模块中获取数据（调用其他模块里的方法）</string>
+    <string name="for_result">for result</string>
+    <string name="back_from_page_for_result">从"For result"页面回来了</string>
+    <string name="you_are_in_for_result_now">你现在在"For result"页面里</string>
+    <string name="the_SimpleServiceImpl_is_a_service_in_another_module">SimpleServiceImpl是另一个module里的服务。</string>
 </resources>

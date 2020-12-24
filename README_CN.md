@@ -18,7 +18,7 @@
 
 |module|GoRouter-api|GoRouter-compiler|GoRouter-annotation|
 |:---:|:---:|:---:|:---:|
-version|[![Version](https://img.shields.io/badge/Version-1.0.30-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
+version|[![Version](https://img.shields.io/badge/Version-1.0.33-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
 
 
 
@@ -41,7 +41,7 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.30-blue)](https://b
 config.gradle
 ```groovy
     dependencies{
-        implementation 'cn.rubintry:gorouter-api:1.0.30'
+        implementation 'cn.rubintry:gorouter-api:1.0.33'
         //Java
         annotationProcessor  'cn.rubintry:gorouter-compiler:1.0.5'
         //Kotlin
@@ -117,7 +117,10 @@ anotherModule.gradle
 ```
 
 
-#### 如何使用此框架?
+# 如何使用此框架?
+
+## 简单使用
+<br/>
 
 Fragment
 ```java
@@ -206,4 +209,55 @@ activity2
    tv = findViewById(R.id.tv);
    GoRouter.getInstance().build("activity1 's routeKey")
    .go(this , ActivityOptionsCompat.makeSceneTransitionAnimation(this , tv , tv.getTransitionName()).toBundle())
+```
+
+
+## 进阶用法
+<br/>
+通过暴露服务进行解耦
+
+```java
+    /**
+      * 把这个服务暴露在公共库中
+      *
+      */
+    interface SimpleService implements IProvider{
+       
+        void simple(Context context);
+    }
+
+
+
+     /**
+      * 在模块B中实现这个服务并加以处理
+      *
+      */
+    public class SimpleServiceImpl implements SimpleService{
+        @override
+        public void init(Context context){
+            //这里可以做一些初始化操作
+        }
+
+        public void simple(Context context){
+            //做一些处理
+        }
+    }
+
+
+     /**
+      * 模块A中的一个activity
+      *
+      */
+    public class SimpleActivity extends AppCompatActivity{
+        
+        @ovserride
+        public void oncreate(Bundle savedInstanceState){
+
+            SimpleService service = GoRouter.getInstance().build("Simple/SimpleService").go(SimpleService.class);
+
+            if(service != null){
+                service.simple(this.getApplicationContext());
+            }
+        }
+    }
 ```

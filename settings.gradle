@@ -1,3 +1,4 @@
+include ':demo_lib_common'
 include ':simplemodule'
 include ':gorouter-annotation'
 include ':gorouter-compiler'

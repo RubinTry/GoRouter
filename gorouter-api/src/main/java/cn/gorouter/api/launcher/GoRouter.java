@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import org.jetbrains.annotations.Nullable;
 
 import cn.gorouter.api.logger.GoLogger;
+import cn.gorouter.api.pub.IProvider;
 import cn.gorouter.api.utils.Callback;
 
 
@@ -255,8 +256,18 @@ public final class GoRouter {
      * 通过先前设置好的路由键访问具体节点
      */
     public Object go(){
-       return go(null);
+        try {
+            if (!init) {
+                throw new IllegalArgumentException("You haven't initialized yet！");
+            }
+
+            return _GoRouter.getInstance().go(applicationContext, null, null , null);
+        } catch (Exception e) {
+            GoLogger.error("Exception happen: " + e);
+            return null;
+        }
     }
+
 
     /**
      * Go to target node.
@@ -272,6 +283,21 @@ public final class GoRouter {
 
             return _GoRouter.getInstance().go(applicationContext, null, null , callback);
         } catch (Exception e) {
+            GoLogger.error("Exception happen: " + e);
+            return null;
+        }
+    }
+
+
+    @androidx.annotation.Nullable
+    public <T> T go(Class<T> service){
+        try{
+            if(!IProvider.class.isAssignableFrom(service)){
+                throw new IllegalArgumentException("The class must be child of IProvider");
+            }
+
+            return _GoRouter.getInstance().go(service);
+        }catch (Exception e){
             GoLogger.error("Exception happen: " + e);
             return null;
         }

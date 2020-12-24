@@ -24,7 +24,7 @@ The most lightweight Framework about router in android.
 
 |module|GoRouter-api|GoRouter-compiler|GoRouter-annotation|
 |:---:|:---:|:---:|:---:|
-version|[![Version](https://img.shields.io/badge/Version-1.0.30-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
+version|[![Version](https://img.shields.io/badge/Version-1.0.33-blue)](https://bintray.com/logcat305/maven/gorouter-api/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.5-orange)](https://bintray.com/logcat305/maven/gorouter-compiler/_latestVersion)|[![Version](https://img.shields.io/badge/Version-1.0.3-brightgreen)](https://bintray.com/logcat305/maven/gorouter-annotation/_latestVersion)
 
 
 
@@ -46,7 +46,7 @@ version|[![Version](https://img.shields.io/badge/Version-1.0.30-blue)](https://b
 config.gradle
 ```groovy
     dependencies{
-    implementation 'cn.rubintry:gorouter-api:1.0.30'
+    implementation 'cn.rubintry:gorouter-api:1.0.33'
     //Java
     annotationProcessor  'cn.rubintry:gorouter-compiler:1.0.5'
     //Kotlin
@@ -123,7 +123,10 @@ The AndroidManifest.xml when you run module as library
     </manifest>
 ```
 
-#### How to use?
+# How to use?
+
+## Simple usage
+<br/>
 
 Fragment
 ```java
@@ -132,6 +135,7 @@ Fragment
    Fragment instance = GoRouter.getInstance().build("fragmentRouteKey").go()
         
 ```
+
 
 
 
@@ -212,4 +216,54 @@ activity2
 
    GoRouter.getInstance().build("activity1 's routeKey")
    .go(this , ActivityOptionsCompat.makeSceneTransitionAnimation(this , tv , tv.getTransitionName()).toBundle())
+```
+
+
+## Advanced usage
+Decoupled by exposure service
+
+```java
+    /**
+      * Expose this service in common lib.
+      *
+      */
+    interface SimpleService implements IProvider{
+       
+        void simple(Context context);
+    }
+
+
+
+     /**
+      * Implements this service in module B and deal with it.
+      *
+      */
+    public class SimpleServiceImpl implements SimpleService{
+        @override
+        public void init(Context context){
+            //Here you can do something to initialize.
+        }
+
+        public void simple(Context context){
+            //do something
+        }
+    }
+
+
+     /**
+      * An activity in module A
+      *
+      */
+    public class SimpleActivity extends AppCompatActivity{
+        
+        @ovserride
+        public void oncreate(Bundle savedInstanceState){
+
+            SimpleService service = GoRouter.getInstance().build("Simple/SimpleService").go(SimpleService.class);
+
+            if(service != null){
+                service.simple(this.getApplicationContext());
+            }
+        }
+    }
 ```

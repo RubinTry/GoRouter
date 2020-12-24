@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SimpleModule</string>
+    <string name="you_called_method_simple_in_SimpleServiceImpl">你调用了SimpleServiceImpl里的simple()方法</string>
 </resources>
