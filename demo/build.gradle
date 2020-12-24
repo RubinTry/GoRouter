@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply from: '../config.gradle'
-apply plugin: 'com.jakewharton.butterknife'
 
 android {
     compileSdkVersion 29
@@ -31,24 +30,18 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-
-
-
-
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
+    if(!moduleIsApplication.toBoolean().booleanValue()){
+        implementation project(path: ':simplemodule')
+    }
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
-
-
     annotationProcessor project(path: ':gorouter-compiler')
     kapt project(path: ':gorouter-compiler')
     implementation project(path: ':gorouter-annotation')
     implementation project(path: ':gorouter-api')
-    implementation 'com.jakewharton:butterknife:10.2.3'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
-    kapt 'com.jakewharton:butterknife-compiler:10.2.3'
 }

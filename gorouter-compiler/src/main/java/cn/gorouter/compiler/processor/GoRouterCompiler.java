@@ -19,7 +19,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
-
 import cn.gorouter.annotation.Route;
 
 
@@ -66,6 +65,13 @@ public class GoRouterCompiler extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
+        initRoute(roundEnvironment);
+        return false;
+    }
+
+
+
+    private void initRoute(RoundEnvironment roundEnvironment) {
         Set<? extends Element> elementsAnnotatedWith = roundEnvironment.getElementsAnnotatedWith(Route.class);
         // TypeElement  类节点 代表一个类
         //ExecutableElement 方法节点
@@ -121,6 +127,7 @@ public class GoRouterCompiler extends AbstractProcessor {
                 }
             }
         }
-        return false;
     }
+
+
 }

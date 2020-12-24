@@ -5,22 +5,20 @@ import android.view.WindowManager
 import android.widget.Button
 import cn.gorouter.R
 import cn.gorouter.api.launcher.GoRouter
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : BaseActivity(), View.OnClickListener {
 
-    private lateinit var btnSimpleJump : Button
-    private lateinit var btnJumpWithParams : Button
 
     override fun bindLayout(): Int {
         return R.layout.activity_main
     }
 
     override fun initViews() {
-        btnSimpleJump = findViewById(R.id.btnSimpleJump)
         btnSimpleJump.setOnClickListener(this)
-        btnJumpWithParams = findViewById(R.id.btnJumpWithParams)
         btnJumpWithParams.setOnClickListener(this)
+        btnGetDataFromAnotherModule.setOnClickListener(this)
     }
 
     override fun onClick(v: View) {
@@ -33,6 +31,10 @@ class MainActivity : BaseActivity(), View.OnClickListener {
                 GoRouter.getInstance().build("main/ParamsActivity")
                         .withInt("RouterParam" , 1)
                         .go()
+            }
+
+            R.id.btnGetDataFromAnotherModule -> {
+
             }
         }
     }

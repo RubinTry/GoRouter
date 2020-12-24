@@ -1,3 +1,4 @@
+include ':simplemodule'
 include ':gorouter-annotation'
 include ':gorouter-compiler'
 include ':gorouter-api'

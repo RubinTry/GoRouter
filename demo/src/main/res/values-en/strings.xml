@@ -4,4 +4,5 @@
     <string name="jump_with_param">Jump with params.</string>
     <string name="find_param">Find param</string>
     <string name="you_jump_to_a_simple_page">You jump to a simple page</string>
+    <string name="get_data_from_another_module">Get some data from another module(Invoke the method from another module)</string>
 </resources>

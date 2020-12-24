@@ -245,6 +245,7 @@ public final class GoRouter {
     }
 
 
+    @Deprecated
     public Fragment getFragment() {
         return _GoRouter.getInstance().getFragmentInstance();
     }
