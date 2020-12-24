@@ -240,6 +240,7 @@ Decoupled by exposure service
       * Implements this service in module B and deal with it.
       *
       */
+    @Route(url = "Simple/SimpleService")
     public class SimpleServiceImpl implements SimpleService{
         @override
         public void init(Context context){

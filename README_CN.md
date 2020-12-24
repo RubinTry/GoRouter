@@ -233,6 +233,7 @@ activity2
       * 在模块B中实现这个服务并加以处理
       *
       */
+    @Route(url = "Simple/SimpleService")
     public class SimpleServiceImpl implements SimpleService{
         @override
         public void init(Context context){
