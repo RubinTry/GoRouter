@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -393,6 +394,7 @@ public final class _GoRouter {
                     GoLogger.error("Don't use this method to open fragment, please get a fragment instance then open it.");
                 }
             } else {
+                Toast.makeText(context.getApplicationContext() , "Route node \"" + routeKey + "\" is not found!!!" , Toast.LENGTH_SHORT).show();
                 throw new RouteNotFoundException("Route node \"" + routeKey + "\" is not found!!!");
             }
         } catch (Exception e) {
