@@ -41,8 +41,11 @@ dependencies {
     }
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
-    annotationProcessor project(path: ':gorouter-compiler')
-    kapt project(path: ':gorouter-compiler')
-    implementation project(path: ':gorouter-annotation')
-    implementation project(path: ':gorouter-api')
+//    annotationProcessor project(path: ':gorouter-compiler')
+//    kapt project(path: ':gorouter-compiler')
+//    implementation project(path: ':gorouter-annotation')
+//    implementation project(path: ':gorouter-api')
+    implementation project(path: ':gorouter-api-kotlin')
+    kapt project(path: ':gorouter-compiler-kotlin')
+    implementation 'cn.rubintry:gorouter-annotation:1.0.3'
 }

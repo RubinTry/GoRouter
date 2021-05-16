@@ -4,10 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Bundle
-import android.os.Process
 import androidx.fragment.app.FragmentActivity
 import java.util.*
-import kotlin.system.exitProcess
 
 /**
  * @author logcat

@@ -2,11 +2,9 @@ package cn.gorouter.activity
 
 import android.content.Intent
 import android.view.View
-import android.view.WindowManager
-import android.widget.Button
 import android.widget.Toast
 import cn.gorouter.R
-import cn.gorouter.api.launcher.GoRouter
+import cn.gorouter.api.kotlin.core.GoRouter
 import kotlinx.android.synthetic.main.activity_main.*
 
 

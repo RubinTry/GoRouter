@@ -10,9 +10,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.transition.Transition;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -37,7 +35,6 @@ import java.util.regex.Pattern;
 
 import cn.gorouter.api.card.GoBoard;
 import cn.gorouter.api.exception.NoAnyNodeException;
-import cn.gorouter.api.exception.NotSupportException;
 import cn.gorouter.api.exception.RouteNotFoundException;
 import cn.gorouter.api.logger.GoLogger;
 import cn.gorouter.api.pub.IProvider;
@@ -51,7 +48,6 @@ import dalvik.system.DexFile;
 
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.ACTIVITY;
 import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT;
-import static cn.gorouter.api.launcher._GoRouter.TypeKind.FRAGMENT_IN_APP_PACKAGE;
 import static cn.gorouter.api.utils.Const.GOROUTER_SP_CACHE_KEY;
 import static cn.gorouter.api.utils.Const.GOROUTER_SP_KEY_SET;
 

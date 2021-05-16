@@ -2,7 +2,6 @@ package cn.gorouter.api.card;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 /**
  * @author logcat

@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
-import android.transition.Transition;
-import android.view.View;
 
 import androidx.fragment.app.Fragment;
 

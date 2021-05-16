@@ -1,10 +1,9 @@
 package cn.gorouter.activity
 
-import android.util.Log
 import cn.gorouter.R
 import cn.gorouter.annotation.Route
 import cn.gorouter.api.launcher.GoRouter
-import cn.rubintry.demo_lib_common.service.SimpleService
+import cn.gorouter.demo_lib_common.service.SimpleService
 
 
 @Route(url = "main/SimpleActivity")

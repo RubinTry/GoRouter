@@ -1,7 +1,5 @@
 package cn.gorouter;
 
-import android.app.Application;
-
 import androidx.multidex.MultiDexApplication;
 
 import cn.gorouter.api.launcher.GoRouter;
